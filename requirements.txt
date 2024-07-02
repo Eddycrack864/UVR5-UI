@@ -1,2 +1,3 @@
 audio-separator[gpu]==0.17.2
 scipy
+gradio==4.37.2

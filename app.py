@@ -542,8 +542,4 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
               """
            )
 
-app.launch(
-        share=args.share_enabled,
-        server_name=None if not args.listen else (args.listen_host or '0.0.0.0'),
-        server_port=6969,
-)
+app.launch(share=True)

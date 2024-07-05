@@ -237,6 +237,7 @@ def demucs_separator(demucs_audio, demucs_model, demucs_output_format, demucs_sh
 with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
     gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")
     gr.Markdown("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)")
+    gr.Markdown("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)")
     with gr.Tabs():
         with gr.TabItem("BS/Mel Roformer"):
             with gr.Row():
@@ -531,11 +532,13 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
         with gr.TabItem("Credits"):
            gr.Markdown(
               """
-              UVR5 UI created by **[Not Eddy (Spanish Mod)](http://discord.com/users/274566299349155851)** in **[AI HUB](https://discord.gg/aihub)** community.
+              UVR5 UI created by **[Eddycrack 864](https://github.com/Eddycrack864).** Join **[AI HUB](https://discord.gg/aihub)** community.
 
               * python-audio-separator by [beveradb](https://github.com/beveradb).
-              * Thanks to [Ilaria](https://github.com/TheStingerX) and [Mikus](https://github.com/cappuch) for the help with the code.
-              * Improvements by [Blane187](https://github.com/Blane187).
+              * Special thanks to [Ilaria](https://github.com/TheStingerX) for hosting this space and help.
+              * Thanks to [Mikus](https://github.com/cappuch) for the help with the code.
+              * Thanks to [Nick088](https://huggingface.co/Nick088) for the help to fix roformers.
+              * Improvements by [Blane187](https://huggingface.co/Blane187).
 
               You can donate to the original UVR5 project here:
               [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/uvr5)

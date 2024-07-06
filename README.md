@@ -41,6 +41,16 @@ You can donate to the original UVR5 project here:
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/uvr5)
 
+## TO-DO
+* Separation of YouTube videos/shorts
+* Batch Separation
+* Segment Size for Roformers
+* Pitch Shifts for MDX23C
+* Denoise for MDX23C
+
+## Changelog
+* Support for A100 GPU
+
 ## Credits
 * python-audio-separator by [beveradb](https://github.com/beveradb).
 * Special thanks to [Ilaria](https://github.com/TheStingerX) for hosting this space and help 💖

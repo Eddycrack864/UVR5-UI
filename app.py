@@ -120,7 +120,7 @@ demucs_overlap_values = [
     '0.99',
 ]
 
-def roformer_separator(roformer_audio, roformer_model, roformer_output_format, roformer_overlap):
+def roformer_separator(roformer_audio, roformer_model, roformer_output_format, roformer_overlap, roformer_segment_size):
   files_list = []
   files_list.clear()
   directory = "./outputs"
@@ -129,7 +129,7 @@ def roformer_separator(roformer_audio, roformer_model, roformer_output_format, r
   os.makedirs("outputs", exist_ok=True)
   write(f'{random_id}.wav', roformer_audio[0], roformer_audio[1])
   full_roformer_model = roformer_models[roformer_model]
-  prompt = f"audio-separator {random_id}.wav --model_filename {full_roformer_model} --output_dir=./outputs --output_format={roformer_output_format} --normalization=0.9 --mdxc_overlap={roformer_overlap}"
+  prompt = f"audio-separator {random_id}.wav --model_filename {full_roformer_model} --output_dir=./outputs --output_format={roformer_output_format} --normalization=0.9 --mdxc_overlap={roformer_overlap} --mdxc_segment_size={roformer_segment_size}"
   os.system(prompt)
 
   for file in os.listdir(directory):
@@ -141,7 +141,7 @@ def roformer_separator(roformer_audio, roformer_model, roformer_output_format, r
 
   return stem1_file, stem2_file
 
-def mdxc_separator(mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_overlap):
+def mdxc_separator(mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_overlap, mdx23c_denoise):
   files_list = []
   files_list.clear()
   directory = "./outputs"
@@ -150,6 +150,10 @@ def mdxc_separator(mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segm
   os.makedirs("outputs", exist_ok=True)
   write(f'{random_id}.wav', mdx23c_audio[0], mdx23c_audio[1])
   prompt = f"audio-separator {random_id}.wav --model_filename {mdx23c_model} --output_dir=./outputs --output_format={mdx23c_output_format} --normalization=0.9 --mdxc_segment_size={mdx23c_segment_size} --mdxc_overlap={mdx23c_overlap}"
+        
+  if mdx23c_denoise:
+    prompt += " --mdx_enable_denoise"
+          
   os.system(prompt)
 
   for file in os.listdir(directory):
@@ -261,6 +265,15 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
                     value = 4,
                     interactive = True
                 )
+                roformer_segment_size = gr.Slider(
+                    minimum = 32,
+                    maximum = 4000,
+                    step = 32,
+                    label = "Segment Size",
+                    info = "Larger consumes more resources, but may give better results.",
+                    value = 256,
+                    interactive = True
+                )
             with gr.Row():
                 roformer_audio = gr.Audio(
                     label = "Input Audio",
@@ -283,7 +296,7 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
                     type = "filepath"
                 )
 
-            roformer_button.click(roformer_separator, [roformer_audio, roformer_model, roformer_output_format, roformer_overlap], [roformer_stem1, roformer_stem2])
+            roformer_button.click(roformer_separator, [roformer_separator, [roformer_audio, roformer_model, roformer_output_format, roformer_overlap, roformer_segment_size], [roformer_stem1, roformer_stem2])
         
         with gr.TabItem("MDX23C"):
             with gr.Row():
@@ -316,6 +329,12 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
                     value = 8,
                     interactive = True
                 )
+                mdx23c_denoise = gr.Checkbox(
+                    label = "Denoise",
+                    info = "Enable denoising during separation.",
+                    value = False,
+                    interactive = True
+                )
             with gr.Row():
                 mdx23c_audio = gr.Audio(
                     label = "Input Audio",
@@ -338,7 +357,7 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
                     type = "filepath"
                 )
 
-            mdx23c_button.click(mdxc_separator, [mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_overlap], [mdx23c_stem1, mdx23c_stem2])
+            mdx23c_button.click(mdxc_separator, [mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_overlap, mdx23c_denoise], [mdx23c_stem1, mdx23c_stem2])
         
         with gr.TabItem("MDX-NET"):
             with gr.Row():

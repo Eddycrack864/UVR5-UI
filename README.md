@@ -44,16 +44,15 @@ You can donate to the original UVR5 project here:
 ## TO-DO
 * Separation of YouTube videos/shorts
 * Batch Separation
-* Segment Size for Roformers
-* Pitch Shifts for MDX23C
-* Denoise for MDX23C
 
 ## Changelog
 * Support for A100 GPU
+* Segment Size for Roformers
+* Denoise for MDX23C
 
 ## Credits
 * python-audio-separator by [beveradb](https://github.com/beveradb).
 * Special thanks to [Ilaria](https://github.com/TheStingerX) for hosting this space and help 💖
 * Thanks to [Mikus](https://github.com/cappuch) for the help with the code.
 * Thanks to [Nick088](https://github.com/Nick088Official) for the help to fix roformers.
-* Improvements by [Blane187](https://github.com/Blane187).
+* Improvements by [Blane187](https://huggingface.co/Blane187).

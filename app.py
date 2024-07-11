@@ -2,7 +2,10 @@ import os
 import re
 import random
 from scipy.io.wavfile import write
+from scipy.io.wavfile import read
+import numpy as np
 import gradio as gr
+import yt_dlp
 
 roformer_models = {
         'BS-Roformer-Viperx-1297.ckpt': 'model_bs_roformer_ep_317_sdr_12.9755.ckpt',
@@ -120,6 +123,25 @@ demucs_overlap_values = [
     '0.99',
 ]
 
+def download_audio(url):
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'outtmpl': 'ytdl/%(title)s.%(ext)s',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'wav',
+            'preferredquality': '192',
+        }],
+    }
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info_dict = ydl.extract_info(url, download=True)
+        file_path = ydl.prepare_filename(info_dict).rsplit('.', 1)[0] + '.wav'
+        sample_rate, audio_data = read(file_path)
+        audio_array = np.asarray(audio_data, dtype=np.int16)
+
+        return sample_rate, audio_array
+
 def roformer_separator(roformer_audio, roformer_model, roformer_output_format, roformer_overlap, roformer_segment_size):
   files_list = []
   files_list.clear()
@@ -150,10 +172,10 @@ def mdxc_separator(mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segm
   os.makedirs("outputs", exist_ok=True)
   write(f'{random_id}.wav', mdx23c_audio[0], mdx23c_audio[1])
   prompt = f"audio-separator {random_id}.wav --model_filename {mdx23c_model} --output_dir=./outputs --output_format={mdx23c_output_format} --normalization=0.9 --mdxc_segment_size={mdx23c_segment_size} --mdxc_overlap={mdx23c_overlap}"
-        
+  
   if mdx23c_denoise:
     prompt += " --mdx_enable_denoise"
-          
+  
   os.system(prompt)
 
   for file in os.listdir(directory):
@@ -280,6 +302,23 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
                     type = "numpy",
                     interactive = True
                 )
+            with gr.Accordion("Separation by Link", open = False):
+                with gr.Row():
+                    roformer_link = gr.Textbox(
+                    label = "Link",
+                    placeholder = "Paste the link here",
+                    interactive = True
+                )
+                with gr.Row():
+                   gr.Markdown("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)")
+                with gr.Row():
+                    roformer_download_button = gr.Button(
+                    "Download!",
+                    variant = "primary"
+                )
+
+            roformer_download_button.click(download_audio, [roformer_link], [roformer_audio])
+
             with gr.Row():
                 roformer_button = gr.Button("Separate!", variant = "primary")
             with gr.Row():
@@ -341,6 +380,23 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
                     type = "numpy",
                     interactive = True
                 )
+            with gr.Accordion("Separation by Link", open = False):
+                with gr.Row():
+                    mdx23c_link = gr.Textbox(
+                    label = "Link",
+                    placeholder = "Paste the link here",
+                    interactive = True
+                )
+                with gr.Row():
+                   gr.Markdown("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)")
+                with gr.Row():
+                    mdx23c_download_button = gr.Button(
+                    "Download!",
+                    variant = "primary"
+                )
+
+            mdx23c_download_button.click(download_audio, [mdx23c_link], [mdx23c_audio])
+
             with gr.Row():
                 mdx23c_button = gr.Button("Separate!", variant = "primary")
             with gr.Row():
@@ -399,6 +455,23 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
                     type = "numpy",
                     interactive = True
                 )
+            with gr.Accordion("Separation by Link", open = False):
+                with gr.Row():
+                    mdxnet_link = gr.Textbox(
+                    label = "Link",
+                    placeholder = "Paste the link here",
+                    interactive = True
+                )
+                with gr.Row():
+                   gr.Markdown("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)")
+                with gr.Row():
+                    mdxnet_download_button = gr.Button(
+                    "Download!",
+                    variant = "primary"
+                )
+
+            mdxnet_download_button.click(download_audio, [mdxnet_link], [mdxnet_audio])
+
             with gr.Row():
                 mdxnet_button = gr.Button("Separate!", variant = "primary")
             with gr.Row():
@@ -465,6 +538,23 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
                     type = "numpy",
                     interactive = True
                 )
+            with gr.Accordion("Separation by Link", open = False):
+                with gr.Row():
+                   vrarch_link = gr.Textbox(
+                    label = "Link",
+                    placeholder = "Paste the link here",
+                    interactive = True
+                )
+                with gr.Row():
+                   gr.Markdown("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)")
+                with gr.Row():
+                    vrarch_download_button = gr.Button(
+                    "Download!",
+                    variant = "primary"
+                )
+
+            vrarch_download_button.click(download_audio, [vrarch_link], [vrarch_audio])
+
             with gr.Row():
                 vrarch_button = gr.Button("Separate!", variant = "primary")
             with gr.Row():
@@ -517,6 +607,23 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
                     type = "numpy",
                     interactive = True
                 )
+            with gr.Accordion("Separation by Link", open = False):
+                with gr.Row():
+                    demucs_link = gr.Textbox(
+                    label = "Link",
+                    placeholder = "Paste the link here",
+                    interactive = True
+                )
+                with gr.Row():
+                   gr.Markdown("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)")
+                with gr.Row():
+                    demucs_download_button = gr.Button(
+                    "Download!",
+                    variant = "primary"
+                )
+
+            demucs_download_button.click(download_audio, [demucs_link], [demucs_audio])
+
             with gr.Row():
                 demucs_button = gr.Button("Separate!", variant = "primary")
             with gr.Row():
@@ -552,12 +659,12 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
            gr.Markdown(
               """
               UVR5 UI created by **[Eddycrack 864](https://github.com/Eddycrack864).** Join **[AI HUB](https://discord.gg/aihub)** community.
-
               * python-audio-separator by [beveradb](https://github.com/beveradb).
               * Special thanks to [Ilaria](https://github.com/TheStingerX) for hosting this space and help.
               * Thanks to [Mikus](https://github.com/cappuch) for the help with the code.
               * Thanks to [Nick088](https://huggingface.co/Nick088) for the help to fix roformers.
-              * Improvements by [Blane187](https://huggingface.co/Blane187).
+              * Thanks to [yt_dlp](https://github.com/yt-dlp/yt-dlp) devs.
+              * Separation by link source code and improvements by [Blane187](https://huggingface.co/Blane187).
 
               You can donate to the original UVR5 project here:
               [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/uvr5)

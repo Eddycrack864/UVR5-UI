@@ -29,6 +29,7 @@ You can also try it in Hugging Faces Spaces running on Zero GPU (A100)!
 * MDX23C Models
 * BS-Roformer ViperX Models
 * VIP Models
+* Separation of an audio/video from all sites supported by [yt_dlp](https://github.com/yt-dlp/yt-dlp). Check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
 
 ## Contributions
 If you want to participate and help me with this project feel free to create an [issue](https://github.com/Eddycrack864/UVR5-UI/issues) if something goes wrong or make a [pull request](https://github.com/Eddycrack864/UVR5-UI/pulls) to improve this project.
@@ -42,17 +43,19 @@ You can donate to the original UVR5 project here:
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/uvr5)
 
 ## TO-DO
-* Separation of YouTube videos/shorts
 * Batch Separation
 
 ## Changelog
 * Support for A100 GPU
 * Segment Size for Roformers
 * Denoise for MDX23C
+* Separation of an audio/video from all sites supported by yt_dlp
 
 ## Credits
 * python-audio-separator by [beveradb](https://github.com/beveradb).
 * Special thanks to [Ilaria](https://github.com/TheStingerX) for hosting this space and help 💖
 * Thanks to [Mikus](https://github.com/cappuch) for the help with the code.
 * Thanks to [Nick088](https://github.com/Nick088Official) for the help to fix roformers.
+* Thanks to [yt_dlp](https://github.com/yt-dlp/yt-dlp) devs.
 * Improvements by [Blane187](https://huggingface.co/Blane187).
+* Separation by link source code and improvements by [Blane187](https://huggingface.co/Blane187).

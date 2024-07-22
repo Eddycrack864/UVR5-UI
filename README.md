@@ -43,13 +43,14 @@ You can donate to the original UVR5 project here:
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/uvr5)
 
 ## TO-DO
-* Batch Separation
+* Code Improvements
 
 ## Changelog
 * Support for A100 GPU
 * Segment Size for Roformers
 * Denoise for MDX23C
 * Separation of an audio/video from all sites supported by yt_dlp
+* Batch Separation
 
 ## Credits
 * python-audio-separator by [beveradb](https://github.com/beveradb).

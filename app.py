@@ -6,6 +6,7 @@ from scipy.io.wavfile import read
 import numpy as np
 import gradio as gr
 import yt_dlp
+import subprocess
 
 roformer_models = {
         'BS-Roformer-Viperx-1297.ckpt': 'model_bs_roformer_ep_317_sdr_12.9755.ckpt',
@@ -260,6 +261,163 @@ def demucs_separator(demucs_audio, demucs_model, demucs_output_format, demucs_sh
 
   return stem1_file, stem2_file, stem3_file, stem4_file
 
+def roformer_batch(path_input, path_output, model, output_format, overlap, segment_size):
+  found_files = []
+  logs = []
+  logs.clear()
+
+  extensions = (".mp3", ".wav", ".flac")
+
+  full_roformer_model = roformer_models[model]
+
+  for audio_files in os.listdir(path_input):
+    if audio_files.endswith(extensions):
+      found_files.append(audio_files)
+  total_files = len(found_files)
+
+  if total_files == 0:
+    logs.append("No valid audio files.")
+    yield "\n".join(logs)
+  else:
+    logs.append(f"{total_files} audio files found")
+    found_files.sort()
+
+    for audio_files in found_files:
+      file_path = os.path.join(path_input, audio_files)
+      prompt = ["audio-separator", file_path, "-m", f"{full_roformer_model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--mdxc_overlap={overlap}", f"--mdxc_segment_size={segment_size}"]
+      logs.append(f"Processing file: {audio_files}")
+      yield "\n".join(logs)
+      subprocess.run(prompt)
+      logs.append(f"File: {audio_files} processed!")
+      yield "\n".join(logs)
+
+def mdx23c_batch(path_input, path_output, model, output_format, overlap, segment_size, denoise):
+  found_files = []
+  logs = []
+  logs.clear()
+
+  extensions = (".mp3", ".wav", ".flac")
+
+  for audio_files in os.listdir(path_input):
+    if audio_files.endswith(extensions):
+      found_files.append(audio_files)
+  total_files = len(found_files)
+
+  if total_files == 0:
+    logs.append("No valid audio files.")
+    yield "\n".join(logs)
+  else:
+    logs.append(f"{total_files} audio files found")
+    found_files.sort()
+
+    for audio_files in found_files:
+      file_path = os.path.join(path_input, audio_files)
+      prompt = ["audio-separator", file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--mdxc_overlap={overlap}", f"--mdxc_segment_size={segment_size}"]
+
+      if denoise:
+        prompt.append("--mdx_enable_denoise")
+
+      logs.append(f"Processing file: {audio_files}")
+      yield "\n".join(logs)
+      subprocess.run(prompt)
+      logs.append(f"File: {audio_files} processed!")
+      yield "\n".join(logs)
+
+def mdxnet_batch(path_input, path_output, model, output_format, overlap, segment_size, denoise):
+  found_files = []
+  logs = []
+  logs.clear()
+
+  extensions = (".mp3", ".wav", ".flac")
+
+  for audio_files in os.listdir(path_input):
+    if audio_files.endswith(extensions):
+      found_files.append(audio_files)
+  total_files = len(found_files)
+
+  if total_files == 0:
+    logs.append("No valid audio files.")
+    yield "\n".join(logs)
+  else:
+    logs.append(f"{total_files} audio files found")
+    found_files.sort()
+
+    for audio_files in found_files:
+      file_path = os.path.join(path_input, audio_files)
+      prompt = ["audio-separator", file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--mdx_overlap={overlap}", f"--mdx_segment_size={segment_size}"]
+
+      if denoise:
+        prompt.append("--mdx_enable_denoise")
+
+      logs.append(f"Processing file: {audio_files}")
+      yield "\n".join(logs)
+      subprocess.run(prompt)
+      logs.append(f"File: {audio_files} processed!")
+      yield "\n".join(logs)
+
+def vrarch_batch(path_input, path_output, model, output_format, window_size, agression, tta, high_end_process):
+  found_files = []
+  logs = []
+  logs.clear()
+
+  extensions = (".mp3", ".wav", ".flac")
+
+  for audio_files in os.listdir(path_input):
+    if audio_files.endswith(extensions):
+      found_files.append(audio_files)
+  total_files = len(found_files)
+
+  if total_files == 0:
+    logs.append("No valid audio files.")
+    yield "\n".join(logs)
+  else:
+    logs.append(f"{total_files} audio files found")
+    found_files.sort()
+
+    for audio_files in found_files:
+      file_path = os.path.join(path_input, audio_files)
+      prompt = ["audio-separator", file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--vr_window_size={window_size}", f"--vr_aggression={agression}"]
+
+      if tta:
+        prompt.append("--vr_enable_tta")
+      if high_end_process:
+         prompt.append("--vr_high_end_process")
+
+      logs.append(f"Processing file: {audio_files}")
+      yield "\n".join(logs)
+      subprocess.run(prompt)
+      logs.append(f"File: {audio_files} processed!")
+      yield "\n".join(logs)
+
+def demucs_batch(path_input, path_output, model, output_format, shifts, overlap):
+  found_files = []
+  logs = []
+  logs.clear()
+
+  extensions = (".mp3", ".wav", ".flac")
+
+  for audio_files in os.listdir(path_input):
+    if audio_files.endswith(extensions):
+      found_files.append(audio_files)
+  total_files = len(found_files)
+
+  if total_files == 0:
+    logs.append("No valid audio files.")
+    yield "\n".join(logs)
+  else:
+    logs.append(f"{total_files} audio files found")
+    found_files.sort()
+
+    for audio_files in found_files:
+      file_path = os.path.join(path_input, audio_files)
+      prompt = ["audio-separator", file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--demucs_shifts={shifts}", f"--demucs_overlap={overlap}"]
+
+      logs.append(f"Processing file: {audio_files}")
+      yield "\n".join(logs)
+      subprocess.run(prompt)
+      logs.append(f"File: {audio_files} processed!")
+      yield "\n".join(logs)
+
 with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
     gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")
     gr.Markdown("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)")
@@ -318,6 +476,28 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
                 )
 
             roformer_download_button.click(download_audio, [roformer_link], [roformer_audio])
+
+            with gr.Accordion("Batch Separation", open = False):
+                with gr.Row():
+                    roformer_input_path = gr.Textbox(
+                        label = "Input Path",
+                        placeholder = "Place the input path here",
+                        interactive = True
+                    )
+                    roformer_output_path = gr.Textbox(
+                        label = "Output Path",
+                        placeholder = "Place the output path here",
+                        interactive = True
+                    )
+                with gr.Row():
+                    roformer_bath_button = gr.Button("Separate!", variant = "primary")
+                with gr.Row():
+                    roformer_info = gr.Textbox(
+                        label = "Output Information",
+                        interactive = False
+                    )
+
+            roformer_bath_button.click(roformer_batch, [roformer_input_path, roformer_output_path, roformer_model, roformer_output_format, roformer_overlap, roformer_segment_size], [roformer_info])
 
             with gr.Row():
                 roformer_button = gr.Button("Separate!", variant = "primary")
@@ -397,6 +577,28 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
 
             mdx23c_download_button.click(download_audio, [mdx23c_link], [mdx23c_audio])
 
+            with gr.Accordion("Batch Separation", open = False):
+                with gr.Row():
+                    mdx23c_input_path = gr.Textbox(
+                        label = "Input Path",
+                        placeholder = "Place the input path here",
+                        interactive = True
+                    )
+                    mdx23c_output_path = gr.Textbox(
+                        label = "Output Path",
+                        placeholder = "Place the output path here",
+                        interactive = True
+                    )
+                with gr.Row():
+                    mdx23c_bath_button = gr.Button("Separate!", variant = "primary")
+                with gr.Row():
+                    mdx23c_info = gr.Textbox(
+                        label = "Output Information",
+                        interactive = False
+                    )
+
+            mdx23c_bath_button.click(mdx23c_batch, [mdx23c_input_path, mdx23c_output_path, mdx23c_model, mdx23c_output_format, mdx23c_overlap, mdx23c_segment_size, mdx23c_denoise], [mdx23c_info])
+
             with gr.Row():
                 mdx23c_button = gr.Button("Separate!", variant = "primary")
             with gr.Row():
@@ -471,6 +673,28 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
                 )
 
             mdxnet_download_button.click(download_audio, [mdxnet_link], [mdxnet_audio])
+
+            with gr.Accordion("Batch Separation", open = False):
+                with gr.Row():
+                    mdxnet_input_path = gr.Textbox(
+                        label = "Input Path",
+                        placeholder = "Place the input path here",
+                        interactive = True
+                    )
+                    mdxnet_output_path = gr.Textbox(
+                        label = "Output Path",
+                        placeholder = "Place the output path here",
+                        interactive = True
+                    )
+                with gr.Row():
+                    mdxnet_bath_button = gr.Button("Separate!", variant = "primary")
+                with gr.Row():
+                    mdxnet_info = gr.Textbox(
+                        label = "Output Information",
+                        interactive = False
+                    )
+
+            mdxnet_bath_button.click(mdxnet_batch, [mdxnet_input_path, mdxnet_output_path, mdxnet_model, mdxnet_output_format, mdxnet_overlap, mdxnet_segment_size, mdxnet_denoise], [mdxnet_info])
 
             with gr.Row():
                 mdxnet_button = gr.Button("Separate!", variant = "primary")
@@ -555,6 +779,28 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
 
             vrarch_download_button.click(download_audio, [vrarch_link], [vrarch_audio])
 
+            with gr.Accordion("Batch Separation", open = False):
+                with gr.Row():
+                    vrarch_input_path = gr.Textbox(
+                        label = "Input Path",
+                        placeholder = "Place the input path here",
+                        interactive = True
+                    )
+                    vrarch_output_path = gr.Textbox(
+                        label = "Output Path",
+                        placeholder = "Place the output path here",
+                        interactive = True
+                    )
+                with gr.Row():
+                    vrarch_bath_button = gr.Button("Separate!", variant = "primary")
+                with gr.Row():
+                    vrarch_info = gr.Textbox(
+                        label = "Output Information",
+                        interactive = False
+                    )
+
+            vrarch_bath_button.click(vrarch_batch, [vrarch_input_path, vrarch_output_path, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_high_end_process], [vrarch_info])
+
             with gr.Row():
                 vrarch_button = gr.Button("Separate!", variant = "primary")
             with gr.Row():
@@ -624,6 +870,28 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
 
             demucs_download_button.click(download_audio, [demucs_link], [demucs_audio])
 
+            with gr.Accordion("Batch Separation", open = False):
+                with gr.Row():
+                    demucs_input_path = gr.Textbox(
+                        label = "Input Path",
+                        placeholder = "Place the input path here",
+                        interactive = True
+                    )
+                    demucs_output_path = gr.Textbox(
+                        label = "Output Path",
+                        placeholder = "Place the output path here",
+                        interactive = True
+                    )
+                with gr.Row():
+                    demucs_bath_button = gr.Button("Separate!", variant = "primary")
+                with gr.Row():
+                    demucs_info = gr.Textbox(
+                        label = "Output Information",
+                        interactive = False
+                    )
+
+            demucs_bath_button.click(demucs_batch, [demucs_input_path, demucs_output_path, demucs_model, demucs_output_format, demucs_shifts, demucs_overlap], [demucs_info])
+
             with gr.Row():
                 demucs_button = gr.Button("Separate!", variant = "primary")
             with gr.Row():
@@ -665,7 +933,6 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
               * Thanks to [Nick088](https://huggingface.co/Nick088) for the help to fix roformers.
               * Thanks to [yt_dlp](https://github.com/yt-dlp/yt-dlp) devs.
               * Separation by link source code and improvements by [Blane187](https://huggingface.co/Blane187).
-
               You can donate to the original UVR5 project here:
               [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/uvr5)
               """

@@ -1,4 +1,7 @@
 audio-separator[gpu]==0.17.5
 scipy
-gradio==4.37.2
+gradio==4.43.0
 yt_dlp
+pydantic==2.8.2
+fastapi==0.112.0
+starlette==0.37.2

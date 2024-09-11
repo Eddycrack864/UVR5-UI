@@ -7,6 +7,13 @@ import numpy as np
 import gradio as gr
 import yt_dlp
 import subprocess
+from argparse import ArgumentParser
+
+if __name__ == "__main__":
+   parser = ArgumentParser(description="Separate audio into multiple stems")
+   parser.add_argument("--share", action="store_true", dest="share_enabled", default=False, help="Enable sharing")
+   parser.add_argument('--listen-port', type=int, help="The listening port that the server will use.")
+   args = parser.parse_args()
 
 roformer_models = {
         'BS-Roformer-Viperx-1297.ckpt': 'model_bs_roformer_ep_317_sdr_12.9755.ckpt',
@@ -939,4 +946,8 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
               """
            )
 
-app.launch(share=True)
+app.launch(
+    share=args.share_enabled,
+    server_name="",
+    server_port=9999,
+)

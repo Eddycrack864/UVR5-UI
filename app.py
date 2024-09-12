@@ -450,7 +450,7 @@ def select_themes_tab():
     )
 
 
-with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
+with gr.Blocks(theme= loadThemes.load_json() or "NoCrypt/miku", title="🎵 UVR5 UI 🎵") as app:
     gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")
     gr.Markdown("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)")
     gr.Markdown("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)")

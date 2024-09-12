@@ -62,4 +62,3 @@ You can donate to the original UVR5 project here:
 * Thanks to [yt_dlp](https://github.com/yt-dlp/yt-dlp) devs.
 * Improvements by [Blane187](https://huggingface.co/Blane187).
 * Separation by link source code and improvements by [Blane187](https://huggingface.co/Blane187).
-* UVR5 Kaggle by **[ArisDev](https://github.com/aris-py)**

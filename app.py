@@ -940,6 +940,8 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
               * Thanks to [Nick088](https://huggingface.co/Nick088) for the help to fix roformers.
               * Thanks to [yt_dlp](https://github.com/yt-dlp/yt-dlp) devs.
               * Separation by link source code and improvements by [Blane187](https://huggingface.co/Blane187).
+              * Thanks to ArisDev for porting UVR5 UI to Kaggle and improvements.
+              
               
               You can donate to the original UVR5 project here:
               [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/uvr5)

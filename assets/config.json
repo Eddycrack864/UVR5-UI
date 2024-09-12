@@ -1,0 +1,10 @@
+{
+  "theme": {
+    "file": null,
+    "class": "NoCrypt/miku"
+  },
+  "lang": {
+    "override": false,
+    "selected_lang": "en_US"
+  }
+}

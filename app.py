@@ -433,14 +433,29 @@ def demucs_batch(path_input, path_output, model, output_format, shifts, overlap)
       logs.append(f"File: {audio_files} processed!")
       yield "\n".join(logs)
 
+def select_themes_tab():
+        with gr.Column():
+            themes_select = gr.Dropdown(
+            choices=loadThemes.get_list(),
+            value=loadThemes.read_json(),
+            label=i18n("Theme"),
+            info=i18n(
+                "Select the theme you want to use. (Requires restarting the App)"
+            ),
+            visible=True,
+        )
+        themes_select.change(
+            fn=loadThemes.select_theme,
+            inputs=themes_select,
+            outputs=[],
+        )
+
+
 with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
     gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")
     gr.Markdown("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)")
     gr.Markdown("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)")
     with gr.Tabs():
-        with gr.Tab(i18n("Settings")):
-            select_themes_tab()
-
         with gr.TabItem("BS/Mel Roformer"):
             with gr.Row():
                 roformer_model = gr.Dropdown(
@@ -941,6 +956,8 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
             
             demucs_button.click(demucs_separator, [demucs_audio, demucs_model, demucs_output_format, demucs_shifts, demucs_overlap], [demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4])
             
+        with gr.TabItem(i18n("Settings")):
+            select_themes_tab()
 
         with gr.TabItem("Credits"):
            gr.Markdown(

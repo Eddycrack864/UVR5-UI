@@ -455,8 +455,6 @@ with gr.Blocks(theme= loadThemes.load_json() or "NoCrypt/miku", title="🎵 UVR5
     gr.Markdown("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)")
     gr.Markdown("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)")
     with gr.Tabs():
-        with gr.TabItem("Theme"):
-            select_themes_tab()
 
         with gr.TabItem("BS/Mel Roformer"):
             with gr.Row():
@@ -958,15 +956,8 @@ with gr.Blocks(theme= loadThemes.load_json() or "NoCrypt/miku", title="🎵 UVR5
             
             demucs_button.click(demucs_separator, [demucs_audio, demucs_model, demucs_output_format, demucs_shifts, demucs_overlap], [demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4])
             
-        def main():
-            with gradio.Blocks() as demo:
-                with gradio.Tabs() as tabs:
-                    with gradio.TabItem(i18n("Settings")):
-                        select_themes_tab()
-                    demo.launch()
-
-                    if __name__ == "__main__":
-                     main()
+        with gr.TabItem("Themes"):
+            select_themes_tab()
 
         with gr.TabItem("Credits"):
            gr.Markdown(

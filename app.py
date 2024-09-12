@@ -8,6 +8,12 @@ import gradio as gr
 import yt_dlp
 import subprocess
 from argparse import ArgumentParser
+from tabs.settings import select_themes_tab
+from assets.i18n.i18n import I18nAuto
+
+i18n = I18nAuto()
+
+import assets.themes.loadThemes as loadThemes
 
 if __name__ == "__main__":
    parser = ArgumentParser(description="Separate audio into multiple stems")
@@ -929,6 +935,9 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
                 )
             
             demucs_button.click(demucs_separator, [demucs_audio, demucs_model, demucs_output_format, demucs_shifts, demucs_overlap], [demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4])
+
+            with gr.Tab(i18n("Settings")):
+                    select_themes_tab()
 
         with gr.TabItem("Credits"):
            gr.Markdown(

@@ -16,9 +16,6 @@ i18n = I18nAuto()
 import assets.themes.loadThemes as loadThemes
 
 
-with gr.Tab(i18n("Settings")):
-    select_themes_tab()
-
 
 if __name__ == "__main__":
    parser = ArgumentParser(description="Separate audio into multiple stems")
@@ -441,6 +438,9 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
     gr.Markdown("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)")
     gr.Markdown("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)")
     with gr.Tabs():
+        with gr.Tab(i18n("Settings")):
+            select_themes_tab()
+
         with gr.TabItem("BS/Mel Roformer"):
             with gr.Row():
                 roformer_model = gr.Dropdown(

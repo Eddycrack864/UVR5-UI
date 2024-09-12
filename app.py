@@ -434,21 +434,20 @@ def demucs_batch(path_input, path_output, model, output_format, shifts, overlap)
       yield "\n".join(logs)
 
 def select_themes_tab():
-        with gr.Column():
-            themes_select = gr.Dropdown(
-            choices=loadThemes.get_list(),
-            value=loadThemes.read_json(),
-            label=i18n("Theme"),
-            info=i18n(
-                "Select the theme you want to use. (Requires restarting the App)"
-            ),
-            visible=True,
-        )
-        themes_select.change(
-            fn=loadThemes.select_theme,
-            inputs=themes_select,
-            outputs=[],
-        )
+    themes_select = gr.Dropdown(
+        choices=loadThemes.get_list(),
+        value=loadThemes.read_json(),
+        label=i18n("Theme"),
+        info=i18n(
+            "Select the theme you want to use. (Requires restarting the App)"
+        ),
+        visible=True,
+    )
+    themes_select.change(
+        fn=loadThemes.select_theme,
+        inputs=themes_select,
+        outputs=[],
+    )
 
 
 with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
@@ -456,6 +455,9 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
     gr.Markdown("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)")
     gr.Markdown("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)")
     with gr.Tabs():
+        with gr.TabItem("Theme"):
+            select_themes_tab()
+
         with gr.TabItem("BS/Mel Roformer"):
             with gr.Row():
                 roformer_model = gr.Dropdown(

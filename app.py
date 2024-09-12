@@ -956,8 +956,15 @@ with gr.Blocks(theme="NoCrypt/miku@1.2.2", title="🎵 UVR5 UI 🎵") as app:
             
             demucs_button.click(demucs_separator, [demucs_audio, demucs_model, demucs_output_format, demucs_shifts, demucs_overlap], [demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4])
             
-        with gr.TabItem(i18n("Settings")):
-            select_themes_tab()
+        def main():
+            with gradio.Blocks() as demo:
+                with gradio.Tabs() as tabs:
+                    with gradio.TabItem(i18n("Settings")):
+                        select_themes_tab()
+                    demo.launch()
+
+                    if __name__ == "__main__":
+                     main()
 
         with gr.TabItem("Credits"):
            gr.Markdown(

@@ -6,6 +6,7 @@
 
 ![cutecounter](https://count.nett.moe/get/uvr5_ui_colab/img?theme=rule34)
 
+[![Kaggle](https://img.shields.io/badge/Kaggle-035a7d?style=for-the-badge&logo=kaggle&logoColor=white)](https://www.kaggle.com/code/eddycrack864/uvr5-ui)
 [![Open In Colab](https://img.shields.io/badge/Colab-F9AB00?style=for-the-badge&logo=googlecolab&color=525252)](https://colab.research.google.com/github/Eddycrack864/UVR5-UI/blob/main/UVR_UI.ipynb)
 [![Licence](https://img.shields.io/badge/LICENSE-MIT-green.svg?style=for-the-badge)](https://github.com/Eddycrack864/UVR5-UI/blob/main/LICENSE)
 [![Discord](https://img.shields.io/badge/Community-Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/aihub)
@@ -61,3 +62,4 @@ You can donate to the original UVR5 project here:
 * Thanks to [yt_dlp](https://github.com/yt-dlp/yt-dlp) devs.
 * Improvements by [Blane187](https://huggingface.co/Blane187).
 * Separation by link source code and improvements by [Blane187](https://huggingface.co/Blane187).
+* UVR5 Kaggle by **[ArisDev](https://github.com/aris-py)**

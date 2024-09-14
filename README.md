@@ -6,7 +6,6 @@
 
 ![cutecounter](https://count.nett.moe/get/uvr5_ui_colab/img?theme=rule34)
 
-[![Kaggle](https://img.shields.io/badge/Kaggle-035a7d?style=for-the-badge&logo=kaggle&logoColor=white)](https://www.kaggle.com/code/eddycrack864/uvr5-ui)
 [![Open In Colab](https://img.shields.io/badge/Colab-F9AB00?style=for-the-badge&logo=googlecolab&color=525252)](https://colab.research.google.com/github/Eddycrack864/UVR5-UI/blob/main/UVR_UI.ipynb)
 [![Open In Kaggle](https://img.shields.io/badge/Kaggle-20BEFF?style=for-the-badge&logo=Kaggle&logoColor=white)](https://www.kaggle.com/code/eddycrack864/uvr5-ui)
 [![Licence](https://img.shields.io/badge/LICENSE-MIT-green.svg?style=for-the-badge)](https://github.com/Eddycrack864/UVR5-UI/blob/main/LICENSE)
@@ -50,6 +49,7 @@ You can donate to the original UVR5 project here:
 * Code Improvements
 
 ## Changelog
+* Theme Selector
 * Ngrok tunnel, Kaggle Notebook and imjoy-elfinder for Kaggle Notebook
 * Support for A100 GPU
 * Segment Size for Roformers

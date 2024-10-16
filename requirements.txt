@@ -1,6 +1,6 @@
 audio-separator[gpu]==0.21.0
 scipy
-gradio==5.1.0
+gradio==4.44.1
 yt_dlp
 pydantic==2.8.2
 fastapi==0.112.0

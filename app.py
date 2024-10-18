@@ -7,7 +7,6 @@ import numpy as np
 import gradio as gr
 import yt_dlp
 import subprocess
-import sys
 from argparse import ArgumentParser
 from tabs.settings import select_themes_tab
 from assets.i18n.i18n import I18nAuto
@@ -463,12 +462,14 @@ with gr.Blocks(theme= loadThemes.load_json() or "NoCrypt/miku", title="🎵 UVR5
             with gr.Row():
                 roformer_model = gr.Dropdown(
                     label = "Select the Model",
-                    choices=list(roformer_models.keys()),
+                    choices = list(roformer_models.keys()),
+                    value = lambda : None,
                     interactive = True
                 )
                 roformer_output_format = gr.Dropdown(
                     label = "Select the Output Format",
                     choices = output_format,
+                    value = lambda : None,
                     interactive = True
                 )
             with gr.Row():
@@ -558,11 +559,13 @@ with gr.Blocks(theme= loadThemes.load_json() or "NoCrypt/miku", title="🎵 UVR5
                 mdx23c_model = gr.Dropdown(
                     label = "Select the Model",
                     choices = mdx23c_models,
+                    value = lambda : None,
                     interactive = True
                 )
                 mdx23c_output_format = gr.Dropdown(
                     label = "Select the Output Format",
                     choices = output_format,
+                    value = lambda : None,
                     interactive = True
                 )
             with gr.Row():
@@ -658,11 +661,13 @@ with gr.Blocks(theme= loadThemes.load_json() or "NoCrypt/miku", title="🎵 UVR5
                 mdxnet_model = gr.Dropdown(
                     label = "Select the Model",
                     choices = mdxnet_models,
+                    value = lambda : None,
                     interactive = True
                 )
                 mdxnet_output_format = gr.Dropdown(
                     label = "Select the Output Format",
                     choices = output_format,
+                    value = lambda : None,
                     interactive = True
                 )
             with gr.Row():
@@ -755,11 +760,13 @@ with gr.Blocks(theme= loadThemes.load_json() or "NoCrypt/miku", title="🎵 UVR5
                 vrarch_model = gr.Dropdown(
                     label = "Select the Model",
                     choices = vrarch_models,
+                    value = lambda : None,
                     interactive = True
                 )
                 vrarch_output_format = gr.Dropdown(
                     label = "Select the Output Format",
                     choices = output_format,
+                    value = lambda : None,
                     interactive = True
                 )
             with gr.Row():
@@ -860,11 +867,13 @@ with gr.Blocks(theme= loadThemes.load_json() or "NoCrypt/miku", title="🎵 UVR5
                 demucs_model = gr.Dropdown(
                     label = "Select the Model",
                     choices = demucs_models,
+                    value = lambda : None,
                     interactive = True
                 )
                 demucs_output_format = gr.Dropdown(
                     label = "Select the Output Format",
                     choices = output_format,
+                    value = lambda : None,
                     interactive = True
                 )
             with gr.Row():

@@ -141,6 +141,14 @@ demucs_overlap_values = [
     '0.99',
 ]
 
+files_list = []
+found_files = []
+logs = []
+directory = "./outputs"
+extensions = (".mp3", ".wav", ".flac")
+
+os.makedirs("outputs", exist_ok=True)
+
 def download_audio(url):
     ydl_opts = {
         'format': 'bestaudio/best',
@@ -160,16 +168,17 @@ def download_audio(url):
 
         return sample_rate, audio_array
 
+def random_id_generator():
+    random_id = str(random.randint(10000, 99999))
+    return random_id
+
 def roformer_separator(roformer_audio, roformer_model, roformer_output_format, roformer_overlap, roformer_segment_size):
-  files_list = []
+  global files_list
   files_list.clear()
-  directory = "./outputs"
-  random_id = str(random.randint(10000, 99999))
-  pattern = f"{random_id}"
-  os.makedirs("outputs", exist_ok=True)
-  write(f'{random_id}.wav', roformer_audio[0], roformer_audio[1])
+  pattern = random_id_generator()
+  write(f'{pattern}.wav', roformer_audio[0], roformer_audio[1])
   full_roformer_model = roformer_models[roformer_model]
-  prompt = f"audio-separator {random_id}.wav --model_filename {full_roformer_model} --output_dir=./outputs --output_format={roformer_output_format} --normalization=0.9 --mdxc_overlap={roformer_overlap} --mdxc_segment_size={roformer_segment_size}"
+  prompt = f"audio-separator {pattern}.wav --model_filename {full_roformer_model} --output_dir=./outputs --output_format={roformer_output_format} --normalization=0.9 --mdxc_overlap={roformer_overlap} --mdxc_segment_size={roformer_segment_size}"
   os.system(prompt)
 
   for file in os.listdir(directory):
@@ -182,14 +191,11 @@ def roformer_separator(roformer_audio, roformer_model, roformer_output_format, r
   return stem1_file, stem2_file
 
 def mdxc_separator(mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_overlap, mdx23c_denoise):
-  files_list = []
+  global files_list
   files_list.clear()
-  directory = "./outputs"
-  random_id = str(random.randint(10000, 99999))
-  pattern = f"{random_id}"
-  os.makedirs("outputs", exist_ok=True)
-  write(f'{random_id}.wav', mdx23c_audio[0], mdx23c_audio[1])
-  prompt = f"audio-separator {random_id}.wav --model_filename {mdx23c_model} --output_dir=./outputs --output_format={mdx23c_output_format} --normalization=0.9 --mdxc_segment_size={mdx23c_segment_size} --mdxc_overlap={mdx23c_overlap}"
+  pattern = random_id_generator()
+  write(f'{pattern}.wav', mdx23c_audio[0], mdx23c_audio[1])
+  prompt = f"audio-separator {pattern}.wav --model_filename {mdx23c_model} --output_dir=./outputs --output_format={mdx23c_output_format} --normalization=0.9 --mdxc_segment_size={mdx23c_segment_size} --mdxc_overlap={mdx23c_overlap}"
   
   if mdx23c_denoise:
     prompt += " --mdx_enable_denoise"
@@ -206,14 +212,11 @@ def mdxc_separator(mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segm
   return stem1_file, stem2_file
 
 def mdxnet_separator(mdxnet_audio, mdxnet_model, mdxnet_output_format, mdxnet_segment_size, mdxnet_overlap, mdxnet_denoise):
-  files_list = []
+  global files_list
   files_list.clear()
-  directory = "./outputs"
-  random_id = str(random.randint(10000, 99999))
-  pattern = f"{random_id}"
-  os.makedirs("outputs", exist_ok=True)
-  write(f'{random_id}.wav', mdxnet_audio[0], mdxnet_audio[1])
-  prompt = f"audio-separator {random_id}.wav --model_filename {mdxnet_model} --output_dir=./outputs --output_format={mdxnet_output_format} --normalization=0.9 --mdx_segment_size={mdxnet_segment_size} --mdx_overlap={mdxnet_overlap}"
+  pattern = random_id_generator()
+  write(f'{pattern}.wav', mdxnet_audio[0], mdxnet_audio[1])
+  prompt = f"audio-separator {pattern}.wav --model_filename {mdxnet_model} --output_dir=./outputs --output_format={mdxnet_output_format} --normalization=0.9 --mdx_segment_size={mdxnet_segment_size} --mdx_overlap={mdxnet_overlap}"
   
   if mdxnet_denoise:
     prompt += " --mdx_enable_denoise"
@@ -230,14 +233,11 @@ def mdxnet_separator(mdxnet_audio, mdxnet_model, mdxnet_output_format, mdxnet_se
   return stem1_file, stem2_file
 
 def vrarch_separator(vrarch_audio, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_high_end_process):
-  files_list = []
+  global files_list
   files_list.clear()
-  directory = "./outputs"
-  random_id = str(random.randint(10000, 99999))
-  pattern = f"{random_id}"
-  os.makedirs("outputs", exist_ok=True)
-  write(f'{random_id}.wav', vrarch_audio[0], vrarch_audio[1])
-  prompt = f"audio-separator {random_id}.wav --model_filename {vrarch_model} --output_dir=./outputs --output_format={vrarch_output_format} --normalization=0.9 --vr_window_size={vrarch_window_size} --vr_aggression={vrarch_agression}"
+  pattern = random_id_generator()
+  write(f'{pattern}.wav', vrarch_audio[0], vrarch_audio[1])
+  prompt = f"audio-separator {pattern}.wav --model_filename {vrarch_model} --output_dir=./outputs --output_format={vrarch_output_format} --normalization=0.9 --vr_window_size={vrarch_window_size} --vr_aggression={vrarch_agression}"
   
   if vrarch_tta:
     prompt += " --vr_enable_tta"
@@ -256,14 +256,11 @@ def vrarch_separator(vrarch_audio, vrarch_model, vrarch_output_format, vrarch_wi
   return stem1_file, stem2_file
 
 def demucs_separator(demucs_audio, demucs_model, demucs_output_format, demucs_shifts, demucs_overlap):
-  files_list = []
+  global files_list
   files_list.clear()
-  directory = "./outputs"
-  random_id = str(random.randint(10000, 99999))
-  pattern = f"{random_id}"
-  os.makedirs("outputs", exist_ok=True)
-  write(f'{random_id}.wav', demucs_audio[0], demucs_audio[1])
-  prompt = f"audio-separator {random_id}.wav --model_filename {demucs_model} --output_dir=./outputs --output_format={demucs_output_format} --normalization=0.9 --demucs_shifts={demucs_shifts} --demucs_overlap={demucs_overlap}"
+  pattern = random_id_generator()
+  write(f'{pattern}.wav', demucs_audio[0], demucs_audio[1])
+  prompt = f"audio-separator {pattern}.wav --model_filename {demucs_model} --output_dir=./outputs --output_format={demucs_output_format} --normalization=0.9 --demucs_shifts={demucs_shifts} --demucs_overlap={demucs_overlap}"
 
   os.system(prompt)
 
@@ -279,11 +276,8 @@ def demucs_separator(demucs_audio, demucs_model, demucs_output_format, demucs_sh
   return stem1_file, stem2_file, stem3_file, stem4_file
 
 def roformer_batch(path_input, path_output, model, output_format, overlap, segment_size):
-  found_files = []
-  logs = []
+  found_files.clear()
   logs.clear()
-
-  extensions = (".mp3", ".wav", ".flac")
 
   full_roformer_model = roformer_models[model]
 
@@ -309,11 +303,8 @@ def roformer_batch(path_input, path_output, model, output_format, overlap, segme
       yield "\n".join(logs)
 
 def mdx23c_batch(path_input, path_output, model, output_format, overlap, segment_size, denoise):
-  found_files = []
-  logs = []
+  found_files.clear()
   logs.clear()
-
-  extensions = (".mp3", ".wav", ".flac")
 
   for audio_files in os.listdir(path_input):
     if audio_files.endswith(extensions):
@@ -341,11 +332,8 @@ def mdx23c_batch(path_input, path_output, model, output_format, overlap, segment
       yield "\n".join(logs)
 
 def mdxnet_batch(path_input, path_output, model, output_format, overlap, segment_size, denoise):
-  found_files = []
-  logs = []
+  found_files.clear()
   logs.clear()
-
-  extensions = (".mp3", ".wav", ".flac")
 
   for audio_files in os.listdir(path_input):
     if audio_files.endswith(extensions):
@@ -373,11 +361,8 @@ def mdxnet_batch(path_input, path_output, model, output_format, overlap, segment
       yield "\n".join(logs)
 
 def vrarch_batch(path_input, path_output, model, output_format, window_size, agression, tta, high_end_process):
-  found_files = []
-  logs = []
+  found_files.clear()
   logs.clear()
-
-  extensions = (".mp3", ".wav", ".flac")
 
   for audio_files in os.listdir(path_input):
     if audio_files.endswith(extensions):
@@ -407,11 +392,8 @@ def vrarch_batch(path_input, path_output, model, output_format, window_size, agr
       yield "\n".join(logs)
 
 def demucs_batch(path_input, path_output, model, output_format, shifts, overlap):
-  found_files = []
-  logs = []
+  found_files.clear()
   logs.clear()
-
-  extensions = (".mp3", ".wav", ".flac")
 
   for audio_files in os.listdir(path_input):
     if audio_files.endswith(extensions):
@@ -450,7 +432,6 @@ def select_themes_tab():
         inputs=themes_select,
         outputs=[],
     )
-
 
 with gr.Blocks(theme= loadThemes.load_json() or "NoCrypt/miku", title="🎵 UVR5 UI 🎵") as app:
     gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")

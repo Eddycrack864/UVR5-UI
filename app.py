@@ -144,10 +144,13 @@ demucs_overlap_values = [
 files_list = []
 found_files = []
 logs = []
-directory = "./outputs"
+directory = "outputs"
 extensions = (".mp3", ".wav", ".flac")
 
 os.makedirs("outputs", exist_ok=True)
+os.makedirs("inputs", exist_ok=True)
+os.makedirs("ytdl", exist_ok=True)
+os.makedirs("models", exist_ok=True)
 
 def download_audio(url):
     ydl_opts = {
@@ -176,9 +179,9 @@ def roformer_separator(roformer_audio, roformer_model, roformer_output_format, r
   global files_list
   files_list.clear()
   pattern = random_id_generator()
-  write(f'{pattern}.wav', roformer_audio[0], roformer_audio[1])
+  write(f'inputs/{pattern}.wav', roformer_audio[0], roformer_audio[1])
   full_roformer_model = roformer_models[roformer_model]
-  prompt = f"audio-separator {pattern}.wav --model_filename {full_roformer_model} --output_dir=./outputs --output_format={roformer_output_format} --normalization=0.9 --mdxc_overlap={roformer_overlap} --mdxc_segment_size={roformer_segment_size}"
+  prompt = f"audio-separator inputs/{pattern}.wav --model_filename {full_roformer_model} --output_dir=outputs --output_format={roformer_output_format} --normalization=0.9 --mdxc_overlap={roformer_overlap} --mdxc_segment_size={roformer_segment_size} --model_file_dir=models"
   os.system(prompt)
 
   for file in os.listdir(directory):
@@ -194,8 +197,8 @@ def mdxc_separator(mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segm
   global files_list
   files_list.clear()
   pattern = random_id_generator()
-  write(f'{pattern}.wav', mdx23c_audio[0], mdx23c_audio[1])
-  prompt = f"audio-separator {pattern}.wav --model_filename {mdx23c_model} --output_dir=./outputs --output_format={mdx23c_output_format} --normalization=0.9 --mdxc_segment_size={mdx23c_segment_size} --mdxc_overlap={mdx23c_overlap}"
+  write(f'inputs/{pattern}.wav', mdx23c_audio[0], mdx23c_audio[1])
+  prompt = f"audio-separator inputs/{pattern}.wav --model_filename {mdx23c_model} --output_dir=outputs --output_format={mdx23c_output_format} --normalization=0.9 --mdxc_segment_size={mdx23c_segment_size} --mdxc_overlap={mdx23c_overlap} --model_file_dir=models"
   
   if mdx23c_denoise:
     prompt += " --mdx_enable_denoise"
@@ -215,8 +218,8 @@ def mdxnet_separator(mdxnet_audio, mdxnet_model, mdxnet_output_format, mdxnet_se
   global files_list
   files_list.clear()
   pattern = random_id_generator()
-  write(f'{pattern}.wav', mdxnet_audio[0], mdxnet_audio[1])
-  prompt = f"audio-separator {pattern}.wav --model_filename {mdxnet_model} --output_dir=./outputs --output_format={mdxnet_output_format} --normalization=0.9 --mdx_segment_size={mdxnet_segment_size} --mdx_overlap={mdxnet_overlap}"
+  write(f'inputs/{pattern}.wav', mdxnet_audio[0], mdxnet_audio[1])
+  prompt = f"audio-separator inputs/{pattern}.wav --model_filename {mdxnet_model} --output_dir=outputs --output_format={mdxnet_output_format} --normalization=0.9 --mdx_segment_size={mdxnet_segment_size} --mdx_overlap={mdxnet_overlap} --model_file_dir=models"
   
   if mdxnet_denoise:
     prompt += " --mdx_enable_denoise"
@@ -236,8 +239,8 @@ def vrarch_separator(vrarch_audio, vrarch_model, vrarch_output_format, vrarch_wi
   global files_list
   files_list.clear()
   pattern = random_id_generator()
-  write(f'{pattern}.wav', vrarch_audio[0], vrarch_audio[1])
-  prompt = f"audio-separator {pattern}.wav --model_filename {vrarch_model} --output_dir=./outputs --output_format={vrarch_output_format} --normalization=0.9 --vr_window_size={vrarch_window_size} --vr_aggression={vrarch_agression}"
+  write(f'inputs/{pattern}.wav', vrarch_audio[0], vrarch_audio[1])
+  prompt = f"audio-separator inputs/{pattern}.wav --model_filename {vrarch_model} --output_dir=outputs --output_format={vrarch_output_format} --normalization=0.9 --vr_window_size={vrarch_window_size} --vr_aggression={vrarch_agression} --model_file_dir=models"
   
   if vrarch_tta:
     prompt += " --vr_enable_tta"
@@ -259,8 +262,8 @@ def demucs_separator(demucs_audio, demucs_model, demucs_output_format, demucs_sh
   global files_list
   files_list.clear()
   pattern = random_id_generator()
-  write(f'{pattern}.wav', demucs_audio[0], demucs_audio[1])
-  prompt = f"audio-separator {pattern}.wav --model_filename {demucs_model} --output_dir=./outputs --output_format={demucs_output_format} --normalization=0.9 --demucs_shifts={demucs_shifts} --demucs_overlap={demucs_overlap}"
+  write(f'inputs/{pattern}.wav', demucs_audio[0], demucs_audio[1])
+  prompt = f"audio-separator inputs/{pattern}.wav --model_filename {demucs_model} --output_dir=outputs --output_format={demucs_output_format} --normalization=0.9 --demucs_shifts={demucs_shifts} --demucs_overlap={demucs_overlap} --model_file_dir=models"
 
   os.system(prompt)
 
@@ -295,7 +298,7 @@ def roformer_batch(path_input, path_output, model, output_format, overlap, segme
 
     for audio_files in found_files:
       file_path = os.path.join(path_input, audio_files)
-      prompt = ["audio-separator", file_path, "-m", f"{full_roformer_model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--mdxc_overlap={overlap}", f"--mdxc_segment_size={segment_size}"]
+      prompt = ["audio-separator", file_path, "-m", f"{full_roformer_model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--mdxc_overlap={overlap}", f"--mdxc_segment_size={segment_size}", "--model_file_dir=models"]
       logs.append(f"Processing file: {audio_files}")
       yield "\n".join(logs)
       subprocess.run(prompt)
@@ -320,7 +323,7 @@ def mdx23c_batch(path_input, path_output, model, output_format, overlap, segment
 
     for audio_files in found_files:
       file_path = os.path.join(path_input, audio_files)
-      prompt = ["audio-separator", file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--mdxc_overlap={overlap}", f"--mdxc_segment_size={segment_size}"]
+      prompt = ["audio-separator", file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--mdxc_overlap={overlap}", f"--mdxc_segment_size={segment_size}", "--model_file_dir=models"]
 
       if denoise:
         prompt.append("--mdx_enable_denoise")
@@ -349,7 +352,7 @@ def mdxnet_batch(path_input, path_output, model, output_format, overlap, segment
 
     for audio_files in found_files:
       file_path = os.path.join(path_input, audio_files)
-      prompt = ["audio-separator", file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--mdx_overlap={overlap}", f"--mdx_segment_size={segment_size}"]
+      prompt = ["audio-separator", file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--mdx_overlap={overlap}", f"--mdx_segment_size={segment_size}", "--model_file_dir=models"]
 
       if denoise:
         prompt.append("--mdx_enable_denoise")
@@ -378,7 +381,7 @@ def vrarch_batch(path_input, path_output, model, output_format, window_size, agr
 
     for audio_files in found_files:
       file_path = os.path.join(path_input, audio_files)
-      prompt = ["audio-separator", file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--vr_window_size={window_size}", f"--vr_aggression={agression}"]
+      prompt = ["audio-separator", file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--vr_window_size={window_size}", f"--vr_aggression={agression}", "--model_file_dir=models"]
 
       if tta:
         prompt.append("--vr_enable_tta")
@@ -409,7 +412,7 @@ def demucs_batch(path_input, path_output, model, output_format, shifts, overlap)
 
     for audio_files in found_files:
       file_path = os.path.join(path_input, audio_files)
-      prompt = ["audio-separator", file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--demucs_shifts={shifts}", f"--demucs_overlap={overlap}"]
+      prompt = ["audio-separator", file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--demucs_shifts={shifts}", f"--demucs_overlap={overlap}", "--model_file_dir=models"]
 
       logs.append(f"Processing file: {audio_files}")
       yield "\n".join(logs)

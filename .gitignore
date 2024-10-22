@@ -1,0 +1,20 @@
+# Eddycrack864 functional adds
+*.onnx
+*.pth
+*.th
+*.ckpt
+*.chpt
+*.yaml
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+#Audio files
+*.wav
+*.flac
+*.mp3
+
+#Specific files
+models/download_checks.json
+models/mdx_model_data.json
+models/vr_model_data.json

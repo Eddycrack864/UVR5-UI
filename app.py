@@ -419,24 +419,7 @@ def demucs_batch(path_input, path_output, model, output_format, shifts, overlap)
       logs.append(f"File: {audio_files} processed!")
       yield "\n".join(logs)
 
-def select_themes_tab():
-    themes_select = gr.Dropdown(
-        choices=loadThemes.get_list(),
-        value=loadThemes.read_json(),
-        label=i18n("Theme"),
-        info=i18n(
-            "Select the theme you want to use. (Requires restarting the App)"
-        ),
-        visible=True,
-    )
-    dummy_output = gr.Textbox(visible=False)
-    themes_select.change(
-        fn=loadThemes.select_theme,
-        inputs=themes_select,
-        outputs=[dummy_output],
-    )
-
-with gr.Blocks(theme= loadThemes.load_json() or "NoCrypt/miku", title="🎵 UVR5 UI 🎵") as app:
+with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 UVR5 UI 🎵") as app:
     gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")
     gr.Markdown("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)")
     gr.Markdown("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)")
@@ -953,7 +936,20 @@ with gr.Blocks(theme= loadThemes.load_json() or "NoCrypt/miku", title="🎵 UVR5
             demucs_button.click(demucs_separator, [demucs_audio, demucs_model, demucs_output_format, demucs_shifts, demucs_overlap], [demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4])
             
         with gr.TabItem("Themes"):
-            select_themes_tab()
+            themes_select = gr.Dropdown(
+                label = "Theme",
+                info = "Select the theme you want to use. (Requires restarting the App)",
+                choices = loadThemes.get_list(),
+                value = loadThemes.read_json(),
+                visible = True
+            )
+            dummy_output = gr.Textbox(visible = False)
+
+            themes_select.change(
+                fn = loadThemes.select_theme,
+                inputs = themes_select,
+                outputs = [dummy_output]
+            )
 
         with gr.TabItem("Credits"):
            gr.Markdown(

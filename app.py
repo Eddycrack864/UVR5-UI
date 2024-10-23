@@ -8,7 +8,6 @@ import gradio as gr
 import yt_dlp
 import subprocess
 from argparse import ArgumentParser
-from tabs.settings import select_themes_tab
 from assets.i18n.i18n import I18nAuto
 i18n = I18nAuto()
 
@@ -430,10 +429,11 @@ def select_themes_tab():
         ),
         visible=True,
     )
+    dummy_output = gr.Textbox(visible=False)
     themes_select.change(
         fn=loadThemes.select_theme,
         inputs=themes_select,
-        outputs=[],
+        outputs=[dummy_output],
     )
 
 with gr.Blocks(theme= loadThemes.load_json() or "NoCrypt/miku", title="🎵 UVR5 UI 🎵") as app:

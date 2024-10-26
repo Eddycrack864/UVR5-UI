@@ -1,0 +1,83 @@
+en:
+  If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)
+  Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI) : Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)
+  Select the model : Select the model
+  Select the output format : Select the output format
+  Overlap : Overlap
+  Amount of overlap between prediction windows : Amount of overlap between prediction windows
+  Segment size : Segment size
+  Larger consumes more resources, but may give better results : Larger consumes more resources, but may give better results
+  Input audio : Input audio
+  Separation by link : Separation by link
+  Link : Link
+  Paste the link here : Paste the link here
+  You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) : You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
+  Download! : Download!
+  Batch separation : Batch separation
+  Input path : Input path
+  Place the input path here : Place the input path here
+  Output path : Output path
+  Place the output path here : Place the output path here
+  Separate! : Separate!
+  Output information : Output information
+  Stem 1 : Stem 1
+  Stem 2 : Stem 2
+  Denoise : Denoise
+  Enable denoising during separation : Enable denoising during separation
+  Window size : Window size
+  Agression : Agression
+  Intensity of primary stem extraction : Intensity of primary stem extraction
+  TTA : TTA
+  Enable Test-Time-Augmentation; slow but improves quality : Enable Test-Time-Augmentation; slow but improves quality
+  High end process : High end process
+  Mirror the missing frequency range of the output : Mirror the missing frequency range of the output
+  Shifts : Shifts
+  Number of predictions with random shifts, higher = slower but better quality : Number of predictions with random shifts, higher = slower but better quality
+  Stem 3 : Stem 3
+  Stem 4 : Stem 4
+  Themes : Themes
+  Theme : Theme
+  Select the theme you want to use. (Requires restarting the App) : Select the theme you want to use. (Requires restarting the App)
+  Credits : Credits
+
+es:
+  If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : Si te gusta UVR5 UI puedes darle una estrella a mi repo en [GitHub](https://github.com/Eddycrack864/UVR5-UI)
+  Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI) : Prueba UVR5 UI en Hugging Face con una A100 [aquí](https://huggingface.co/spaces/TheStinger/UVR5_UI)
+  Select the model : Selecciona el modelo
+  Select the output format : Selecciona el formato de salida
+  Overlap : Superposición
+  Amount of overlap between prediction windows : Cantidad de superposición entre ventanas de predicción
+  Segment size : Tamaño del segmento
+  Larger consumes more resources, but may give better results : Un tamaño más grande consume más recursos, pero puede dar mejores resultados
+  Input audio : Audio de entrada
+  Separation by link : Separación por enlace
+  Link : Enlace
+  Paste the link here : Pega el enlace aquí
+  You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) : Puedes pegar el enlace al video/audio desde muchos sitios, revisa la lista completa [aquí](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
+  Download! : Descargar!
+  Batch separation : Separación por lotes
+  Input path : Ruta de entrada
+  Place the input path here : Coloca la ruta de entrada aquí
+  Output path : Ruta de salida
+  Place the output path here : Coloca la ruta de salida aquí
+  Separate! : Separar!
+  Output information : Información de la salida
+  Stem 1 : Pista 1
+  Stem 2 : Pista 2
+  Denoise : Eliminaación de ruido
+  Enable denoising during separation : Habilitar la eliminación de ruido durante la separación
+  Window size : Tamaño de la ventana
+  Agression : Agresión
+  Intensity of primary stem extraction : Intensidad de extracción de la pista primaria
+  TTA : TTA
+  Enable Test-Time-Augmentation; slow but improves quality : Habilitar Aumento del Tiempo de Prueba; lento pero mejora la calidad
+  High end process : Procesamiento de alto rendimiento
+  Mirror the missing frequency range of the output : Reflejar el rango de frecuencia faltante de la salida
+  Shifts : Desplazamientos temporales
+  Number of predictions with random shifts, higher = slower but better quality : Número de predicciones con desplazamientos temporales, mayor = más lento pero mejor calidad
+  Stem 3 : Pista 3
+  Stem 4 : Pista 4
+  Themes : Temas
+  Theme : Tema
+  Select the theme you want to use. (Requires restarting the App) : Selecciona el tema que deseas utilizar. (Requiere reiniciar la aplicación)
+  Credits : Créditos

@@ -4,7 +4,6 @@
 *.th
 *.ckpt
 *.chpt
-*.yaml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -15,6 +14,5 @@ __pycache__/
 *.mp3
 
 #Specific files
-models/download_checks.json
-models/mdx_model_data.json
-models/vr_model_data.json
+models/*.json
+models/*.yaml

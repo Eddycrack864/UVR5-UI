@@ -8,9 +8,8 @@ import gradio as gr
 import yt_dlp
 import subprocess
 from argparse import ArgumentParser
-from assets.i18n.i18n import I18nAuto
-i18n = I18nAuto()
-
+from gradio_i18n import Translate
+from gradio_i18n import gettext as _
 import assets.themes.loadThemes as loadThemes
 
 if __name__ == "__main__":
@@ -420,554 +419,571 @@ def demucs_batch(path_input, path_output, model, output_format, shifts, overlap)
       yield "\n".join(logs)
 
 with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 UVR5 UI 🎵") as app:
-    gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")
-    gr.Markdown("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)")
-    gr.Markdown("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)")
-    with gr.Tabs():
+    lang = gr.Dropdown(
+        label = _("Language"),
+        choices = [
+            ("English", "en"),
+            ("Español", "es"),
+        ],
+        render = False,
+    )
+    with Translate(
+       "assets/languages/translation.yaml",
+       lang,
+       placeholder_langs = ["en", "es"],
+    ):
+        gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")
+        gr.Markdown(_("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)"))
+        gr.Markdown(_("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)"))
+        with gr.Tabs():
 
-        with gr.TabItem("BS/Mel Roformer"):
-            with gr.Row():
-                roformer_model = gr.Dropdown(
-                    label = "Select the Model",
-                    choices = list(roformer_models.keys()),
-                    value = lambda : None,
-                    interactive = True
-                )
-                roformer_output_format = gr.Dropdown(
-                    label = "Select the Output Format",
-                    choices = output_format,
-                    value = lambda : None,
-                    interactive = True
-                )
-            with gr.Row():
-                roformer_overlap = gr.Slider(
-                    minimum = 2,
-                    maximum = 4,
-                    step = 1,
-                    label = "Overlap",
-                    info = "Amount of overlap between prediction windows.",
-                    value = 4,
-                    interactive = True
-                )
-                roformer_segment_size = gr.Slider(
-                    minimum = 32,
-                    maximum = 4000,
-                    step = 32,
-                    label = "Segment Size",
-                    info = "Larger consumes more resources, but may give better results.",
-                    value = 256,
-                    interactive = True
-                )
-            with gr.Row():
-                roformer_audio = gr.Audio(
-                    label = "Input Audio",
-                    type = "numpy",
-                    interactive = True
-                )
-            with gr.Accordion("Separation by Link", open = False):
+            with gr.TabItem("BS/Mel Roformer"):
                 with gr.Row():
-                    roformer_link = gr.Textbox(
-                    label = "Link",
-                    placeholder = "Paste the link here",
-                    interactive = True
-                )
-                with gr.Row():
-                   gr.Markdown("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)")
-                with gr.Row():
-                    roformer_download_button = gr.Button(
-                    "Download!",
-                    variant = "primary"
-                )
-
-            roformer_download_button.click(download_audio, [roformer_link], [roformer_audio])
-
-            with gr.Accordion("Batch Separation", open = False):
-                with gr.Row():
-                    roformer_input_path = gr.Textbox(
-                        label = "Input Path",
-                        placeholder = "Place the input path here",
+                    roformer_model = gr.Dropdown(
+                        label = _("Select the model"),
+                        choices = list(roformer_models.keys()),
+                        value = lambda : None,
                         interactive = True
                     )
-                    roformer_output_path = gr.Textbox(
-                        label = "Output Path",
-                        placeholder = "Place the output path here",
+                    roformer_output_format = gr.Dropdown(
+                        label = _("Select the output format"),
+                        choices = output_format,
+                        value = lambda : None,
                         interactive = True
                     )
                 with gr.Row():
-                    roformer_bath_button = gr.Button("Separate!", variant = "primary")
-                with gr.Row():
-                    roformer_info = gr.Textbox(
-                        label = "Output Information",
-                        interactive = False
-                    )
-
-            roformer_bath_button.click(roformer_batch, [roformer_input_path, roformer_output_path, roformer_model, roformer_output_format, roformer_overlap, roformer_segment_size], [roformer_info])
-
-            with gr.Row():
-                roformer_button = gr.Button("Separate!", variant = "primary")
-            with gr.Row():
-                roformer_stem1 = gr.Audio(
-                    show_download_button = True,
-                    interactive = False,
-                    label = "Stem 1",
-                    type = "filepath"
-                )
-                roformer_stem2 = gr.Audio(
-                    show_download_button = True,
-                    interactive = False,
-                    label = "Stem 2",
-                    type = "filepath"
-                )
-
-            roformer_button.click(roformer_separator, [roformer_audio, roformer_model, roformer_output_format, roformer_overlap, roformer_segment_size], [roformer_stem1, roformer_stem2])
-        
-        with gr.TabItem("MDX23C"):
-            with gr.Row():
-                mdx23c_model = gr.Dropdown(
-                    label = "Select the Model",
-                    choices = mdx23c_models,
-                    value = lambda : None,
-                    interactive = True
-                )
-                mdx23c_output_format = gr.Dropdown(
-                    label = "Select the Output Format",
-                    choices = output_format,
-                    value = lambda : None,
-                    interactive = True
-                )
-            with gr.Row():
-                mdx23c_segment_size = gr.Slider(
-                    minimum = 32,
-                    maximum = 4000,
-                    step = 32,
-                    label = "Segment Size",
-                    info = "Larger consumes more resources, but may give better results.",
-                    value = 256,
-                    interactive = True
-                )
-                mdx23c_overlap = gr.Slider(
-                    minimum = 2,
-                    maximum = 50,
-                    step = 1,
-                    label = "Overlap",
-                    info = "Amount of overlap between prediction windows.",
-                    value = 8,
-                    interactive = True
-                )
-                mdx23c_denoise = gr.Checkbox(
-                    label = "Denoise",
-                    info = "Enable denoising during separation.",
-                    value = False,
-                    interactive = True
-                )
-            with gr.Row():
-                mdx23c_audio = gr.Audio(
-                    label = "Input Audio",
-                    type = "numpy",
-                    interactive = True
-                )
-            with gr.Accordion("Separation by Link", open = False):
-                with gr.Row():
-                    mdx23c_link = gr.Textbox(
-                    label = "Link",
-                    placeholder = "Paste the link here",
-                    interactive = True
-                )
-                with gr.Row():
-                   gr.Markdown("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)")
-                with gr.Row():
-                    mdx23c_download_button = gr.Button(
-                    "Download!",
-                    variant = "primary"
-                )
-
-            mdx23c_download_button.click(download_audio, [mdx23c_link], [mdx23c_audio])
-
-            with gr.Accordion("Batch Separation", open = False):
-                with gr.Row():
-                    mdx23c_input_path = gr.Textbox(
-                        label = "Input Path",
-                        placeholder = "Place the input path here",
+                    roformer_overlap = gr.Slider(
+                        minimum = 2,
+                        maximum = 4,
+                        step = 1,
+                        label = _("Overlap"),
+                        info = _("Amount of overlap between prediction windows"),
+                        value = 4,
                         interactive = True
                     )
-                    mdx23c_output_path = gr.Textbox(
-                        label = "Output Path",
-                        placeholder = "Place the output path here",
+                    roformer_segment_size = gr.Slider(
+                        minimum = 32,
+                        maximum = 4000,
+                        step = 32,
+                        label = _("Segment size"),
+                        info = _("Larger consumes more resources, but may give better results"),
+                        value = 256,
                         interactive = True
                     )
                 with gr.Row():
-                    mdx23c_bath_button = gr.Button("Separate!", variant = "primary")
-                with gr.Row():
-                    mdx23c_info = gr.Textbox(
-                        label = "Output Information",
-                        interactive = False
-                    )
-
-            mdx23c_bath_button.click(mdx23c_batch, [mdx23c_input_path, mdx23c_output_path, mdx23c_model, mdx23c_output_format, mdx23c_overlap, mdx23c_segment_size, mdx23c_denoise], [mdx23c_info])
-
-            with gr.Row():
-                mdx23c_button = gr.Button("Separate!", variant = "primary")
-            with gr.Row():
-                mdx23c_stem1 = gr.Audio(
-                    show_download_button = True,
-                    interactive = False,
-                    label = "Stem 1",
-                    type = "filepath"
-                )
-                mdx23c_stem2 = gr.Audio(
-                    show_download_button = True,
-                    interactive = False,
-                    label = "Stem 2",
-                    type = "filepath"
-                )
-
-            mdx23c_button.click(mdxc_separator, [mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_overlap, mdx23c_denoise], [mdx23c_stem1, mdx23c_stem2])
-        
-        with gr.TabItem("MDX-NET"):
-            with gr.Row():
-                mdxnet_model = gr.Dropdown(
-                    label = "Select the Model",
-                    choices = mdxnet_models,
-                    value = lambda : None,
-                    interactive = True
-                )
-                mdxnet_output_format = gr.Dropdown(
-                    label = "Select the Output Format",
-                    choices = output_format,
-                    value = lambda : None,
-                    interactive = True
-                )
-            with gr.Row():
-                mdxnet_segment_size = gr.Slider(
-                    minimum = 32,
-                    maximum = 4000,
-                    step = 32,
-                    label = "Segment Size",
-                    info = "Larger consumes more resources, but may give better results.",
-                    value = 256,
-                    interactive = True
-                )
-                mdxnet_overlap = gr.Dropdown(
-                        label = "Overlap",
-                        choices = mdxnet_overlap_values,
-                        value = mdxnet_overlap_values[0],
-                        interactive = True
-                )
-                mdxnet_denoise = gr.Checkbox(
-                    label = "Denoise",
-                    info = "Enable denoising during separation.",
-                    value = True,
-                    interactive = True
-                )
-            with gr.Row():
-                mdxnet_audio = gr.Audio(
-                    label = "Input Audio",
-                    type = "numpy",
-                    interactive = True
-                )
-            with gr.Accordion("Separation by Link", open = False):
-                with gr.Row():
-                    mdxnet_link = gr.Textbox(
-                    label = "Link",
-                    placeholder = "Paste the link here",
-                    interactive = True
-                )
-                with gr.Row():
-                   gr.Markdown("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)")
-                with gr.Row():
-                    mdxnet_download_button = gr.Button(
-                    "Download!",
-                    variant = "primary"
-                )
-
-            mdxnet_download_button.click(download_audio, [mdxnet_link], [mdxnet_audio])
-
-            with gr.Accordion("Batch Separation", open = False):
-                with gr.Row():
-                    mdxnet_input_path = gr.Textbox(
-                        label = "Input Path",
-                        placeholder = "Place the input path here",
+                    roformer_audio = gr.Audio(
+                        label = _("Input audio"),
+                        type = "numpy",
                         interactive = True
                     )
-                    mdxnet_output_path = gr.Textbox(
-                        label = "Output Path",
-                        placeholder = "Place the output path here",
+                with gr.Accordion(_("Separation by link"), open = False):
+                    with gr.Row():
+                        roformer_link = gr.Textbox(
+                        label = _("Link"),
+                        placeholder = _("Paste the link here"),
                         interactive = True
                     )
-                with gr.Row():
-                    mdxnet_bath_button = gr.Button("Separate!", variant = "primary")
-                with gr.Row():
-                    mdxnet_info = gr.Textbox(
-                        label = "Output Information",
-                        interactive = False
+                    with gr.Row():
+                        gr.Markdown(_("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)"))
+                    with gr.Row():
+                        roformer_download_button = gr.Button(
+                        _("Download!"),
+                        variant = "primary"
                     )
 
-            mdxnet_bath_button.click(mdxnet_batch, [mdxnet_input_path, mdxnet_output_path, mdxnet_model, mdxnet_output_format, mdxnet_overlap, mdxnet_segment_size, mdxnet_denoise], [mdxnet_info])
+                roformer_download_button.click(download_audio, [roformer_link], [roformer_audio])
 
-            with gr.Row():
-                mdxnet_button = gr.Button("Separate!", variant = "primary")
-            with gr.Row():
-                mdxnet_stem1 = gr.Audio(
-                    show_download_button = True,
-                    interactive = False,
-                    label = "Stem 1",
-                    type = "filepath"
-                )
-                mdxnet_stem2 = gr.Audio(
-                    show_download_button = True,
-                    interactive = False,
-                    label = "Stem 2",
-                    type = "filepath"
-                )
+                with gr.Accordion(_("Batch separation"), open = False):
+                    with gr.Row():
+                        roformer_input_path = gr.Textbox(
+                            label = _("Input path"),
+                            placeholder = _("Place the input path here"),
+                            interactive = True
+                        )
+                        roformer_output_path = gr.Textbox(
+                            label = _("Output path"),
+                            placeholder = _("Place the output path here"),
+                            interactive = True
+                        )
+                    with gr.Row():
+                        roformer_bath_button = gr.Button(_("Separate!"), variant = "primary")
+                    with gr.Row():
+                        roformer_info = gr.Textbox(
+                            label = _("Output information"),
+                            interactive = False
+                        )
 
-            mdxnet_button.click(mdxnet_separator, [mdxnet_audio, mdxnet_model, mdxnet_output_format, mdxnet_segment_size, mdxnet_overlap, mdxnet_denoise], [mdxnet_stem1, mdxnet_stem2])
+                roformer_bath_button.click(roformer_batch, [roformer_input_path, roformer_output_path, roformer_model, roformer_output_format, roformer_overlap, roformer_segment_size], [roformer_info])
 
-        with gr.TabItem("VR ARCH"):
-            with gr.Row():
-                vrarch_model = gr.Dropdown(
-                    label = "Select the Model",
-                    choices = vrarch_models,
-                    value = lambda : None,
-                    interactive = True
-                )
-                vrarch_output_format = gr.Dropdown(
-                    label = "Select the Output Format",
-                    choices = output_format,
-                    value = lambda : None,
-                    interactive = True
-                )
-            with gr.Row():
-                vrarch_window_size = gr.Dropdown(
-                    label = "Window Size",
-                    choices = vrarch_window_size_values,
-                    value = vrarch_window_size_values[0],
-                    interactive = True
-                )
-                vrarch_agression = gr.Slider(
-                    minimum = 1,
-                    maximum = 50,
-                    step = 1,
-                    label = "Agression",
-                    info = "Intensity of primary stem extraction.",
-                    value = 5,
-                    interactive = True
-                )
-                vrarch_tta = gr.Checkbox(
-                    label = "TTA",
-                    info = "Enable Test-Time-Augmentation; slow but improves quality.",
-                    value = True,
-                    visible = True,
-                    interactive = True,
-                )
-                vrarch_high_end_process = gr.Checkbox(
-                    label = "High End Process",
-                    info = "Mirror the missing frequency range of the output.",
-                    value = False,
-                    visible = True,
-                    interactive = True,
-                )
-            with gr.Row():
-                vrarch_audio = gr.Audio(
-                    label = "Input Audio",
-                    type = "numpy",
-                    interactive = True
-                )
-            with gr.Accordion("Separation by Link", open = False):
                 with gr.Row():
-                   vrarch_link = gr.Textbox(
-                    label = "Link",
-                    placeholder = "Paste the link here",
-                    interactive = True
-                )
+                    roformer_button = gr.Button(_("Separate!"), variant = "primary")
                 with gr.Row():
-                   gr.Markdown("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)")
-                with gr.Row():
-                    vrarch_download_button = gr.Button(
-                    "Download!",
-                    variant = "primary"
-                )
-
-            vrarch_download_button.click(download_audio, [vrarch_link], [vrarch_audio])
-
-            with gr.Accordion("Batch Separation", open = False):
-                with gr.Row():
-                    vrarch_input_path = gr.Textbox(
-                        label = "Input Path",
-                        placeholder = "Place the input path here",
-                        interactive = True
+                    roformer_stem1 = gr.Audio(
+                        show_download_button = True,
+                        interactive = False,
+                        label = _("Stem 1"),
+                        type = "filepath"
                     )
-                    vrarch_output_path = gr.Textbox(
-                        label = "Output Path",
-                        placeholder = "Place the output path here",
-                        interactive = True
-                    )
-                with gr.Row():
-                    vrarch_bath_button = gr.Button("Separate!", variant = "primary")
-                with gr.Row():
-                    vrarch_info = gr.Textbox(
-                        label = "Output Information",
-                        interactive = False
+                    roformer_stem2 = gr.Audio(
+                        show_download_button = True,
+                        interactive = False,
+                        label = _("Stem 2"),
+                        type = "filepath"
                     )
 
-            vrarch_bath_button.click(vrarch_batch, [vrarch_input_path, vrarch_output_path, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_high_end_process], [vrarch_info])
-
-            with gr.Row():
-                vrarch_button = gr.Button("Separate!", variant = "primary")
-            with gr.Row():
-                vrarch_stem1 = gr.Audio(
-                    show_download_button = True,
-                    interactive = False,
-                    type = "filepath",
-                    label = "Stem 1"
-                )
-                vrarch_stem2 = gr.Audio(
-                    show_download_button = True,
-                    interactive = False,
-                    type = "filepath",
-                    label = "Stem 2"
-                )
-
-            vrarch_button.click(vrarch_separator, [vrarch_audio, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_high_end_process], [vrarch_stem1, vrarch_stem2])
-
-        with gr.TabItem("Demucs"):
-            with gr.Row():
-                demucs_model = gr.Dropdown(
-                    label = "Select the Model",
-                    choices = demucs_models,
-                    value = lambda : None,
-                    interactive = True
-                )
-                demucs_output_format = gr.Dropdown(
-                    label = "Select the Output Format",
-                    choices = output_format,
-                    value = lambda : None,
-                    interactive = True
-                )
-            with gr.Row():
-                demucs_shifts = gr.Slider(
-                    minimum = 1,
-                    maximum = 20,
-                    step = 1,
-                    label = "Shifts",
-                    info = "Number of predictions with random shifts, higher = slower but better quality.",
-                    value = 2,
-                    interactive = True
-                )
-                demucs_overlap = gr.Dropdown(
-                   label = "Overlap",
-                   choices = demucs_overlap_values,
-                   value = demucs_overlap_values[0],
-                   interactive = True
-                )
-            with gr.Row():
-                demucs_audio = gr.Audio(
-                    label = "Input Audio",
-                    type = "numpy",
-                    interactive = True
-                )
-            with gr.Accordion("Separation by Link", open = False):
-                with gr.Row():
-                    demucs_link = gr.Textbox(
-                    label = "Link",
-                    placeholder = "Paste the link here",
-                    interactive = True
-                )
-                with gr.Row():
-                   gr.Markdown("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)")
-                with gr.Row():
-                    demucs_download_button = gr.Button(
-                    "Download!",
-                    variant = "primary"
-                )
-
-            demucs_download_button.click(download_audio, [demucs_link], [demucs_audio])
-
-            with gr.Accordion("Batch Separation", open = False):
-                with gr.Row():
-                    demucs_input_path = gr.Textbox(
-                        label = "Input Path",
-                        placeholder = "Place the input path here",
-                        interactive = True
-                    )
-                    demucs_output_path = gr.Textbox(
-                        label = "Output Path",
-                        placeholder = "Place the output path here",
-                        interactive = True
-                    )
-                with gr.Row():
-                    demucs_bath_button = gr.Button("Separate!", variant = "primary")
-                with gr.Row():
-                    demucs_info = gr.Textbox(
-                        label = "Output Information",
-                        interactive = False
-                    )
-
-            demucs_bath_button.click(demucs_batch, [demucs_input_path, demucs_output_path, demucs_model, demucs_output_format, demucs_shifts, demucs_overlap], [demucs_info])
-
-            with gr.Row():
-                demucs_button = gr.Button("Separate!", variant = "primary")
-            with gr.Row():
-                demucs_stem1 = gr.Audio(
-                    show_download_button = True,
-                    interactive = False,
-                    type = "filepath",
-                    label = "Stem 1"
-                )
-                demucs_stem2 = gr.Audio(
-                    show_download_button = True,
-                    interactive = False,
-                    type = "filepath",
-                    label = "Stem 2"
-                )
-            with gr.Row():
-                demucs_stem3 = gr.Audio(
-                    show_download_button = True,
-                    interactive = False,
-                    type = "filepath",
-                    label = "Stem 3"
-                )
-                demucs_stem4 = gr.Audio(
-                    show_download_button = True,
-                    interactive = False,
-                    type = "filepath",
-                    label = "Stem 4"
-                )
+                roformer_button.click(roformer_separator, [roformer_audio, roformer_model, roformer_output_format, roformer_overlap, roformer_segment_size], [roformer_stem1, roformer_stem2])
             
-            demucs_button.click(demucs_separator, [demucs_audio, demucs_model, demucs_output_format, demucs_shifts, demucs_overlap], [demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4])
+            with gr.TabItem("MDX23C"):
+                with gr.Row():
+                    mdx23c_model = gr.Dropdown(
+                        label = _("Select the model"),
+                        choices = mdx23c_models,
+                        value = lambda : None,
+                        interactive = True
+                    )
+                    mdx23c_output_format = gr.Dropdown(
+                        label = _("Select the output format"),
+                        choices = output_format,
+                        value = lambda : None,
+                        interactive = True
+                    )
+                with gr.Row():
+                    mdx23c_segment_size = gr.Slider(
+                        minimum = 32,
+                        maximum = 4000,
+                        step = 32,
+                        label = _("Segment size"),
+                        info = _("Larger consumes more resources, but may give better results"),
+                        value = 256,
+                        interactive = True
+                    )
+                    mdx23c_overlap = gr.Slider(
+                        minimum = 2,
+                        maximum = 50,
+                        step = 1,
+                        label = _("Overlap"),
+                        info = _("Amount of overlap between prediction windows"),
+                        value = 8,
+                        interactive = True
+                    )
+                    mdx23c_denoise = gr.Checkbox(
+                        label = _("Denoise"),
+                        info = _("**Enable denoising during separation**"),
+                        value = False,
+                        interactive = True
+                    )
+                with gr.Row():
+                    mdx23c_audio = gr.Audio(
+                        label = _("Input audio"),
+                        type = "numpy",
+                        interactive = True
+                    )
+                with gr.Accordion(_("Separation by link"), open = False):
+                    with gr.Row():
+                        mdx23c_link = gr.Textbox(
+                        label = _("Link"),
+                        placeholder = _("Paste the link here"),
+                        interactive = True
+                    )
+                    with gr.Row():
+                        gr.Markdown(_("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)"))
+                    with gr.Row():
+                        mdx23c_download_button = gr.Button(
+                        _("Download!"),
+                        variant = "primary"
+                    )
+
+                mdx23c_download_button.click(download_audio, [mdx23c_link], [mdx23c_audio])
+
+                with gr.Accordion(_("Batch separation"), open = False):
+                    with gr.Row():
+                        mdx23c_input_path = gr.Textbox(
+                            label = _("Input path"),
+                            placeholder = _("Place the input path here"),
+                            interactive = True
+                        )
+                        mdx23c_output_path = gr.Textbox(
+                            label = _("Output path"),
+                            placeholder = _("Place the output path here"),
+                            interactive = True
+                        )
+                    with gr.Row():
+                        mdx23c_bath_button = gr.Button(_("Separate!"), variant = "primary")
+                    with gr.Row():
+                        mdx23c_info = gr.Textbox(
+                            label = _("Output information"),
+                            interactive = False
+                        )
+
+                mdx23c_bath_button.click(mdx23c_batch, [mdx23c_input_path, mdx23c_output_path, mdx23c_model, mdx23c_output_format, mdx23c_overlap, mdx23c_segment_size, mdx23c_denoise], [mdx23c_info])
+
+                with gr.Row():
+                    mdx23c_button = gr.Button(_("Separate!"), variant = "primary")
+                with gr.Row():
+                    mdx23c_stem1 = gr.Audio(
+                        show_download_button = True,
+                        interactive = False,
+                        label = _("Stem 1"),
+                        type = "filepath"
+                    )
+                    mdx23c_stem2 = gr.Audio(
+                        show_download_button = True,
+                        interactive = False,
+                        label = _("Stem 2"),
+                        type = "filepath"
+                    )
+
+                mdx23c_button.click(mdxc_separator, [mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_overlap, mdx23c_denoise], [mdx23c_stem1, mdx23c_stem2])
             
-        with gr.TabItem("Themes"):
-            themes_select = gr.Dropdown(
-                label = "Theme",
-                info = "Select the theme you want to use. (Requires restarting the App)",
-                choices = loadThemes.get_list(),
-                value = loadThemes.read_json(),
-                visible = True
-            )
-            dummy_output = gr.Textbox(visible = False)
+            with gr.TabItem("MDX-NET"):
+                with gr.Row():
+                    mdxnet_model = gr.Dropdown(
+                        label = _("Select the model"),
+                        choices = mdxnet_models,
+                        value = lambda : None,
+                        interactive = True
+                    )
+                    mdxnet_output_format = gr.Dropdown(
+                        label = _("Select the output format"),
+                        choices = output_format,
+                        value = lambda : None,
+                        interactive = True
+                    )
+                with gr.Row():
+                    mdxnet_segment_size = gr.Slider(
+                        minimum = 32,
+                        maximum = 4000,
+                        step = 32,
+                        label = _("Segment size"),
+                        info = _("Larger consumes more resources, but may give better results"),
+                        value = 256,
+                        interactive = True
+                    )
+                    mdxnet_overlap = gr.Dropdown(
+                            label = _("Overlap"),
+                            choices = mdxnet_overlap_values,
+                            value = mdxnet_overlap_values[0],
+                            interactive = True
+                    )
+                    mdxnet_denoise = gr.Checkbox(
+                        label = _("Denoise"),
+                        info = _("**Enable denoising during separation**"),
+                        value = True,
+                        interactive = True
+                    )
+                with gr.Row():
+                    mdxnet_audio = gr.Audio(
+                        label = _("Input audio"),
+                        type = "numpy",
+                        interactive = True
+                    )
+                with gr.Accordion(_("Separation by link"), open = False):
+                    with gr.Row():
+                        mdxnet_link = gr.Textbox(
+                        label = _("Link"),
+                        placeholder = _("Paste the link here"),
+                        interactive = True
+                    )
+                    with gr.Row():
+                        gr.Markdown(_("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)"))
+                    with gr.Row():
+                        mdxnet_download_button = gr.Button(
+                        _("Download!"),
+                        variant = "primary"
+                    )
 
-            themes_select.change(
-                fn = loadThemes.select_theme,
-                inputs = themes_select,
-                outputs = [dummy_output]
-            )
+                mdxnet_download_button.click(download_audio, [mdxnet_link], [mdxnet_audio])
 
-        with gr.TabItem("Credits"):
-           gr.Markdown(
-              """
-              UVR5 UI created by **[Eddycrack 864](https://github.com/Eddycrack864).** Join **[AI HUB](https://discord.gg/aihub)** community.
-              * python-audio-separator by [beveradb](https://github.com/beveradb).
-              * Special thanks to [Ilaria](https://github.com/TheStingerX) for hosting this space and help.
-              * Thanks to [Mikus](https://github.com/cappuch) for the help with the code.
-              * Thanks to [Nick088](https://huggingface.co/Nick088) for the help to fix roformers.
-              * Thanks to [yt_dlp](https://github.com/yt-dlp/yt-dlp) devs.
-              * Separation by link source code and improvements by [Blane187](https://huggingface.co/Blane187).
-              * Thanks to [ArisDev](https://github.com/aris-py) for porting UVR5 UI to Kaggle and improvements.
-              
-              
-              You can donate to the original UVR5 project here:
-              [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/uvr5)
-              """
-           )
+                with gr.Accordion(_("Batch separation"), open = False):
+                    with gr.Row():
+                        mdxnet_input_path = gr.Textbox(
+                            label = _("Input path"),
+                            placeholder = _("Place the input path here"),
+                            interactive = True
+                        )
+                        mdxnet_output_path = gr.Textbox(
+                            label = _("Output path"),
+                            placeholder = _("Place the output path here"),
+                            interactive = True
+                        )
+                    with gr.Row():
+                        mdxnet_bath_button = gr.Button(_("Separate!"), variant = "primary")
+                    with gr.Row():
+                        mdxnet_info = gr.Textbox(
+                            label = _("Output information"),
+                            interactive = False
+                        )
+
+                mdxnet_bath_button.click(mdxnet_batch, [mdxnet_input_path, mdxnet_output_path, mdxnet_model, mdxnet_output_format, mdxnet_overlap, mdxnet_segment_size, mdxnet_denoise], [mdxnet_info])
+
+                with gr.Row():
+                    mdxnet_button = gr.Button(_("Separate!"), variant = "primary")
+                with gr.Row():
+                    mdxnet_stem1 = gr.Audio(
+                        show_download_button = True,
+                        interactive = False,
+                        label = _("Stem 1"),
+                        type = "filepath"
+                    )
+                    mdxnet_stem2 = gr.Audio(
+                        show_download_button = True,
+                        interactive = False,
+                        label = _("Stem 2"),
+                        type = "filepath"
+                    )
+
+                mdxnet_button.click(mdxnet_separator, [mdxnet_audio, mdxnet_model, mdxnet_output_format, mdxnet_segment_size, mdxnet_overlap, mdxnet_denoise], [mdxnet_stem1, mdxnet_stem2])
+
+            with gr.TabItem("VR ARCH"):
+                with gr.Row():
+                    vrarch_model = gr.Dropdown(
+                        label = _("Select the model"),
+                        choices = vrarch_models,
+                        value = lambda : None,
+                        interactive = True
+                    )
+                    vrarch_output_format = gr.Dropdown(
+                        label = _("Select the output format"),
+                        choices = output_format,
+                        value = lambda : None,
+                        interactive = True
+                    )
+                with gr.Row():
+                    vrarch_window_size = gr.Dropdown(
+                        label = _("Window size"),
+                        choices = vrarch_window_size_values,
+                        value = vrarch_window_size_values[0],
+                        interactive = True
+                    )
+                    vrarch_agression = gr.Slider(
+                        minimum = 1,
+                        maximum = 50,
+                        step = 1,
+                        label = _("Agression"),
+                        info = _("Intensity of primary stem extraction"),
+                        value = 5,
+                        interactive = True
+                    )
+                    vrarch_tta = gr.Checkbox(
+                        label = _("TTA"),
+                        info = _("**Enable Test-Time-Augmentation; slow but improves quality**"),
+                        value = True,
+                        visible = True,
+                        interactive = True,
+                    )
+                    vrarch_high_end_process = gr.Checkbox(
+                        label = _("High end process"),
+                        info = _("**Mirror the missing frequency range of the output**"),
+                        value = False,
+                        visible = True,
+                        interactive = True,
+                    )
+                with gr.Row():
+                    vrarch_audio = gr.Audio(
+                        label = _("Input audio"),
+                        type = "numpy",
+                        interactive = True
+                    )
+                with gr.Accordion(_("Separation by link"), open = False):
+                    with gr.Row():
+                        vrarch_link = gr.Textbox(
+                            label = _("Link"),
+                            placeholder = _("Paste the link here"),
+                            interactive = True
+                        )
+                    with gr.Row():
+                        gr.Markdown(_("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)"))
+                    with gr.Row():
+                        vrarch_download_button = gr.Button(
+                        _("Download!"),
+                        variant = "primary"
+                    )
+
+                vrarch_download_button.click(download_audio, [vrarch_link], [vrarch_audio])
+
+                with gr.Accordion(_("Batch separation"), open = False):
+                    with gr.Row():
+                        vrarch_input_path = gr.Textbox(
+                            label = _("Input path"),
+                            placeholder = _("Place the input path here"),
+                            interactive = True
+                        )
+                        vrarch_output_path = gr.Textbox(
+                            label = _("Output path"),
+                            placeholder = _("Place the output path here"),
+                            interactive = True
+                        )
+                    with gr.Row():
+                        vrarch_bath_button = gr.Button(_("Separate!"), variant = "primary")
+                    with gr.Row():
+                        vrarch_info = gr.Textbox(
+                            label = _("Output information"),
+                            interactive = False
+                        )
+
+                vrarch_bath_button.click(vrarch_batch, [vrarch_input_path, vrarch_output_path, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_high_end_process], [vrarch_info])
+
+                with gr.Row():
+                    vrarch_button = gr.Button(_("Separate!"), variant = "primary")
+                with gr.Row():
+                    vrarch_stem1 = gr.Audio(
+                        show_download_button = True,
+                        interactive = False,
+                        type = "filepath",
+                        label = _("Stem 1")
+                    )
+                    vrarch_stem2 = gr.Audio(
+                        show_download_button = True,
+                        interactive = False,
+                        type = "filepath",
+                        label = _("Stem 2")
+                    )
+
+                vrarch_button.click(vrarch_separator, [vrarch_audio, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_high_end_process], [vrarch_stem1, vrarch_stem2])
+
+            with gr.TabItem("Demucs"):
+                with gr.Row():
+                    demucs_model = gr.Dropdown(
+                        label = _("Select the model"),
+                        choices = demucs_models,
+                        value = lambda : None,
+                        interactive = True
+                    )
+                    demucs_output_format = gr.Dropdown(
+                        label = _("Select the output format"),
+                        choices = output_format,
+                        value = lambda : None,
+                        interactive = True
+                    )
+                with gr.Row():
+                    demucs_shifts = gr.Slider(
+                        minimum = 1,
+                        maximum = 20,
+                        step = 1,
+                        label = _("Shifts"),
+                        info = _("Number of predictions with random shifts, higher = slower but better quality"),
+                        value = 2,
+                        interactive = True
+                    )
+                    demucs_overlap = gr.Dropdown(
+                    label = _("Overlap"),
+                    choices = demucs_overlap_values,
+                    value = demucs_overlap_values[0],
+                    interactive = True
+                    )
+                with gr.Row():
+                    demucs_audio = gr.Audio(
+                        label = _("Input audio"),
+                        type = "numpy",
+                        interactive = True
+                    )
+                with gr.Accordion(_("Separation by link"), open = False):
+                    with gr.Row():
+                        demucs_link = gr.Textbox(
+                        label = _("Link"),
+                        placeholder = _("Paste the link here"),
+                        interactive = True
+                    )
+                    with gr.Row():
+                        gr.Markdown(_("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)"))
+                    with gr.Row():
+                        demucs_download_button = gr.Button(
+                        _("Download!"),
+                        variant = "primary"
+                    )
+
+                demucs_download_button.click(download_audio, [demucs_link], [demucs_audio])
+
+                with gr.Accordion(_("Batch separation"), open = False):
+                    with gr.Row():
+                        demucs_input_path = gr.Textbox(
+                            label = _("Input path"),
+                            placeholder = _("Place the input path here"),
+                            interactive = True
+                        )
+                        demucs_output_path = gr.Textbox(
+                            label = _("Output path"),
+                            placeholder = _("Place the output path here"),
+                            interactive = True
+                        )
+                    with gr.Row():
+                        demucs_bath_button = gr.Button(_("Separate!"), variant = "primary")
+                    with gr.Row():
+                        demucs_info = gr.Textbox(
+                            label = _("Output information"),
+                            interactive = False
+                        )
+
+                demucs_bath_button.click(demucs_batch, [demucs_input_path, demucs_output_path, demucs_model, demucs_output_format, demucs_shifts, demucs_overlap], [demucs_info])
+
+                with gr.Row():
+                    demucs_button = gr.Button(_("Separate!"), variant = "primary")
+                with gr.Row():
+                    demucs_stem1 = gr.Audio(
+                        show_download_button = True,
+                        interactive = False,
+                        type = "filepath",
+                        label = _("Stem 1")
+                    )
+                    demucs_stem2 = gr.Audio(
+                        show_download_button = True,
+                        interactive = False,
+                        type = "filepath",
+                        label = _("Stem 2")
+                    )
+                with gr.Row():
+                    demucs_stem3 = gr.Audio(
+                        show_download_button = True,
+                        interactive = False,
+                        type = "filepath",
+                        label = _("Stem 3")
+                    )
+                    demucs_stem4 = gr.Audio(
+                        show_download_button = True,
+                        interactive = False,
+                        type = "filepath",
+                        label = _("Stem 4")
+                    )
+                
+                demucs_button.click(demucs_separator, [demucs_audio, demucs_model, demucs_output_format, demucs_shifts, demucs_overlap], [demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4])
+                
+            with gr.TabItem(_("Themes")):
+                themes_select = gr.Dropdown(
+                    label = _("Theme"),
+                    info = _("Select the theme you want to use. (Requires restarting the App)"),
+                    choices = loadThemes.get_list(),
+                    value = loadThemes.read_json(),
+                    visible = True
+                )
+                dummy_output = gr.Textbox(visible = False)
+
+                themes_select.change(
+                    fn = loadThemes.select_theme,
+                    inputs = themes_select,
+                    outputs = [dummy_output]
+                )
+
+            with gr.TabItem(_("Language")):
+               lang.render()
+
+            with gr.TabItem(_("Credits")):
+                    gr.Markdown(
+                    """
+                    UVR5 UI created by **[Eddycrack 864](https://github.com/Eddycrack864).** Join **[AI HUB](https://discord.gg/aihub)** community.
+                    * python-audio-separator by [beveradb](https://github.com/beveradb).
+                    * gradio-i18n by [hoveychen](https://github.com/hoveychen)
+                    * Special thanks to [Ilaria](https://github.com/TheStingerX) for hosting this space and help.
+                    * Thanks to [Mikus](https://github.com/cappuch) for the help with the code.
+                    * Thanks to [Nick088](https://huggingface.co/Nick088) for the help to fix roformers.
+                    * Thanks to [yt_dlp](https://github.com/yt-dlp/yt-dlp) devs.
+                    * Separation by link source code and improvements by [Blane187](https://huggingface.co/Blane187).
+                    * Thanks to [ArisDev](https://github.com/aris-py) for porting UVR5 UI to Kaggle and improvements.
+                    
+                    
+                    You can donate to the original UVR5 project here:
+                    [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/uvr5)
+                    """
+                    )
 
 app.launch(
     share=args.share_enabled,

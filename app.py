@@ -424,13 +424,17 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
         choices = [
             ("English", "en"),
             ("Español", "es"),
-        ],
+            ("Italiano", "it"),
+            ("Português", "pt"),
+            ("Pусский", "ru"),
+            ("Yкраїнський", "uk"),
+        ], 
         render = False,
     )
     with Translate(
        "assets/languages/translation.yaml",
        lang,
-       placeholder_langs = ["en", "es"],
+       placeholder_langs = ["en", "es", "it", "pt", "ru", "uk"],
     ):
         gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")
         gr.Markdown(_("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)"))

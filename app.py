@@ -572,7 +572,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     )
                     mdx23c_denoise = gr.Checkbox(
                         label = _("Denoise"),
-                        info = _("**Enable denoising during separation**"),
+                        info = _("Enable denoising during separation"),
                         value = False,
                         interactive = True
                     )
@@ -671,7 +671,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     )
                     mdxnet_denoise = gr.Checkbox(
                         label = _("Denoise"),
-                        info = _("**Enable denoising during separation**"),
+                        info = _("Enable denoising during separation"),
                         value = True,
                         interactive = True
                     )
@@ -770,14 +770,14 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     )
                     vrarch_tta = gr.Checkbox(
                         label = _("TTA"),
-                        info = _("**Enable Test-Time-Augmentation; slow but improves quality**"),
+                        info = _("Enable Test-Time-Augmentation; slow but improves quality"),
                         value = True,
                         visible = True,
                         interactive = True,
                     )
                     vrarch_high_end_process = gr.Checkbox(
                         label = _("High end process"),
-                        info = _("**Mirror the missing frequency range of the output**"),
+                        info = _("Mirror the missing frequency range of the output"),
                         value = False,
                         visible = True,
                         interactive = True,

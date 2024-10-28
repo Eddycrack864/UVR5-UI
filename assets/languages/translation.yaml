@@ -174,6 +174,94 @@ pt:
   Credits : Créditos
   Language : Idioma
 
+ms:
+  # Thanks to Ryouko-Yamanda65777 for the Malay translation !
+  If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : Jika anda suka UI UVR5, anda boleh bintang repositori saya di [GitHub](https://github.com/Eddycrack864/UVR5-UI)
+  Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI) : Cuba UI UVR5 pada Memeluk Wajah dengan A100 [di sini](https://huggingface.co/spaces/TheStinger/UVR5_UI)
+  Select the model : Pilih model
+  Select the output format : Pilih format output
+  Overlap : Pertindihan
+  Amount of overlap between prediction windows : Jumlah pertindihan antara tetingkap ramalan
+  Segment size : Saiz segmen
+  Larger consumes more resources, but may give better results : Saiz besar menggunakan lebih banyak sumber, tetapi mungkin memberikan hasil yang lebih baik
+  Input audio : Input audio
+  Separation by link : Pemisahan mengikut pautan
+  Link : Pautan
+  Paste the link here : Tampal pautan di sini
+  You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) : Anda boleh tampal pautan ke video/audio dari banyak laman, semak senarai lengkap [di sini](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
+  Download! : Muat turun!
+  Batch separation : Pemisahan kelompok
+  Input path : Laluan input
+  Place the input path here : Letakkan laluan input di sini
+  Output path : Laluan output
+  Place the output path here : Letakkan laluan output di sini
+  Separate! : Pisahkan!
+  Output information : Maklumat output
+  Stem 1 : Lapis 1
+  Stem 2 : Lapis 2
+  Denoise : Nyahbunyi
+  Enable denoising during separation : Aktifkan nyahbunyi semasa pemisahan
+  Window size: Saiz tetingkap
+  Agression: Kekasaran
+  Intensity of primary stem extraction : Intensiti pengekstrakan lapis utama
+  TTA : TTA
+  Enable Test-Time-Augmentation; slow but improves quality : Aktifkan Augmentasi Ujian Masa; perlahan tetapi meningkatkan kualiti
+  High end process : Proses hujung tinggi
+  Mirror the missing frequency range of the output : Cerminkan julat frekuensi yang hilang pada output
+  Shifts : Peralihan
+  Number of predictions with random shifts, higher = slower but better quality : Bilangan ramalan dengan peralihan rawak, lebih tinggi = lebih perlahan tetapi kualiti lebih baik
+  Stem 3 : Lapis 3
+  Stem 4 : Lapis 4
+  Themes : Tema
+  Theme : Tema
+  Select the theme you want to use. (Requires restarting the App) : Pilih tema yang anda mahu gunakan. (Perlu mulakan semula Aplikasi)
+  Credits : Kredit
+  Language : Bahasa
+
+id:
+  # Thanks to Ryouko-Yamanda65777 for the Indonesian translation !
+  If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : Jika Anda suka UI UVR5, Anda dapat memberikan bintang pada repo saya di [GitHub](https://github.com/Eddycrack864/UVR5-UI)
+  Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI) : Coba UVR5 UI di Hugging Face dengan A100 [di sini](https://huggingface.co/spaces/TheStinger/UVR5_UI)
+  Select the model : Pilih model
+  Select the output format : Pilih format output
+  Overlap : Tumpang tindih
+  Amount of overlap between prediction windows : Jumlah tumpang tindih antara jendela prediksi
+  Segment size : Ukuran segmen
+  Larger consumes more resources, but may give better results : Lebih besar menggunakan lebih banyak sumber daya, tetapi dapat memberikan hasil yang lebih baik
+  Input audio : Input audio
+  Separation by link : Pemisahan berdasarkan tautan
+  Link : Tautan
+  Paste the link here : Tempel tautan di sini
+  You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) : Anda dapat menempelkan tautan ke video/audio dari banyak situs, lihat daftar lengkap [di sini](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
+  Download! : Unduh!
+  Batch separation : Pemisahan batch
+  Input path : Jalur input
+  Place the input path here : Letakkan jalur input di sini
+  Output path : Jalur output
+  Place the output path here : Tempatkan jalur output di sini
+  Separate! : Pisahkan!
+  Output information : Informasi output
+  Stem 1 : Stem 1
+  Stem 2 : Stem 2
+  Denoise : Mengurangi kebisingan
+  Enable denoising during separation : Aktifkan pengurangan kebisingan selama pemisahan
+  Window size : Ukuran jendela
+  Agression :  Agresi
+  Intensity of primary stem extraction : Intensitas ekstraksi batang primer
+  TTA : TTA
+  Enable Test-Time-Augmentation; slow but improves quality : Aktifkan Augmentasi Saat Uji; lambat tetapi meningkatkan kualitas
+  High end process : Proses Kelas Atas
+  Mirror the missing frequency range of the output : Cerminkan rentang frekuensi yang hilang dari output
+  Shifts : Pergeseran
+  Number of predictions with random shifts, higher = slower but better quality : Jumlah prediksi dengan pergeseran acak, lebih tinggi = lebih lambat tetapi kualitas lebih baik
+  Stem 3 : Stem 3
+  Stem 4 : Stem 4
+  Themes : Tema 
+  Theme :  Tema
+  Select the theme you want to use. (Requires restarting the App) : Pilih tema yang ingin Anda gunakan. (Membutuhkan restart Aplikasi)  
+  Credits : Kredits  
+  Language : Bahasa
+
 ru:
   If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : Если вам нравится UVR5 UI, вы можете посмотреть мое репо на [GitHub](https://github.com/Eddycrack864/UVR5-UI)
   Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI) : Попробуйте UVR5 UI на Hugging Face с A100 [здесь](https://huggingface.co/spaces/TheStinger/UVR5_UI)
@@ -259,3 +347,91 @@ uk:
   Select the theme you want to use. (Requires restarting the App) : Виберіть тему, яку ви хочете використовувати. (Потрібен перезапуск програми)
   Credits : Вдячність
   Language : Мова
+
+zh:
+  #Gemini translation, could be inaccurate
+  If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : 喜欢 UVR5 UI 的话，可以在 [GitHub](https://github.com/Eddycrack864/UVR5-UI) 上标星我的仓库
+  Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI) : 在 Huggingface 上尝试 A100 的 UVR5 UI [这里](https://huggingface.co/spaces/TheStinger/UVR5_UI)
+  Select the model : 选择模型
+  Select the output format : 选择输出格式
+  Overlap : 重叠
+  Amount of overlap between prediction windows : 预测窗口之间的重叠量
+  Segment size : 段大小
+  Larger consumes more resources, but may give better results : 更大的模型消耗更多资源，但可能产生更好的结果
+  Input audio : 输入音频
+  Separation by link : 按链接分离
+  Link : 链接
+  Paste the link here : 请在此粘贴链接
+  You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) : 您可以从许多站点粘贴视频/音频的链接，完整列表请参见 [这里](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
+  Download! : 下载！
+  Batch separation : 批量分离
+  Input path : 输入路径
+  Place the input path here : 在此处放置输入路径
+  Output path : 输出路径
+  Place the output path here : 将输出路径放在这里
+  Separate! : 分离！
+  Output information : 输出信息
+  Stem 1 : 干声 1
+  Stem 2 : 干声 2
+  Denoise : 去噪
+  Enable denoising during separation : 分离过程中启用降噪
+  Window size : 窗口大小
+  Agression : 攻击性
+  Intensity of primary stem extraction : 初生茎提取强度
+  TTA : TTA
+  Enable Test-Time-Augmentation; slow but improves quality : 启用测试时间增强；速度较慢但提高质量
+  High end process : 高频处理
+  Mirror the missing frequency range of the output : 镜像输出中缺失的频率范围
+  Shifts : 偏移
+  Number of predictions with random shifts, higher = slower but better quality : 随机偏移预测次数，越高越慢但质量越好
+  Stem 3 : 干声 3
+  Stem 4 : 干声 4
+  Themes : 主题
+  Theme :  主题
+  Select the theme you want to use. (Requires restarting the App) : 选择您要使用的主题。（需要重新启动应用程序）
+  Credits : 鸣谢
+  Language : 语言
+
+ja:
+  #Gemini translation, could be inaccurate
+  If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : UVR5 UIが気に入ったら、私の[GitHub](https://github.com/Eddycrack864/UVR5-UI)リポジトリにスターを付けてください
+  Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI) : A100搭載の Hugging Face で UVR5 UI を試してみる [ここ](https://huggingface.co/spaces/TheStinger/UVR5_UI)
+  Select the model : モデルを選択
+  Select the output format : 出力形式を選択
+  Overlap : 重複
+  Amount of overlap between prediction windows : 予測ウィンドウ間の重複量
+  Segment size : セグメントサイズ
+  Larger consumes more resources, but may give better results : 大きいほどリソースを消費しますが、より良い結果が得られる可能性がある
+  Input audio : 入力オーディオ
+  Separation by link : リンクによる分離
+  Link : リンク
+  Paste the link here : ここにリンクを貼り付け
+  You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) : ビデオ/オーディオへのリンクをさまざまなサイトから貼り付けることができる。完全なリストは [ここ](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) で確認して
+  Download! : ダウンロード!
+  Batch separation : バッチ分離
+  Input path : 入力パス
+  Place the input path here : 入力パスをここに配置する
+  Output path : 出力パス
+  Place the output path here : 出力パスをここに配置する
+  Separate! : 分離!
+  Output information : 出力情報
+  Stem 1 : ステム 1
+  Stem 2 : ステム 2
+  Denoise : ノイズ除去
+  Enable denoising during separation : 分離中にノイズ除去を有効にする
+  Window size : ウィンドウサイズ
+  Agression : アグレッシブネス
+  Intensity of primary stem extraction : プライマリステム抽出の強度
+  TTA : TTA
+  Enable Test-Time-Augmentation; slow but improves quality : テスト時データ拡張を有効にする; 遅いですが品質が向上する
+  High end process : ハイエンドプロセス
+  Mirror the missing frequency range of the output : 出力の欠落した周波数範囲をミラーリングする
+  Shifts : シフト
+  Number of predictions with random shifts, higher = slower but better quality : ランダムシフトによる予測の数、高いほど遅いが品質が向上する
+  Stem 3 : ステム 3
+  Stem 4 : ステム 4
+  Themes : テーマ
+  Theme : テーマ
+  Select the theme you want to use. (Requires restarting the App) : 使用したいテーマを選択して。(アプリの再起動が必要です)
+  Credits : クレジット
+  Language : 言語

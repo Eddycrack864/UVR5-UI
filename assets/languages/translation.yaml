@@ -349,7 +349,7 @@ uk:
   Language : Мова
 
 zh:
-  #Gemini translation, could be inaccurate
+  # Gemini translation, could be inaccurate
   If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : 喜欢 UVR5 UI 的话，可以在 [GitHub](https://github.com/Eddycrack864/UVR5-UI) 上标星我的仓库
   Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI) : 在 Huggingface 上尝试 A100 的 UVR5 UI [这里](https://huggingface.co/spaces/TheStinger/UVR5_UI)
   Select the model : 选择模型
@@ -393,7 +393,7 @@ zh:
   Language : 语言
 
 ja:
-  #Gemini translation, could be inaccurate
+  # Gemini translation, could be inaccurate
   If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : UVR5 UIが気に入ったら、私の[GitHub](https://github.com/Eddycrack864/UVR5-UI)リポジトリにスターを付けてください
   Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI) : A100搭載の Hugging Face で UVR5 UI を試してみる [ここ](https://huggingface.co/spaces/TheStinger/UVR5_UI)
   Select the model : モデルを選択
@@ -435,3 +435,47 @@ ja:
   Select the theme you want to use. (Requires restarting the App) : 使用したいテーマを選択して。(アプリの再起動が必要です)
   Credits : クレジット
   Language : 言語
+
+ko:
+  # Thanks to perariroswe for the Korean translation !
+  If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : UVR5 UI가 마음에 드신다면 [GitHub](https://github.com/Eddycrack864/UVR5-UI)에서 제 리포지토리에 별을 추가해 주세요
+  Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI) : Hugging Face에서 A100으로 구동되는 UVR5 UI를 사용해 보세요 [이곳](https://huggingface.co/spaces/TheStinger/UVR5_UI)
+  Select the model : 모델 선택
+  Select the output format : 출력 형식 선택
+  Overlap : 오버랩
+  Amount of overlap between prediction windows : 예측 기간 간의 오버랩 정도
+  Segment size : 세그먼트 크기
+  Larger consumes more resources, but may give better results : 크기가 클수록 더 많은 리소스가 소모되지만, 더 나은 결과를 얻을 수 있습니다
+  Input audio : 오디오 입력
+  Separation by link : 링크로 분리하기
+  Link : 링크
+  Paste the link here : 링크를 여기에 붙여 넣으세요
+  You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) : 여러 사이트의 비디오/오디오 링크를 붙여 넣을 수 있습니다. 지원되는 사이트 목록은 [이곳](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)에서 확인하세요
+  Download! : 다운로드!
+  Batch separation : 일괄 분리
+  Input path : 입력 경로
+  Place the input path here : 입력 경로를 여기에 입력하세요
+  Output path : 출력 경로
+  Place the output path here : 출력 경로를 여기에 입력하세요
+  Separate! : 분리하기!
+  Output information : 출력 정보
+  Stem 1 : 스템 1
+  Stem 2 : 스템 2
+  Denoise : 디노이즈
+  Enable denoising during separation : 분리 중 노이즈 제거 활성화
+  Window size : 윈도우 크기
+  Agression : 추출 강도
+  Intensity of primary stem extraction : 주요 스템 추출 강도
+  TTA : TTA
+  Enable Test-Time-Augmentation; slow but improves quality : 테스트 시간 증강 활성화; 느리지만 품질이 향상됩니다
+  High end process : 고급 처리
+  Mirror the missing frequency range of the output : 출력의 누락된 주파수 범위를 보정합니다
+  Shifts : 시프트
+  Number of predictions with random shifts, higher = slower but better quality : 랜덤 시프트 사용 예측 횟수; 높을수록 느리지만 품질 향상
+  Stem 3 : 스템 3
+  Stem 4 : 스템 4
+  Themes : 테마 목록
+  Theme : 테마 선택
+  Select the theme you want to use. (Requires restarting the App) : 사용할 테마를 선택하세요. (앱 재시작 필요)
+  Credits : 크레딧
+  Language : 언어

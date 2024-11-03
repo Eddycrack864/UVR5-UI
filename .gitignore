@@ -13,6 +13,12 @@ __pycache__/
 *.flac
 *.mp3
 
-#Specific files
+# Specific files
 models/*.json
 models/*.yaml
+
+# Environments
+.env
+.venv
+env/
+venv/

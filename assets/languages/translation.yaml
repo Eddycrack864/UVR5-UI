@@ -348,6 +348,50 @@ uk:
   Credits : Вдячність
   Language : Мова
 
+th:
+  # Thanks to lucinamari for the Thai translation !
+  If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : ถ้าคุณชอบ UVR5 UI คุณสามารถให้ดาว repo ของผมได้ที่ [GitHub](https://github.com/Eddycrack864/UVR5-UI)
+  Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI) : ลอง UVR5 UI ผ่าน Hugging Face กับ A100 ได้ [ที่นี่](https://huggingface.co/spaces/TheStinger/UVR5_UI)
+  Select the model : เลือกโมเดล
+  Select the output format : เลือกรูปแบบของเอาท์พุต
+  Overlap : ความทับซ้อน
+  Amount of overlap between prediction windows : ปริมาณความทับซ้อนระหว่างช่วงเวลาของหน้าต่าง
+  Segment size : ขนาดส่วน
+  Larger consumes more resources, but may give better results : ยิ่งมีขนาดใหญ่ยิ่งใช้ทรัพยากรมากขึ้น แต่ก็อาจจะให้ผลลัพธ์ที่ดีกว่า
+  Input audio : อินพุตเสียง
+  Separation by link : แยกด้วยลิงค์
+  Link : ลิงค์
+  Paste the link here : วางลิ้งค์ที่นี้
+  You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) : คุณสามารถวางลิงก์ไปยังวิดีโอหรือเสียงจากหลากหลายเว็บไซต์ได้ ตรวจสอบรายการทั้งหมดได้ [ที่นี่](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
+  Download! : ดาวน์โหลด!
+  Batch separation : การแยกเป็นชุด
+  Input path : ที่อยู่ของอินพุต
+  Place the input path here : วางที่อยู่ของอินพุตที่นี่
+  Output path : ที่อยู่ของเอาท์พุต
+  Place the output path here : วางที่อยู่ของเอาท์พุตที่นี่
+  Separate! : เริ่มการแยก!
+  Output information : ข้อมูลเอาท์พุต
+  Stem 1 : สเต็มที่ 1
+  Stem 2 : สเต็มที่ 2
+  Denoise : ลดเสียงรบกวน
+  Enable denoising during separation : เปิดการลดเสียงรบกวนระหว่างการแยก
+  Window size : ขนาดหน้าต่าง
+  Agression : ความก้าวร้าว
+  Intensity of primary stem extraction : ความเข้มข้นของการคัดแยกสเต็มหลัก
+  TTA : TTA
+  Enable Test-Time-Augmentation; slow but improves quality : เปิดการปรับปรุงข้อมูลในช่วงเวลาทดสอบ; ช้าแต่ปรับปรุงคุณภาพได้
+  High end process : กระบวนการระดับชั้นสูง
+  Mirror the missing frequency range of the output : สะท้อนช่วงความถี่ที่หายไปของเอาต์พุต
+  Shifts : การกะระยะ
+  Number of predictions with random shifts, higher = slower but better quality : จำนวนการทำนายที่มีการกะระยะแบบสุ่ม, สูงมาก = ช้าแต่มีคุณภาพที่ดีกว่า
+  Stem 3 : สเต็มที่ 3
+  Stem 4 : สเต็มที่ 4
+  Themes : ธีม
+  Theme : ธีม
+  Select the theme you want to use. (Requires restarting the App) : เลือกธีมที่คุณต้องการจะใช้ (จำเป็นต้องเริ่มแอปใหม่)
+  Credits : เครดิตผู้มีส่วนร่วม
+  Language : ภาษา
+
 zh:
   # Gemini translation, could be inaccurate
   If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : 喜欢 UVR5 UI 的话，可以在 [GitHub](https://github.com/Eddycrack864/UVR5-UI) 上标星我的仓库

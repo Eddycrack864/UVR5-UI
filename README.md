@@ -36,7 +36,8 @@ You can also try it in Hugging Faces Spaces running on Zero GPU (A100)!
 * Separation of an audio/video from all sites supported by [yt_dlp](https://github.com/yt-dlp/yt-dlp). Check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md).
 * Batch Separation
 * Available in multiple languages
-* Colab/Kaggle/Lightning.ai Support
+* Colab/Kaggle/Lightning.ai support
+* Windows support
 
 ## Contributions
 If you want to participate and help me with this project feel free to create an [issue](https://github.com/Eddycrack864/UVR5-UI/issues) if something goes wrong or make a [pull request](https://github.com/Eddycrack864/UVR5-UI/pulls) to improve this project.
@@ -51,18 +52,7 @@ You can donate to the original UVR5 project here:
 
 ## TO-DO
 * Add more languages
-* Local installation
-
-## Changelog
-* Multiple languages support
-* Lightning.ai notebook
-* Theme Selector
-* Ngrok tunnel, Kaggle Notebook and imjoy-elfinder for Kaggle Notebook
-* Support for A100 GPU
-* Segment Size for Roformers
-* Denoise for MDX23C
-* Separation of an audio/video from all sites supported by yt_dlp
-* Batch Separation
+* Local installation for Linux
 
 ## Credits
 * python-audio-separator by [beveradb](https://github.com/beveradb).

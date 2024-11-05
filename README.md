@@ -39,6 +39,56 @@ You can also try it in Hugging Faces Spaces running on Zero GPU (A100)!
 * Colab/Kaggle/Lightning.ai support
 * Windows support
 
+## Requirements
+
+### Hardware Requirements:
+* Nvidia Series 2000 (RTX) or higher.
+* At least 5Gb of disk space.
+
+> [!NOTE]  
+> Older NVIDIA GPUs will be very slow. CPU will be insanely slow. If you don't meet the hardware requirements use our [Colab](https://colab.research.google.com/github/Eddycrack864/UVR5-UI/blob/main/UVR_UI.ipynb)/[Kaggle](https://www.kaggle.com/code/eddycrack864/uvr5-ui)/[Lightning.ai](https://lightning.ai/eddycrack864/studios/uvr5-ui)/[Hugging Face](https://huggingface.co/spaces/TheStinger/UVR5_UI).
+
+### Prerequisites:
+- Git. You can download Git [here](https://git-scm.com/downloads).
+- FFmpeg. You can download FFmpeg [here](https://www.ffmpeg.org/download.html) or you can use my [automated installation script](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/ffmpeg-installer.bat) (for Windows).
+
+> [!IMPORTANT]  
+> FFmpeg has to be added to the PATH.
+
+## Getting Started
+
+Clone the repository (git needed) or download the source code of the latest release [here](https://github.com/Eddycrack864/UVR5-UI/releases)
+
+```
+git clone https://github.com/Eddycrack864/UVR5-UI.git
+```
+
+Then continue with the steps described below
+
+### 1. Installation
+
+Run the installation script based on your operating system:
+
+- **Windows:** Double-click `UVR5-UI-installer.bat`.
+- **Linux:** In development.
+
+> [!TIP]
+> I personally recommend running the updater before installing to make sure you have the latest changes.
+
+### 2. Running UVR5 UI
+
+Start UVR5 UI using:
+
+- **Windows:** Double-click `run-UVR5-UI.bat`.
+- **Linux:** In development.
+
+### 3. Update UVR5 UI (If you want/need it)
+
+Update UVR5 UI using (git needed):
+
+- **Windows:** Double-click `UVR5-UI-updater.bat`.
+- **Linux:** In development.
+
 ## Contributions
 If you want to participate and help me with this project feel free to create an [issue](https://github.com/Eddycrack864/UVR5-UI/issues) if something goes wrong or make a [pull request](https://github.com/Eddycrack864/UVR5-UI/pulls) to improve this project.
 

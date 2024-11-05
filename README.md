@@ -73,7 +73,7 @@ Run the installation script based on your operating system:
 - **Linux:** In development.
 
 > [!TIP]
-> I personally recommend running the updater before installing to make sure you have the latest changes.
+> I personally recommend running the [updater](https://github.com/Eddycrack864/UVR5-UI#3-update-uvr5-ui-if-you-wantneed-it) before installing to make sure you have the latest changes.
 
 ### 2. Running UVR5 UI
 
@@ -88,6 +88,8 @@ Update UVR5 UI using (git needed):
 
 - **Windows:** Double-click `UVR5-UI-updater.bat`.
 - **Linux:** In development.
+
+If you find an error when installing or running the program please consult [this troubleshooting file](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/troubleshooting.md) first, if your error is not described there please create an [issue](https://github.com/Eddycrack864/UVR5-UI/issues)
 
 ## Contributions
 If you want to participate and help me with this project feel free to create an [issue](https://github.com/Eddycrack864/UVR5-UI/issues) if something goes wrong or make a [pull request](https://github.com/Eddycrack864/UVR5-UI/pulls) to improve this project.

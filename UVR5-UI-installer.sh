@@ -87,6 +87,8 @@ install_dependencies() {
     echo
 }
 
+set -e
+
 check_privileges
 cleanup
 install_miniconda
@@ -97,3 +99,5 @@ echo "UVR5 UI has been installed successfully!"
 echo "To start UVR5 UI, please run 'run-UVR5-UI.sh'"
 
 read -p "Press Enter to exit..."
+
+chmod +x "$0"

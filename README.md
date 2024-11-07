@@ -37,20 +37,20 @@ You can also try it in Hugging Faces Spaces running on Zero GPU (A100)!
 * Batch Separation
 * Available in multiple languages
 * Colab/Kaggle/Lightning.ai support
-* Windows support
+* Windows/Linux support
 
 ## Requirements
 
 ### Hardware Requirements:
 * Nvidia Series 2000 (RTX) or higher.
-* At least 5Gb of disk space.
+* At least 10Gb of disk space.
 
 > [!NOTE]  
 > Older NVIDIA GPUs will be very slow. CPU will be insanely slow. If you don't meet the hardware requirements use our [Colab](https://colab.research.google.com/github/Eddycrack864/UVR5-UI/blob/main/UVR_UI.ipynb)/[Kaggle](https://www.kaggle.com/code/eddycrack864/uvr5-ui)/[Lightning.ai](https://lightning.ai/eddycrack864/studios/uvr5-ui)/[Hugging Face](https://huggingface.co/spaces/TheStinger/UVR5_UI).
 
 ### Prerequisites:
 - Git. You can download Git [here](https://git-scm.com/downloads).
-- FFmpeg. You can download FFmpeg [here](https://www.ffmpeg.org/download.html) or you can use my [automated installation script](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/ffmpeg-installer.bat) (for Windows).
+- FFmpeg. You can download FFmpeg [here](https://www.ffmpeg.org/download.html) or you can use my [automated installation script](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/ffmpeg-installer.bat) (for Windows). For linux just run `sudo apt-get install ffmpeg`.
 
 > [!IMPORTANT]  
 > FFmpeg has to be added to the PATH.
@@ -70,7 +70,7 @@ Then continue with the steps described below
 Run the installation script based on your operating system:
 
 - **Windows:** Double-click `UVR5-UI-installer.bat`.
-- **Linux:** In development.
+- **Linux:** Run `UVR5-UI-installer.sh`.
 
 > [!TIP]
 > I personally recommend running the [updater](https://github.com/Eddycrack864/UVR5-UI#3-update-uvr5-ui-if-you-wantneed-it) before installing to make sure you have the latest changes.
@@ -80,14 +80,14 @@ Run the installation script based on your operating system:
 Start UVR5 UI using:
 
 - **Windows:** Double-click `run-UVR5-UI.bat`.
-- **Linux:** In development.
+- **Linux:** Run `run-UVR5-UI.sh`.
 
 ### 3. Update UVR5 UI (If you want/need it)
 
 Update UVR5 UI using (git needed):
 
 - **Windows:** Double-click `UVR5-UI-updater.bat`.
-- **Linux:** In development.
+- **Linux:** Run `UVR5-UI-updater.sh`.
 
 If you find an error when installing or running the program please consult [this troubleshooting file](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/troubleshooting.md) first, if your error is not described there please create an [issue](https://github.com/Eddycrack864/UVR5-UI/issues)
 
@@ -104,7 +104,7 @@ You can donate to the original UVR5 project here:
 
 ## TO-DO
 * Add more languages
-* Local installation for Linux
+* Add more models
 
 ## Credits
 * python-audio-separator by [beveradb](https://github.com/beveradb).

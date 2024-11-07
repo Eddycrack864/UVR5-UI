@@ -1,6 +1,7 @@
 import os
 import re
 import random
+import platform
 from scipy.io.wavfile import write
 from scipy.io.wavfile import read
 import numpy as np
@@ -151,7 +152,10 @@ os.makedirs("ytdl", exist_ok=True)
 os.makedirs("models", exist_ok=True)
 
 if os.path.isdir("env"):
-    separator_location = ".\\env\\Scripts\\audio-separator.exe"
+    if platform.system() == "Windows":
+        separator_location = ".\\env\\Scripts\\audio-separator.exe"
+    elif platform.system() == "Linux":
+        separator_location = "env/bin/audio-separator"
 else:
     separator_location = "audio-separator"
 

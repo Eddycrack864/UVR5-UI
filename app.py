@@ -428,29 +428,7 @@ def demucs_batch(path_input, path_output, model, output_format, shifts, overlap)
       yield "\n".join(logs)
 
 with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 UVR5 UI 🎵") as app:
-    lang = gr.Dropdown(
-        label = _("Language"),
-        choices = [
-            ("English", "en"),
-            ("Español", "es"),
-            ("Italiano", "it"),
-            ("Português", "pt"),
-            ("Melayu", "ms"),
-            ("Indonesia", "id"),
-            ("Pусский", "ru"),
-            ("Yкраїнський", "uk"),
-            ("ไทย", "th"),
-            ("中文", "zh"),
-            ("日本語", "ja"),
-            ("한국어", "ko"),
-        ], 
-        render = False,
-    )
-    with Translate(
-       "assets/languages/translation.yaml",
-       lang,
-       placeholder_langs = ["en", "es", "it", "pt", "ms", "id", "ru", "uk", "th", "zh", "ja", "ko"],
-    ):
+    with Translate("assets/languages/translation.yaml", placeholder_langs = ["en", "es", "it", "pt", "ms", "id", "ru", "uk", "th", "zh", "ja", "ko"]) as lang:
         gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")
         gr.Markdown(_("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)"))
         gr.Markdown(_("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)"))
@@ -981,9 +959,6 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     inputs = themes_select,
                     outputs = [dummy_output]
                 )
-
-            with gr.TabItem(_("Language")):
-               lang.render()
 
             with gr.TabItem(_("Credits")):
                     gr.Markdown(

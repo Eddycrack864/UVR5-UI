@@ -523,3 +523,91 @@ ko:
   Select the theme you want to use. (Requires restarting the App) : 사용할 테마를 선택하세요. (앱 재시작 필요)
   Credits : 크레딧
   Language : 언어
+
+tr:
+  # Translation by Enes (Discord: asambhavpyaar)
+  If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI): UVR5 UI'ı beğendiyseniz GitHub'daki repoma yıldız verebilirsiniz [GitHub](https://github.com/Eddycrack864/UVR5-UI)
+  Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI): UVR5 UI'ı A100 ile Hugging Face'de deneyin [buradan](https://huggingface.co/spaces/TheStinger/UVR5_UI)
+  Select the model: Modeli seçin
+  Select the output format: Çıktı formatını seçin
+  Overlap: Örtüşme
+  Amount of overlap between prediction windows: Tahmin pencereleri arasındaki örtüşme miktarı
+  Segment size: Segment boyutu
+  Larger consumes more resources, but may give better results: Daha büyük boyut daha fazla kaynak tüketir ancak daha iyi sonuçlar verebilir
+  Input audio: Ses girişi
+  Separation by link: Bağlantı ile ayırma
+  Link: Bağlantı
+  Paste the link here: Bağlantıyı buraya yapıştırın
+  You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md): Birçok siteden video/ses bağlantısını yapıştırabilirsiniz, tam listeyi [buradan](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) kontrol edin
+  Download!: İndir!
+  Batch separation: Toplu ayırma
+  Input path: Giriş yolu
+  Place the input path here: Giriş yolunu buraya yerleştirin
+  Output path: Çıkış yolu
+  Place the output path here: Çıkış yolunu buraya yerleştirin
+  Separate!: Ayır!
+  Output information: Çıktı bilgisi
+  Stem 1: Kanal 1
+  Stem 2: Kanal 2
+  Denoise: Gürültü giderme
+  Enable denoising during separation: Ayırma sırasında gürültü gidermeyi etkinleştir
+  Window size: Pencere boyutu
+  Agression: Saldırganlık
+  Intensity of primary stem extraction: Birincil kanal çıkarma yoğunluğu
+  TTA: TTA
+  Enable Test-Time-Augmentation; slow but improves quality: Test-Zamanı-Artırımını etkinleştir; yavaş ama kaliteyi artırır
+  High end process: Yüksek kalite işleme
+  Mirror the missing frequency range of the output: Eksik frekans aralığını çıktıda yansıt
+  Shifts: Kaymalar
+  Number of predictions with random shifts, higher = slower but better quality: Rastgele kaymalarla tahmin sayısı, yüksek = daha yavaş ama daha iyi kalite
+  Stem 3: Kanal 3
+  Stem 4: Kanal 4
+  Themes: Temalar
+  Theme: Tema
+  Select the theme you want to use. (Requires restarting the App): Kullanmak istediğiniz temayı seçin. (Uygulamayı yeniden başlatmayı gerektirir)
+  Credits: Katkıda Bulunanlar
+  Language: Dil
+
+hi:
+  # Translation by Enes (discord: asambhavpyaar)
+  If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI): यदि आपको UVR5 UI पसंद है तो आप मेरे GitHub रेपो को स्टार कर सकते हैं [GitHub](https://github.com/Eddycrack864/UVR5-UI)
+  Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI): UVR5 UI को A100 के साथ Hugging Face पर [यहाँ](https://huggingface.co/spaces/TheStinger/UVR5_UI) आज़माएं
+  Select the model: मॉडल चुनें
+  Select the output format: आउटपुट फॉर्मेट चुनें
+  Overlap: ओवरलैप
+  Amount of overlap between prediction windows: पूर्वानुमान विंडोज़ के बीच ओवरलैप की मात्रा
+  Segment size: सेगमेंट साइज़
+  Larger consumes more resources, but may give better results: बड़ा साइज़ अधिक संसाधन खपत करता है, लेकिन बेहतर परिणाम दे सकता है
+  Input audio: इनपुट ऑडियो
+  Separation by link: लिंक द्वारा अलगाव
+  Link: लिंक
+  Paste the link here: लिंक यहाँ पेस्ट करें
+  You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md): आप कई साइटों से वीडियो/ऑडियो का लिंक पेस्ट कर सकते हैं, पूरी सूची [यहाँ](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) देखें
+  Download!: डाउनलोड करें!
+  Batch separation: बैच अलगाव
+  Input path: इनपुट पाथ
+  Place the input path here: इनपुट पाथ यहाँ डालें
+  Output path: आउटपुट पाथ
+  Place the output path here: आउटपुट पाथ यहाँ डालें
+  Separate!: अलग करें!
+  Output information: आउटपुट जानकारी
+  Stem 1: स्टेम 1
+  Stem 2: स्टेम 2
+  Denoise: डीनॉइज़
+  Enable denoising during separation: अलगाव के दौरान डीनॉइज़िंग सक्षम करें
+  Window size: विंडो साइज़
+  Agression: आक्रामकता
+  Intensity of primary stem extraction: प्राथमिक स्टेम निष्कर्षण की तीव्रता
+  TTA: टीटीए
+  Enable Test-Time-Augmentation; slow but improves quality: टेस्ट-टाइम-ऑगमेंटेशन सक्षम करें; धीमा लेकिन गुणवत्ता में सुधार करता है
+  High end process: उच्च स्तरीय प्रक्रिया
+  Mirror the missing frequency range of the output: आउटपुट की गायब फ्रीक्वेंसी रेंज को मिरर करें
+  Shifts: शिफ्ट्स
+  Number of predictions with random shifts, higher = slower but better quality: रैंडम शिफ्ट्स के साथ पूर्वानुमानों की संख्या, अधिक = धीमा लेकिन बेहतर गुणवत्ता
+  Stem 3: स्टेम 3
+  Stem 4: स्टेम 4
+  Themes: थीम्स
+  Theme: थीम
+  Select the theme you want to use. (Requires restarting the App): वह थीम चुनें जिसका आप उपयोग करना चाहते हैं। (ऐप को पुनः प्रारंभ करना आवश्यक है)
+  Credits: क्रेडिट्स
+  Language: भाषा

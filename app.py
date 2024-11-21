@@ -428,7 +428,7 @@ def demucs_batch(path_input, path_output, model, output_format, shifts, overlap)
       yield "\n".join(logs)
 
 with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 UVR5 UI 🎵") as app:
-    with Translate("assets/languages/translation.yaml", placeholder_langs = ["en", "es", "it", "pt", "ms", "id", "ru", "uk", "th", "zh", "ja", "ko"]) as lang:
+    with Translate("assets/languages/translation.yaml", placeholder_langs = ["en", "es", "it", "pt", "ms", "id", "ru", "uk", "th", "zh", "ja", "ko", "tr", "hi"]) as lang:
         gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")
         gr.Markdown(_("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)"))
         gr.Markdown(_("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)"))

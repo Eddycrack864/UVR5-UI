@@ -72,7 +72,7 @@ Then continue with the steps described below
 Run the installation script based on your operating system:
 
 - **Windows:** Double-click `UVR5-UI-installer.bat` (DONT RUN AS ADMINISTRATOR 🚧).
-- **Linux:** Run `UVR5-UI-installer.sh` whit `chmod +x UVR5-UI-installer.sh` and `./UVR5-UI-installer.sh`.
+- **Linux:** Run `UVR5-UI-installer.sh` with `chmod +x UVR5-UI-installer.sh` and `./UVR5-UI-installer.sh`.
 
 > [!TIP]
 > I personally recommend running the [updater](https://github.com/Eddycrack864/UVR5-UI#3-update-uvr5-ui-if-you-wantneed-it) before installing to make sure you have the latest changes.

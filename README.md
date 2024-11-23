@@ -50,10 +50,12 @@ You can also try it in Hugging Faces Spaces running on Zero GPU (A100)!
 
 ### Prerequisites:
 - Git. You can download Git [here](https://git-scm.com/downloads).
-- FFmpeg. You can download FFmpeg [here](https://www.ffmpeg.org/download.html) or you can use my [automated installation script](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/ffmpeg-installer.bat) (for Windows). For linux just run `sudo apt-get install ffmpeg`.
+- FFmpeg. You can download FFmpeg [here](https://www.ffmpeg.org/download.html) or you can use my [automated installation script](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/ffmpeg-installer.bat) (for Windows).
+- For linux users, run this command on an terminal: (Debian and Ubuntu users): `sudo apt install ffmpeg git` (For Arch linux users): `sudo pacman -S ffmpeg git` (For Fedora users): `sudo dnf install ffmpeg git`
+(Some distributions already come with Git and FFmpeg preinstalled so this step may be optional.)
 
 > [!IMPORTANT]  
-> FFmpeg has to be added to the PATH.
+> FFmpeg has to be added to the PATH. (only needed on Windows)
 
 ## Getting Started
 
@@ -69,8 +71,8 @@ Then continue with the steps described below
 
 Run the installation script based on your operating system:
 
-- **Windows:** Double-click `UVR5-UI-installer.bat`.
-- **Linux:** Run `UVR5-UI-installer.sh`.
+- **Windows:** Double-click `UVR5-UI-installer.bat` (DONT RUN AS ADMINISTRATOR 🚧).
+- **Linux:** Run `UVR5-UI-installer.sh` whit `chmod +x UVR5-UI-installer.sh` and `./UVR5-UI-installer.sh`.
 
 > [!TIP]
 > I personally recommend running the [updater](https://github.com/Eddycrack864/UVR5-UI#3-update-uvr5-ui-if-you-wantneed-it) before installing to make sure you have the latest changes.
@@ -80,14 +82,14 @@ Run the installation script based on your operating system:
 Start UVR5 UI using:
 
 - **Windows:** Double-click `run-UVR5-UI.bat`.
-- **Linux:** Run `run-UVR5-UI.sh`.
+- **Linux:** Run `run-UVR5-UI.sh` with `chmod +x run-UVR5-UI.sh` and `./run-UVR5-UI.sh`.
 
 ### 3. Update UVR5 UI (If you want/need it)
 
 Update UVR5 UI using (git needed):
 
 - **Windows:** Double-click `UVR5-UI-updater.bat`.
-- **Linux:** Run `UVR5-UI-updater.sh`.
+- **Linux:** Run `UVR5-UI-updater.sh` with `chmod +x UVR5-UI-updater.sh` and `./UVR5-UI-updater.sh`.
 
 If you find an error when installing or running the program please consult [this troubleshooting file](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/troubleshooting.md) first, if your error is not described there please create an [issue](https://github.com/Eddycrack864/UVR5-UI/issues)
 

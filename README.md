@@ -32,6 +32,7 @@ You can also try it in Hugging Faces Spaces running on Zero GPU (A100)!
 * Demucs v4 Models
 * MDX23C Models
 * BS-Roformer ViperX Models
+* Unwa's Mel-Roformer Models
 * VIP Models
 * Separation of an audio/video from all sites supported by [yt_dlp](https://github.com/yt-dlp/yt-dlp). Check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md).
 * Batch Separation
@@ -92,6 +93,13 @@ Update UVR5 UI using (git needed):
 - **Linux:** Run `UVR5-UI-updater.sh` with `chmod +x UVR5-UI-updater.sh` and `./UVR5-UI-updater.sh`.
 
 If you find an error when installing or running the program please consult [this troubleshooting file](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/troubleshooting.md) first, if your error is not described there please create an [issue](https://github.com/Eddycrack864/UVR5-UI/issues)
+
+### 4. Debug (If you want/need it)
+
+Check the status of audio-separator core:
+
+- **Windows:** Double-click `status-checker.bat`.
+- **Linux:** Run `status-checker.sh` with `chmod +x status-checker.sh` and `./status-checker.sh`.
 
 ## Contributions
 If you want to participate and help me with this project feel free to create an [issue](https://github.com/Eddycrack864/UVR5-UI/issues) if something goes wrong or make a [pull request](https://github.com/Eddycrack864/UVR5-UI/pulls) to improve this project.

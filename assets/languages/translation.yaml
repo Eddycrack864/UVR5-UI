@@ -41,6 +41,27 @@ en:
   Select the theme you want to use. (Requires restarting the App) : Select the theme you want to use. (Requires restarting the App)
   Credits : Credits
   Language : Language
+  Advanced settings : Advanced settings
+  Override model default segment size instead of using the model default value : Override model default segment size instead of using the model default value
+  Override segment size : Override segment size
+  Batch size : Batch size
+  Larger consumes more RAM but may process slightly faster : Larger consumes more RAM but may process slightly faster
+  Normalization threshold : Normalization threshold
+  The threshold for audio normalization : The threshold for audio normalization
+  Amplification threshold : Amplification threshold
+  The threshold for audio amplification : The threshold for audio amplification
+  Hop length : Hop length
+  Usually called stride in neural networks; only change if you know what you're doing : Usually called stride in neural networks; only change if you know what you're doing
+  Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality : Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality
+  Identify leftover artifacts within vocal output; may improve separation for some songs : Identify leftover artifacts within vocal output; may improve separation for some songs
+  Post process : Post process
+  Post process threshold : Post process threshold
+  Threshold for post-processing : Threshold for post-processing
+  Size of segments into which the audio is split. Higher = slower but better quality : Size of segments into which the audio is split. Higher = slower but better quality
+  Enable segment-wise processing : Enable segment-wise processing
+  Segment-wise processing : Segment-wise processing
+  Stem 5 : Stem 5
+  Stem 6 : Stem 6
 
 es:
   # Translation by Eddycrack864
@@ -85,6 +106,27 @@ es:
   Select the theme you want to use. (Requires restarting the App) : Selecciona el tema que deseas utilizar. (Requiere reiniciar la aplicación)
   Credits : Créditos
   Language : Idioma
+  Advanced settings : Configuración avanzada
+  Override model default segment size instead of using the model default value : Anular el tamaño del segmento predeterminado del modelo en lugar de usar el valor predeterminado del modelo
+  Override segment size : Anular tamaño del segmento
+  Batch size : Tamaño del lote
+  Larger consumes more RAM but may process slightly faster : Más grande consume más RAM pero puede procesar un poco más rápido
+  Normalization threshold : Umbral de normalización
+  The threshold for audio normalization : El umbral para la normalización del audio
+  Amplification threshold : Umbral de amplificación
+  The threshold for audio amplification : El umbral para la amplificación de audio
+  Hop length : Longitud del salto
+  Usually called stride in neural networks; only change if you know what you're doing : Generalmente llamado paso en redes neuronales; solo cambialo si sabes lo que estás haciendo
+  Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality : Equilibra la calidad y la velocidad. 1024 = más rápido pero de menor calidad, 320 = más lento pero de mejor calidad
+  Identify leftover artifacts within vocal output; may improve separation for some songs : Identifica artefactos sobrantes en la salida vocal; puede mejorar la separación de algunas canciones
+  Post process : Posproceso
+  Post process threshold : Umbral de posproceso
+  Threshold for post-processing : Umbral para el posprocesamiento
+  Size of segments into which the audio is split. Higher = slower but better quality : Tamaño de los segmentos en los que se divide el audio. Más alto = más lento pero de mejor calidad
+  Enable segment-wise processing : Habilitar el procesamiento por segmentos
+  Segment-wise processing : Procesamiento por segmentos
+  Stem 5 : Pista 5
+  Stem 6 : Pista 6
 
 it:
   # Thanks to Nick088 for the Italian translation !
@@ -129,6 +171,27 @@ it:
   Select the theme you want to use. (Requires restarting the App) : Seleziona il tema che desideri utilizzare. (Richiede il riavvio dell'app)
   Credits : Crediti
   Language : Lingua
+  Advanced settings : Impostazioni avanzate
+  Override model default segment size instead of using the model default value : Sovrascrivi la dimensione di segmento predefinita del modello invece di utilizzare il valore predefinito del modello
+  Override segment size : Ignora dimensione segmento
+  Batch size : Dimensione del batch
+  Larger consumes more RAM but may process slightly faster : Più grande consuma più RAM ma potrebbe elaborare leggermente più velocemente
+  Normalization threshold : Soglia di normalizzazione
+  The threshold for audio normalization : La soglia per la normalizzazione dell'audio
+  Amplification threshold : Soglia di amplificazione
+  The threshold for audio amplification : La soglia per l'amplificazione dell'audio
+  Hop length : Lunghezza del salto
+  Usually called stride in neural networks; only change if you know what you're doing : Solitamente chiamato passo nelle reti neurali; cambialo solo se sai cosa stai facendo
+  Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality : Bilancia la qualità e la velocità. 1024 = veloce ma inferiore, 320 = più lento ma migliore qualità
+  Identify leftover artifacts within vocal output; may improve separation for some songs : Identifica gli artefatti residui nell'output vocale; potrebbe migliorare la separazione per alcune canzoni
+  Post process : Post-elaborazione
+  Post process threshold : Soglia di post-elaborazione
+  Threshold for post-processing : Soglia per la post-elaborazione
+  Size of segments into which the audio is split. Higher = slower but better quality : Dimensione dei segmenti in cui l'audio è diviso. Più alto = più lento ma migliore qualità
+  Enable segment-wise processing : Abilita l'elaborazione per segmenti
+  Segment-wise processing : Elaborazione per segmenti
+  Stem 5 : Traccia 5
+  Stem 6 : Traccia 6
 
 pt:
   # Thanks to MrM0dZ for the Portuguese (Brazil) translation !
@@ -173,6 +236,27 @@ pt:
   Select the theme you want to use. (Requires restarting the App) : Selecione o tema que deseja utilizar. (Requer reiniciar o App)
   Credits : Créditos
   Language : Idioma
+  Advanced settings : Opções Avançadas
+  Override model default segment size instead of using the model default value :  Substituir tamanho de segmento padrão ao invés de usar valor padrão do modelo
+  Override segment size : Substituir tamanho de segmento
+  Batch size : Tamanho do lote
+  Larger consumes more RAM but may process slightly faster : Maior consome mais RAM, mas processa mais rapido.
+  Normalization threshold : Limite de normalização
+  The threshold for audio normalization : Limite de normalização para áudio
+  Amplification threshold : Limite para amplicação
+  The threshold for audio amplification : Limite para amplicação para áudio
+  Hop length : Tamanho do pulo
+  Usually called stride in neural networks; only change if you know what you're doing :  Normalmente chamado stride em redes neurais; Somente altere se souber o que está fazendo.
+  Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality :  Balancear qualidade e velocidade. 1024 = Rápido porem lento, 320 = Lento porem melhor qualidade
+  Identify leftover artifacts within vocal output; may improve separation for some songs : Identificar artefatos restantes na saída de vocal; Pode melhorar isolamento para algumas músicas.
+  Post process : Pós-processamento
+  Post process threshold : Limite de pós-processamento
+  Threshold for post-processing : Limite para pós-processamento
+  Size of segments into which the audio is split. Higher = slower but better quality : Tamanho de segmentos para cortar o áudio. Maior = Lento porem melhor qualidade
+  Enable segment-wise processing : Ativar Processamento por segmento
+  Segment-wise processing : Processamento por segmento
+  Stem 5 : Stem 5
+  Stem 6 : Stem 6
 
 ms:
   # Thanks to Ryouko-Yamanda65777 for the Malay translation !
@@ -217,6 +301,27 @@ ms:
   Select the theme you want to use. (Requires restarting the App) : Pilih tema yang anda mahu gunakan. (Perlu mulakan semula Aplikasi)
   Credits : Kredit
   Language : Bahasa
+  Advanced settings: Tetapan lanjutan
+  Override model default segment size instead of using the model default value: Gantikan saiz segmen lalai model daripada menggunakan nilai lalai model
+  Override segment size: Gantikan saiz segmen
+  Batch size: Saiz Batch
+  Larger consumes more RAM but may process slightly faster: Saiz lebih besar menggunakan lebih banyak RAM tetapi mungkin memproses dengan lebih cepat
+  Normalization threshold: Ambang normalisasi
+  The threshold for audio normalization: Ambang untuk normalisasi audio
+  Amplification threshold: Ambang amplifikasi
+  The threshold for audio amplification: Ambang untuk amplifikasi audio
+  Hop length: Panjang Hop
+  Usually called stride in neural networks; only change if you know what you're doing: Biasanya dipanggil langkah dalam rangkaian neural; hanya ubah jika anda tahu apa yang anda lakukan
+  Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality: Imbangkan kualiti dan kelajuan. 1024 = cepat tetapi lebih rendah, 320 = lebih perlahan tetapi kualiti lebih baik
+  Identify leftover artifacts within vocal output; may improve separation for some songs: Kenalpasti artifak sisa dalam keluaran vokal; boleh meningkatkan pemisahan untuk sesetengah lagu
+  Post process: Proses pasca
+  Post process threshold: Ambang proses pasca
+  Threshold for post-processing: Ambang untuk pemprosesan pasca
+  Size of segments into which the audio is split. Higher = slower but better quality: Saiz segmen di mana audio dipecahkan. Lebih besar = lebih perlahan tetapi kualiti lebih baik
+  Enable segment-wise processing: Aktifkan pemprosesan mengikut segmen
+  Segment-wise processing: Pemprosesan mengikut segmen
+  Stem 5: Lapis 5
+  Stem 6: Lapis 6
 
 id:
   # Thanks to Ryouko-Yamanda65777 for the Indonesian translation !
@@ -261,6 +366,27 @@ id:
   Select the theme you want to use. (Requires restarting the App) : Pilih tema yang ingin Anda gunakan. (Membutuhkan restart Aplikasi)  
   Credits : Kredits  
   Language : Bahasa
+  Advanced settings : Pengaturan lanjutan
+  Override model default segment size instead of using the model default value : Ganti ukuran segmen default model alih-alih menggunakan nilai default model
+  Override segment size : Ganti ukuran segmen
+  Batch size : Ukuran batch
+  Larger consumes more RAM but may process slightly faster : Lebih besar mengkonsumsi lebih banyak RAM tetapi mungkin memproses sedikit lebih cepat
+  Normalization threshold : Ambang normalisasi
+  The threshold for audio normalization : Ambang batas untuk normalisasi audio
+  Amplification threshold : Ambang amplifikasi
+  The threshold for audio amplification : Ambang batas untuk amplifikasi audio
+  Hop length : Panjang hop
+  Usually called stride in neural networks; only change if you know what you're doing : Biasanya disebut langkah dalam jaringan saraf; hanya berubah jika anda tahu apa yang Anda lakukan
+  Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality : Seimbangkan kualitas dan kecepatan. 1024 = cepat tapi lebih rendah, 320 = lebih lambat tapi kualitasnya lebih baik
+  Identify leftover artifacts within vocal output; may improve separation for some songs : Identifikasi artefak sisa dalam keluaran vokal; dapat meningkatkan pemisahan untuk beberapa lagu
+  Post process : Proses pasca
+  Post process threshold : Ambang batas pasca proses
+  Threshold for post-processing : Ambang batas untuk pasca-pemrosesan
+  Size of segments into which the audio is split. Higher = slower but better quality : Ukuran segmen tempat audio dibagi. Lebih tinggi = lebih lambat tetapi kualitasnya lebih baik
+  Enable segment-wise processing : Aktifkan pemrosesan berdasarkan segmen
+  Segment-wise processing : Pemrosesan berdasarkan segmen
+  Stem 5 : Stem 5
+  Stem 6 : Stem 6
 
 ru:
   If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : Если вам нравится UVR5 UI, вы можете посмотреть мое репо на [GitHub](https://github.com/Eddycrack864/UVR5-UI)
@@ -304,6 +430,27 @@ ru:
   Select the theme you want to use. (Requires restarting the App) : Выберите тему, которую вы хотите использовать. (Требуется перезапуск приложения)
   Credits : Благодарность
   Language : Язык
+  Advanced settings : Продвинутая настройка
+  Override model default segment size instead of using the model default value : Переопределение размера сегмента по умолчанию вместо использования значения по умолчанию для модели
+  Override segment size : Переопределение размера сегмента
+  Batch size : Размер сегмента
+  Larger consumes more RAM but may process slightly faster : Большие размеры используют больше оперативной памяти, но обработка данных может происходить немного быстрее
+  Normalization threshold : Порог нормализации
+  The threshold for audio normalization : Порог нормализации звука
+  Amplification threshold : Порог усиления
+  The threshold for audio amplification : Порог усиления звука
+  Hop length : Длина шага
+  Usually called stride in neural networks; only change if you know what you're doing : В ИИ обычно называется шагом; меняйте его, только если знаете, что делаете
+  Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality : Балансировка качества и скорости. 1024 = быстро, но качество ниже, 320 = медленнее, но качество выше
+  Identify leftover artifacts within vocal output; may improve separation for some songs : Выявление остаточных артефактов в вокальном потоке; может улучшить разделение для некоторых песен
+  Post process : Постобработка
+  Post process threshold : Порог постобработки
+  Threshold for post-processing : Порог для постобработки
+  Size of segments into which the audio is split. Higher = slower but better quality : Размер сегментов, на которые разбивается аудио. Больше = медленнее, но качественнее
+  Enable segment-wise processing : Включить сегментную обработку
+  Segment-wise processing : Сегментная обработка
+  Stem 5 : Трек 5
+  Stem 6 : Трек 6
 
 uk:
   If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : Якщо вам подобається UVR5 UI, ви можете подивитися моє репо на [GitHub](https://github.com/Eddycrack864/UVR5-UI)
@@ -347,6 +494,27 @@ uk:
   Select the theme you want to use. (Requires restarting the App) : Виберіть тему, яку ви хочете використовувати. (Потрібен перезапуск програми)
   Credits : Вдячність
   Language : Мова
+  Advanced settings : Просунута налаштування
+  Override model default segment size instead of using the model default value : Перевизначення розміру сегмента за замовчуванням замість використання значення за замовчуванням для моделі
+  Override segment size : Перевизначення розміру сегмента
+  Batch size : Розмір сегмента
+  Larger consumes more RAM but may process slightly faster : Великі розміри використовують більше оперативної пам'яті, але обробка даних може відбуватися трохи швидше
+  Normalization threshold : Поріг нормалізації
+  The threshold for audio normalization : Поріг нормалізації звуку
+  Amplification threshold : Поріг підсилення
+  The threshold for audio amplification : Поріг підсилення звуку
+  Hop length : Довжина кроку
+  Usually called stride in neural networks; only change if you know what you're doing : У ШІ зазвичай називається кроком; змінюйте його, тільки якщо знаєте, що робите
+  Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality : Балансування якості та швидкості. 1024 = швидко, але якість нижча, 320 = повільніше, але якість вища
+  Identify leftover artifacts within vocal output; may improve separation for some songs : Виявлення залишкових артефактів у вокальному потоці; може поліпшити поділ для деяких пісень
+  Post process : Постобробка
+  Post process threshold : Поріг постоброблення
+  Threshold for post-processing : Поріг для постоброблення
+  Size of segments into which the audio is split. Higher = slower but better quality : Розмір сегментів, на які розбивається аудіо. Більше = повільніше, але якісніше
+  Enable segment-wise processing : Увімкнути сегментне оброблення
+  Segment-wise processing : Сегментне оброблення
+  Stem 5 : Трек 5
+  Stem 6 : Трек 6
 
 th:
   # Thanks to lucinamari for the Thai translation !
@@ -391,6 +559,27 @@ th:
   Select the theme you want to use. (Requires restarting the App) : เลือกธีมที่คุณต้องการจะใช้ (จำเป็นต้องเริ่มแอปใหม่)
   Credits : เครดิตผู้มีส่วนร่วม
   Language : ภาษา
+  Advanced settings : การตั้งค่าขั้นสูง
+  Override model default segment size instead of using the model default value : แทนที่ขนาดส่วนค่าเริ่มต้นของโมเดลแทนการใช้ค่าเริ่มต้นของโมเดล
+  Override segment size : ขนาดของส่วนที่จะแทนที่
+  Batch size : ขนาดชุดข้อมูล
+  Larger consumes more RAM but may process slightly faster : ส่วนที่ใหญ่ใช้หน่วยความจำมากขึ้น แต่การประมวลผลนั้นค่อนข้างเร็วกว่า
+  Normalization threshold : เกณฑ์การปรับเสียงสมดุล
+  The threshold for audio normalization : เกณฑ์การปรับเสียงสมดุลของเสียง
+  Amplification threshold : เกณฑ์การขยายเสียง
+  The threshold for audio amplification : เกณฑ์การขยายของเสียง
+  Hop length : ความยาวการข้าม
+  Usually called stride in neural networks; only change if you know what you're doing : โดยทั่วไปเรียกว่าก้าวย่างในเครือข่ายประสาท เปลี่ยนแปลงก็ต่อเมื่อคุณรู้ว่าคุณกำลังทำอะไรอยู่
+  Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality : ความสมดุลของคุณภาพและความเร็ว. 1024 = เร็วแต่ให้คุณภาพที่ต่ำกว่า, 320 = ช้าแต่ให้คุณภาพที่ดีกว่า
+  Identify leftover artifacts within vocal output; may improve separation for some songs : ระบุส่วนที่เทียมที่เหลืออยู่ในเอาต์พุตเสียง อาจช่วยให้แยกเพลงบางเพลงไก้ดีขึ้น
+  Post process : หลังกระบวนการ
+  Post process threshold : เกณฑ์หลังกระบวนการ
+  Threshold for post-processing : เกณฑ์สำหรับหลังกระบวนการ
+  Size of segments into which the audio is split. Higher = slower but better quality : ขนาดของส่วนของเสียงใดเสียงหนึ่งที่แยกออก ค่าที่สูงขึ้น = ช้าแต่ให้คุณภาพที่ดีกว่า
+  Enable segment-wise processing : เปิดการประมวลผลแบบเป็นส่วนๆ
+  Segment-wise processing : การประมวลผลแบบเป็นส่วนๆ
+  Stem 5 : สเต็มที่ 5
+  Stem 6 : สเต็มที่ 6
 
 zh:
   # Gemini translation, could be inaccurate
@@ -435,6 +624,27 @@ zh:
   Select the theme you want to use. (Requires restarting the App) : 选择您要使用的主题。（需要重新启动应用程序）
   Credits : 鸣谢
   Language : 语言
+  Advanced settings : 高级设置
+  Override model default segment size instead of using the model default value : 覆盖模型默认段大小，而不是使用模型默认值
+  Override segment size : 覆盖段大小
+  Batch size : 批大小
+  Larger consumes more RAM but may process slightly faster : 更大的批次消耗更多的内存，但可能处理速度稍快
+  Normalization threshold : 归一化阈值
+  The threshold for audio normalization : 音频归一化的阈值
+  Amplification threshold : 放大量阈值
+  The threshold for audio amplification : 音频放大量阈值
+  Hop length : 跳跃长度
+  Usually called stride in neural networks; only change if you know what you're doing : 通常称为神经网络中的步幅；仅在你知道自己在做什么的情况下更改
+  Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality : 平衡质量和速度。1024 = 快但质量较低，320 = 慢但质量更好
+  Identify leftover artifacts within vocal output; may improve separation for some songs : 识别声乐输出中的残留人工制品；可能改善某些歌曲的分离
+  Post process : 后处理
+  Post process threshold : 后处理阈值
+  Threshold for post-processing : 后处理阈值
+  Size of segments into which the audio is split. Higher = slower but better quality : The size of the segments the audio is split into. Higher = slower but better quality
+  Enable segment-wise processing : 启用分段处理
+  Segment-wise processing : 分段处理
+  Stem 5 : 干声 5
+  Stem 6 : 干声 6
 
 ja:
   # Gemini translation, could be inaccurate
@@ -479,6 +689,27 @@ ja:
   Select the theme you want to use. (Requires restarting the App) : 使用したいテーマを選択して。(アプリの再起動が必要です)
   Credits : クレジット
   Language : 言語
+  Advanced settings : 詳細設定
+  Override model default segment size instead of using the model default value : モデルのデフォルト値を使用する代わりに、モデルのデフォルトのセグメント サイズを上書きする
+  Override segment size : セグメントサイズを上書きする
+  Batch size : バッチサイズ
+  Larger consumes more RAM but may process slightly faster : 大きいほどRAMの消費量は多くなりますが、処理速度が若干速くなる
+  Normalization threshold : 正規化しきい値
+  The threshold for audio normalization : オーディオ正規化の閾値
+  Amplification threshold : 増幅閾値
+  The threshold for audio amplification : オーディオ増幅の閾値
+  Hop length : ホップ長
+  Usually called stride in neural networks; only change if you know what you're doing : ニューラル ネットワークでは通常、ストライドと呼ばれます。何をしているのかわかっている場合にのみ変更してください
+  Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality : 品質と速度のバランスをとる。1024 = 高速だが低速、320 = 低速だが高品質
+  Identify leftover artifacts within vocal output; may improve separation for some songs : ボーカル出力内の残留アーティファクトを識別します。一部の曲では分離が改善される可能性がある
+  Post process : ポストプロセス
+  Post process threshold : ポストプロセスしきい値
+  Threshold for post-processing : 後処理のしきい値
+  Size of segments into which the audio is split. Higher = slower but better quality : オーディオを分割するセグメントのサイズ。大きいほど遅くなりますが、品質は向上する
+  Enable segment-wise processing : セグメントごとの処理を有効にする
+  Segment-wise processing : セグメントごとの処理
+  Stem 5 : ステム 5
+  Stem 6 : ステム 6
 
 ko:
   # Thanks to perariroswe for the Korean translation !
@@ -523,9 +754,30 @@ ko:
   Select the theme you want to use. (Requires restarting the App) : 사용할 테마를 선택하세요. (앱 재시작 필요)
   Credits : 크레딧
   Language : 언어
+  Advanced settings : 고급 설정
+  Override model default segment size instead of using the model default value : 모델 기본값 대신 세그먼트 크기를 재정의합니다.
+  Override segment size : 세그먼트 크기 재정의
+  Batch size : 배치 크기
+  Larger consumes more RAM but may process slightly faster : 값이 클수록 RAM 사용량이 증가하지만 처리 속도가 빨라질 수 있습니다.
+  Normalization threshold : 정규화 임계값
+  The threshold for audio normalization : 오디오 정규화의 기준 값입니다.
+  Amplification threshold : 증폭 임계값
+  The threshold for audio amplification : 오디오 증폭의 기준 값입니다.
+  Hop length : 홉 길이
+  Usually called stride in neural networks; only change if you know what you're doing : 신경망에서는 보통 보폭(stride)이라고 하며, 이 설정을 정확히 이해한 경우에만 변경하세요.
+  Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality : 품질과 속도의 균형을 조정합니다. 1024는 빠르지만 품질이 낮고, 320은 느리지만 품질이 더 우수합니다.
+  Identify leftover artifacts within vocal output; may improve separation for some songs : 보컬 출력에 남은 아티팩트를 식별하여 일부 곡에서 분리 품질을 향상시킬 수 있습니다.
+  Post process : 후처리
+  Post process threshold : 후처리 임계값
+  Threshold for post-processing : 후처리의 기준 값입니다.
+  Size of segments into which the audio is split. Higher = slower but better quality : 오디오를 분할하는 세그먼트 크기입니다. 값이 클수록 처리 속도는 느려지지만 품질이 향상됩니다.
+  Enable segment-wise processing : 세그먼트별 처리 활성화
+  Segment-wise processing : 세그먼트별 처리
+  Stem 5 : 스템 5
+  Stem 6 : 스템 6
 
 tr:
-  # Translation by Enes (Discord: asambhavpyaar)
+  # Thanks to Enes (Discord: asambhavpyaar) for the Turkish translation !
   If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI): UVR5 UI'ı beğendiyseniz GitHub'daki repoma yıldız verebilirsiniz [GitHub](https://github.com/Eddycrack864/UVR5-UI)
   Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI): UVR5 UI'ı A100 ile Hugging Face'de deneyin [buradan](https://huggingface.co/spaces/TheStinger/UVR5_UI)
   Select the model: Modeli seçin
@@ -567,9 +819,30 @@ tr:
   Select the theme you want to use. (Requires restarting the App): Kullanmak istediğiniz temayı seçin. (Uygulamayı yeniden başlatmayı gerektirir)
   Credits: Katkıda Bulunanlar
   Language: Dil
+  Advanced settings : Gelişmiş Ayarlar
+  Override model default segment size instead of using the model default value : Modelin varsayılan segment boyutunu kullanmak yerine geçersiz kıl
+  Override segment size : Segment boyutunu geçersiz kıl
+  Batch size : Toplu iş boyutu
+  Larger consumes more RAM but may process slightly faster : Daha büyük boyut daha fazla RAM tüketir ancak biraz daha hızlı işleyebilir
+  Normalization threshold : Normalleştirme eşiği
+  The threshold for audio normalization : Ses normalleştirme eşiği
+  Amplification threshold : Yükseltme eşiği
+  The threshold for audio amplification : Ses yükseltme eşiği
+  Hop length : Atlama uzunluğu
+  Usually called stride in neural networks; only change if you know what you're doing : Genellikle sinir ağlarında adım olarak adlandırılır; yalnızca ne yaptığınızı biliyorsanız değiştirin
+  Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality : Kalite ve hızı dengeleyin. 1024 = hızlı ancak düşük kalite, 320 = yavaş ancak daha iyi kalite
+  Identify leftover artifacts within vocal output; may improve separation for some songs : Vokal çıktısındaki kalan yapaylıkları belirleyin; bazı şarkılar için ayrımı iyileştirebilir
+  Post process : Son işlem
+  Post process threshold : Son işlem eşiği
+  Threshold for post-processing : Son işlem için eşik
+  Size of segments into which the audio is split. Higher = slower but better quality : Sesin bölündüğü segmentlerin boyutu. Daha yüksek = daha yavaş ancak daha iyi kalite
+  Enable segment-wise processing : Segment bazında işlemeyi etkinleştir
+  Segment-wise processing : Segment bazında işleme
+  Stem 5 : Kanal 5
+  Stem 6 : Kanal 6
 
 hi:
-  # Translation by Enes (discord: asambhavpyaar)
+  # Thanks to Enes (Discord: asambhavpyaar) for the Hindi translation !
   If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI): यदि आपको UVR5 UI पसंद है तो आप मेरे GitHub रेपो को स्टार कर सकते हैं [GitHub](https://github.com/Eddycrack864/UVR5-UI)
   Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI): UVR5 UI को A100 के साथ Hugging Face पर [यहाँ](https://huggingface.co/spaces/TheStinger/UVR5_UI) आज़माएं
   Select the model: मॉडल चुनें
@@ -611,3 +884,24 @@ hi:
   Select the theme you want to use. (Requires restarting the App): वह थीम चुनें जिसका आप उपयोग करना चाहते हैं। (ऐप को पुनः प्रारंभ करना आवश्यक है)
   Credits: क्रेडिट्स
   Language: भाषा
+  Advanced settings : उन्नत सेटिंग्स
+  Override model default segment size instead of using the model default value : मॉडल के डिफ़ॉल्ट सेगमेंट आकार का उपयोग करने के बजाय उसे ओवरराइड करें
+  Override segment size : सेगमेंट आकार ओवरराइड करें
+  Batch size : बैच आकार
+  Larger consumes more RAM but may process slightly faster : बड़ा आकार अधिक RAM का उपयोग करता है लेकिन थोड़ी तेज़ी से प्रोसेस कर सकता है
+  Normalization threshold : नॉर्मलाइज़ेशन थ्रेशोल्ड
+  The threshold for audio normalization : ऑडियो नॉर्मलाइज़ेशन के लिए थ्रेशोल्ड
+  Amplification threshold : एम्पलीफिकेशन थ्रेशोल्ड
+  The threshold for audio amplification : ऑडियो एम्पलीफिकेशन के लिए थ्रेशोल्ड
+  Hop length : हॉप लंबाई
+  Usually called stride in neural networks; only change if you know what you're doing : आमतौर पर तंत्रिका नेटवर्क में स्ट्राइड कहा जाता है; केवल तभी बदलें जब आप जानते हों कि आप क्या कर रहे हैं
+  Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality : गुणवत्ता और गति को संतुलित करें। 1024 = तेज़ लेकिन कम, 320 = धीमा लेकिन बेहतर गुणवत्ता
+  Identify leftover artifacts within vocal output; may improve separation for some songs : वोकल आउटपुट के भीतर बचे हुए कलाकृतियों की पहचान करें; कुछ गानों के लिए पृथक्करण में सुधार हो सकता है
+  Post process : पोस्ट प्रोसेस
+  Post process threshold : पोस्ट प्रोसेस थ्रेशोल्ड
+  Threshold for post-processing : पोस्ट-प्रोसेसिंग के लिए थ्रेशोल्ड
+  Size of segments into which the audio is split. Higher = slower but better quality : सेगमेंट का आकार जिसमें ऑडियो विभाजित है। उच्च = धीमा लेकिन बेहतर गुणवत्ता
+  Enable segment-wise processing : सेगमेंट-वार प्रोसेसिंग सक्षम करें
+  Segment-wise processing : सेगमेंट-वार प्रोसेसिंग
+  Stem 5 : स्टेम ५
+  Stem 6 : स्टेम ६

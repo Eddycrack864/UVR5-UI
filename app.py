@@ -1,17 +1,16 @@
 import os
-import re
-import random
-import platform
-from scipy.io.wavfile import write
-from scipy.io.wavfile import read
-import numpy as np
-import gradio as gr
+import torch
+import logging
 import yt_dlp
-import subprocess
-from argparse import ArgumentParser
+import gradio as gr
+import assets.themes.loadThemes as loadThemes
 from gradio_i18n import Translate
 from gradio_i18n import gettext as _
-import assets.themes.loadThemes as loadThemes
+from audio_separator.separator import Separator
+from argparse import ArgumentParser
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+use_autocast = device == "cuda"
 
 if __name__ == "__main__":
    parser = ArgumentParser(description="Separate audio into multiple stems")
@@ -19,24 +18,37 @@ if __name__ == "__main__":
    parser.add_argument('--listen-port', type=int, help="The listening port that the server will use.")
    args = parser.parse_args()
 
+#=========================#
+#     Roformer Models     #
+#=========================#
 roformer_models = {
-        'BS-Roformer-Viperx-1297.ckpt': 'model_bs_roformer_ep_317_sdr_12.9755.ckpt',
-        'BS-Roformer-Viperx-1296.ckpt': 'model_bs_roformer_ep_368_sdr_12.9628.ckpt',
-        'BS-Roformer-Viperx-1053.ckpt': 'model_bs_roformer_ep_937_sdr_10.5309.ckpt',
-        'Mel-Roformer-Viperx-1143.ckpt': 'model_mel_band_roformer_ep_3005_sdr_11.4360.ckpt',
-        'BS-Roformer-De-Reverb-Anvuew': 'deverb_bs_roformer_8_384dim_10depth.ckpt',
-        'Mel-Roformer-Crowd-Aufr33-Viperx': 'mel_band_roformer_crowd_aufr33_viperx_sdr_8.7144.ckpt',
-        'Mel-Roformer-Denoise-Aufr33': 'denoise_mel_band_roformer_aufr33_sdr_27.9959.ckpt',
-        'Mel-Roformer-Denoise-Aufr33-Aggr' : 'denoise_mel_band_roformer_aufr33_aggr_sdr_27.9768.ckpt',
-        'Mel-Roformer-Karaoke-Aufr33-Viperx': 'mel_band_roformer_karaoke_aufr33_viperx_sdr_10.1956.ckpt'
+    'BS-Roformer-Viperx-1297': 'model_bs_roformer_ep_317_sdr_12.9755.ckpt',
+    'BS-Roformer-Viperx-1296': 'model_bs_roformer_ep_368_sdr_12.9628.ckpt',
+    'BS-Roformer-Viperx-1053': 'model_bs_roformer_ep_937_sdr_10.5309.ckpt',
+    'Mel-Roformer-Viperx-1143': 'model_mel_band_roformer_ep_3005_sdr_11.4360.ckpt',
+    'BS-Roformer-De-Reverb': 'deverb_bs_roformer_8_384dim_10depth.ckpt',
+    'Mel-Roformer-Crowd-Aufr33-Viperx': 'mel_band_roformer_crowd_aufr33_viperx_sdr_8.7144.ckpt',
+    'Mel-Roformer-Denoise-Aufr33': 'denoise_mel_band_roformer_aufr33_sdr_27.9959.ckpt',
+    'Mel-Roformer-Denoise-Aufr33-Aggr' : 'denoise_mel_band_roformer_aufr33_aggr_sdr_27.9768.ckpt',
+    'Mel-Roformer-Karaoke-Aufr33-Viperx': 'mel_band_roformer_karaoke_aufr33_viperx_sdr_10.1956.ckpt',
+    'MelBand Roformer Kim | Inst V1 by Unwa' : 'melband_roformer_inst_v1.ckpt',
+    'MelBand Roformer Kim | Inst V2 by Unwa' : 'melband_roformer_inst_v2.ckpt',
+    'MelBand Roformer Kim | InstVoc Duality V1 by Unwa' : 'melband_roformer_instvoc_duality_v1.ckpt',
+    'MelBand Roformer Kim | InstVoc Duality V2 by Unwa' : 'melband_roformer_instvox_duality_v2.ckpt',
 }
 
+#=========================#
+#      MDX23C Models      #
+#=========================#
 mdx23c_models = [
     'MDX23C_D1581.ckpt',
     'MDX23C-8KFFT-InstVoc_HQ.ckpt',
     'MDX23C-8KFFT-InstVoc_HQ_2.ckpt',
 ]
 
+#=========================#
+#     MDXN-NET Models     #
+#=========================#
 mdxnet_models = [
     'UVR-MDX-NET-Inst_full_292.onnx',
     'UVR-MDX-NET_Inst_187_beta.onnx',
@@ -78,6 +90,9 @@ mdxnet_models = [
     'kuielab_b_drums.onnx',
 ]
 
+#========================#
+#     VR-ARCH Models     #
+#========================#
 vrarch_models = [
     '1_HP-UVR.pth',
     '2_HP-UVR.pth',
@@ -108,8 +123,12 @@ vrarch_models = [
     'MGM_MAIN_v4.pth',
 ]
 
+#=======================#
+#     DEMUCS Models     #
+#=======================#
 demucs_models = [
-    'htdemucs_ft.yaml', 
+    'htdemucs_ft.yaml',
+    'htdemucs_6s.yaml',
     'htdemucs.yaml',
     'hdemucs_mmi.yaml',
 ]
@@ -118,322 +137,470 @@ output_format = [
     'wav',
     'flac',
     'mp3',
+    'ogg',
+    'opus',
+    'm4a',
+    'aiff',
+    'ac3'
 ]
 
-mdxnet_overlap_values = [
-    '0.25',
-    '0.5',
-    '0.75',
-    '0.99',
-]
-
-vrarch_window_size_values = [
-    '320',
-    '512',
-    '1024',
-]
-
-demucs_overlap_values = [
-    '0.25',
-    '0.50',
-    '0.75',
-    '0.99',
-]
-
-files_list = []
 found_files = []
 logs = []
-directory = "outputs"
-extensions = (".mp3", ".wav", ".flac")
+out_dir = "./outputs"
+models_dir = "./models"
+extensions = (".wav", ".flac", ".mp3", ".ogg", ".opus", ".m4a", ".aiff", ".ac3")
 
-os.makedirs("outputs", exist_ok=True)
-os.makedirs("inputs", exist_ok=True)
-os.makedirs("ytdl", exist_ok=True)
-os.makedirs("models", exist_ok=True)
+def download_audio(url, output_dir="ytdl"):
 
-if os.path.isdir("env"):
-    if platform.system() == "Windows":
-        separator_location = ".\\env\\Scripts\\audio-separator.exe"
-    elif platform.system() == "Linux":
-        separator_location = "env/bin/audio-separator"
-else:
-    separator_location = "audio-separator"
+    os.makedirs(output_dir, exist_ok=True)
 
-def download_audio(url):
     ydl_opts = {
         'format': 'bestaudio/best',
-        'outtmpl': 'ytdl/%(title)s.%(ext)s',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'wav',
-            'preferredquality': '192',
+            'preferredquality': '32',
         }],
+        'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),
+        'postprocessor_args': [
+            '-acodec', 'pcm_f32le'
+        ],
     }
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info_dict = ydl.extract_info(url, download=True)
-        file_path = ydl.prepare_filename(info_dict).rsplit('.', 1)[0] + '.wav'
-        sample_rate, audio_data = read(file_path)
-        audio_array = np.asarray(audio_data, dtype=np.int16)
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=False)
+            video_title = info['title']
 
-        return sample_rate, audio_array
+            ydl.download([url])
 
-def random_id_generator():
-    random_id = str(random.randint(10000, 99999))
-    return random_id
+            file_path = os.path.join(output_dir, f"{video_title}.wav")
 
-def roformer_separator(roformer_audio, roformer_model, roformer_output_format, roformer_overlap, roformer_segment_size):
-  global files_list
-  files_list.clear()
-  pattern = random_id_generator()
-  write(f'inputs/{pattern}.wav', roformer_audio[0], roformer_audio[1])
-  full_roformer_model = roformer_models[roformer_model]
-  prompt = f"{separator_location} ./inputs/{pattern}.wav --model_filename {full_roformer_model} --output_dir=./outputs --output_format={roformer_output_format} --normalization=0.9 --mdxc_overlap={roformer_overlap} --mdxc_segment_size={roformer_segment_size} --model_file_dir=./models"
-  os.system(prompt)
+            if os.path.exists(file_path):
+                return os.path.abspath(file_path)
+            else:
+                raise Exception("Something went wrong")
 
-  for file in os.listdir(directory):
-    if re.search(pattern, file):
-      files_list.append(os.path.join(directory, file))
+    except Exception as e:
+        raise Exception(f"Error extracting audio with yt-dlp: {str(e)}")
 
-  stem1_file = files_list[0]
-  stem2_file = files_list[1]
+def roformer_separator(audio, model_key, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, progress=gr.Progress(track_tqdm=True)):
+    base_name = os.path.splitext(os.path.basename(audio))[0]
+    roformer_model = roformer_models[model_key]
+    try:
+        separator = Separator(
+            log_level=logging.WARNING,
+            model_file_dir=models_dir,
+            output_dir=out_dir,
+            output_format=out_format,
+            use_autocast=use_autocast,
+            normalization_threshold=norm_thresh,
+            amplification_threshold=amp_thresh,
+            mdxc_params={
+                "segment_size": segment_size,
+                "override_model_segment_size": override_seg_size,
+                "batch_size": batch_size,
+                "overlap": overlap,
+            }
+        )
+    
+        progress(0.2, desc="Loading model...")
+        separator.load_model(model_filename=roformer_model)
 
-  return stem1_file, stem2_file
+        progress(0.7, desc="Separating audio...")
+        separation = separator.separate(audio, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
 
-def mdxc_separator(mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_overlap, mdx23c_denoise):
-  global files_list
-  files_list.clear()
-  pattern = random_id_generator()
-  write(f'inputs/{pattern}.wav', mdx23c_audio[0], mdx23c_audio[1])
-  prompt = f"{separator_location} ./inputs/{pattern}.wav --model_filename {mdx23c_model} --output_dir=./outputs --output_format={mdx23c_output_format} --normalization=0.9 --mdxc_segment_size={mdx23c_segment_size} --mdxc_overlap={mdx23c_overlap} --model_file_dir=./models"
-  
-  if mdx23c_denoise:
-    prompt += " --mdx_enable_denoise"
-  
-  os.system(prompt)
+        stems = [os.path.join(out_dir, file_name) for file_name in separation]
+        return stems[1], stems[0]
+    except Exception as e:
+        raise RuntimeError(f"Roformer separation failed: {e}") from e
+    
+def mdxc_separator(audio, model, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, progress=gr.Progress(track_tqdm=True)):
+    base_name = os.path.splitext(os.path.basename(audio))[0]
+    try:
+        separator = Separator(
+            log_level=logging.WARNING,
+            model_file_dir=models_dir,
+            output_dir=out_dir,
+            output_format=out_format,
+            use_autocast=use_autocast,
+            normalization_threshold=norm_thresh,
+            amplification_threshold=amp_thresh,
+            mdxc_params={
+                "segment_size": segment_size,
+                "override_model_segment_size": override_seg_size,
+                "batch_size": batch_size,
+                "overlap": overlap,
+            }
+        )
 
-  for file in os.listdir(directory):
-    if re.search(pattern, file):
-      files_list.append(os.path.join(directory, file))
+        progress(0.2, desc="Loading model...")
+        separator.load_model(model_filename=model)
 
-  stem1_file = files_list[0]
-  stem2_file = files_list[1]
+        progress(0.7, desc="Separating audio...")
+        separation = separator.separate(audio, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
 
-  return stem1_file, stem2_file
+        stems = [os.path.join(out_dir, file_name) for file_name in separation]
+        return stems[1], stems[0]
+    except Exception as e:
+        raise RuntimeError(f"MDX23C separation failed: {e}") from e
 
-def mdxnet_separator(mdxnet_audio, mdxnet_model, mdxnet_output_format, mdxnet_segment_size, mdxnet_overlap, mdxnet_denoise):
-  global files_list
-  files_list.clear()
-  pattern = random_id_generator()
-  write(f'inputs/{pattern}.wav', mdxnet_audio[0], mdxnet_audio[1])
-  prompt = f"{separator_location} ./inputs/{pattern}.wav --model_filename {mdxnet_model} --output_dir=./outputs --output_format={mdxnet_output_format} --normalization=0.9 --mdx_segment_size={mdxnet_segment_size} --mdx_overlap={mdxnet_overlap} --model_file_dir=./models"
-  
-  if mdxnet_denoise:
-    prompt += " --mdx_enable_denoise"
-  
-  os.system(prompt)
+def mdxnet_separator(audio, model, out_format, hop_length, segment_size, denoise, overlap, batch_size, norm_thresh, amp_thresh, progress=gr.Progress(track_tqdm=True)):
+    base_name = os.path.splitext(os.path.basename(audio))[0]
+    try:
+        separator = Separator(
+            log_level=logging.WARNING,
+            model_file_dir=models_dir,
+            output_dir=out_dir,
+            output_format=out_format,
+            use_autocast=use_autocast,
+            normalization_threshold=norm_thresh,
+            amplification_threshold=amp_thresh,
+            mdx_params={
+                "hop_length": hop_length,
+                "segment_size": segment_size,
+                "overlap": overlap,
+                "batch_size": batch_size,
+                "enable_denoise": denoise,
+            }
+        )
 
-  for file in os.listdir(directory):
-    if re.search(pattern, file):
-      files_list.append(os.path.join(directory, file))
+        progress(0.2, desc="Loading model...")
+        separator.load_model(model_filename=model)
 
-  stem1_file = files_list[0]
-  stem2_file = files_list[1]
+        progress(0.7, desc="Separating audio...")
+        separation = separator.separate(audio, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
 
-  return stem1_file, stem2_file
+        stems = [os.path.join(out_dir, file_name) for file_name in separation]
+        return stems[0], stems[1]
+    except Exception as e:
+        raise RuntimeError(f"MDX-NET separation failed: {e}") from e
 
-def vrarch_separator(vrarch_audio, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_high_end_process):
-  global files_list
-  files_list.clear()
-  pattern = random_id_generator()
-  write(f'inputs/{pattern}.wav', vrarch_audio[0], vrarch_audio[1])
-  prompt = f"{separator_location} ./inputs/{pattern}.wav --model_filename {vrarch_model} --output_dir=./outputs --output_format={vrarch_output_format} --normalization=0.9 --vr_window_size={vrarch_window_size} --vr_aggression={vrarch_agression} --model_file_dir=./models"
-  
-  if vrarch_tta:
-    prompt += " --vr_enable_tta"
-  if vrarch_high_end_process:
-    prompt += " --vr_high_end_process"
+def vrarch_separator(audio, model, out_format, window_size, aggression, tta, post_process, post_process_threshold, high_end_process, batch_size, norm_thresh, amp_thresh, progress=gr.Progress(track_tqdm=True)):
+    base_name = os.path.splitext(os.path.basename(audio))[0]
+    try:
+        separator = Separator(
+            log_level=logging.WARNING,
+            model_file_dir=models_dir,
+            output_dir=out_dir,
+            output_format=out_format,
+            use_autocast=use_autocast,
+            normalization_threshold=norm_thresh,
+            amplification_threshold=amp_thresh,
+            vr_params={
+                "batch_size": batch_size,
+                "window_size": window_size,
+                "aggression": aggression,
+                "enable_tta": tta,
+                "enable_post_process": post_process,
+                "post_process_threshold": post_process_threshold,
+                "high_end_process": high_end_process,
+            }
+        )
 
-  os.system(prompt)
+        progress(0.2, desc="Loading model...")
+        separator.load_model(model_filename=model)
 
-  for file in os.listdir(directory):
-    if re.search(pattern, file):
-      files_list.append(os.path.join(directory, file))
+        progress(0.7, desc="Separating audio...")
+        separation = separator.separate(audio, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
 
-  stem1_file = files_list[0]
-  stem2_file = files_list[1]
+        stems = [os.path.join(out_dir, file_name) for file_name in separation]
+        return stems[0], stems[1]
+    except Exception as e:
+        raise RuntimeError(f"VR ARCH separation failed: {e}") from e
 
-  return stem1_file, stem2_file
+def demucs_separator(audio, model, out_format, shifts, segment_size, segments_enabled, overlap, batch_size, norm_thresh, amp_thresh, progress=gr.Progress(track_tqdm=True)):
+    base_name = os.path.splitext(os.path.basename(audio))[0]
+    try:
+        separator = Separator(
+            log_level=logging.WARNING,
+            model_file_dir=models_dir,
+            output_dir=out_dir,
+            output_format=out_format,
+            use_autocast=use_autocast,
+            normalization_threshold=norm_thresh,
+            amplification_threshold=amp_thresh,
+            demucs_params={
+                "batch_size": batch_size,
+                "segment_size": segment_size,
+                "shifts": shifts,
+                "overlap": overlap,
+                "segments_enabled": segments_enabled,
+            }
+        )
 
-def demucs_separator(demucs_audio, demucs_model, demucs_output_format, demucs_shifts, demucs_overlap):
-  global files_list
-  files_list.clear()
-  pattern = random_id_generator()
-  write(f'inputs/{pattern}.wav', demucs_audio[0], demucs_audio[1])
-  prompt = f"{separator_location} ./inputs/{pattern}.wav --model_filename {demucs_model} --output_dir=./outputs --output_format={demucs_output_format} --normalization=0.9 --demucs_shifts={demucs_shifts} --demucs_overlap={demucs_overlap} --model_file_dir=./models"
+        progress(0.2, desc="Loading model...")
+        separator.load_model(model_filename=model)
 
-  os.system(prompt)
+        progress(0.7, desc="Separating audio...")
+        separation = separator.separate(audio)
 
-  for file in os.listdir(directory):
-    if re.search(pattern, file):
-      files_list.append(os.path.join(directory, file))
+        stems = [os.path.join(out_dir, file_name) for file_name in separation]
+        
+        if model == "htdemucs_6s.yaml":
+            return stems[0], stems[1], stems[2], stems[3], stems[4], stems[5]
+        else:
+            return stems[0], stems[1], stems[2], stems[3], None, None
+    except Exception as e:
+        raise RuntimeError(f"Demucs separation failed: {e}") from e
 
-  stem1_file = files_list[0]
-  stem2_file = files_list[1]
-  stem3_file = files_list[2]
-  stem4_file = files_list[3]
+def update_stems(model):
+    if model == "htdemucs_6s.yaml":
+        return gr.update(visible=True)
+    else:
+        return gr.update(visible=False)
 
-  return stem1_file, stem2_file, stem3_file, stem4_file
+def roformer_batch(path_input, path_output, model_key, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh):
+    found_files.clear()
+    logs.clear()
+    roformer_model = roformer_models[model_key]
 
-def roformer_batch(path_input, path_output, model, output_format, overlap, segment_size):
-  found_files.clear()
-  logs.clear()
+    for audio_files in os.listdir(path_input):
+        if audio_files.endswith(extensions):
+            found_files.append(audio_files)
+    total_files = len(found_files)
 
-  full_roformer_model = roformer_models[model]
+    if total_files == 0:
+        logs.append("No valid audio files.")
+        yield "\n".join(logs)
+    else:
+        logs.append(f"{total_files} audio files found")
+        found_files.sort()
 
-  for audio_files in os.listdir(path_input):
-    if audio_files.endswith(extensions):
-      found_files.append(audio_files)
-  total_files = len(found_files)
+        for audio_files in found_files:
+            file_path = os.path.join(path_input, audio_files)
+            base_name = os.path.splitext(os.path.basename(file_path))[0]
+            try:
+                separator = Separator(
+                    log_level=logging.WARNING,
+                    model_file_dir=models_dir,
+                    output_dir=path_output,
+                    output_format=out_format,
+                    use_autocast=use_autocast,
+                    normalization_threshold=norm_thresh,
+                    amplification_threshold=amp_thresh,
+                    mdxc_params={
+                        "segment_size": segment_size,
+                        "override_model_segment_size": override_seg_size,
+                        "batch_size": batch_size,
+                        "overlap": overlap,
+                    }
+                )
 
-  if total_files == 0:
-    logs.append("No valid audio files.")
-    yield "\n".join(logs)
-  else:
-    logs.append(f"{total_files} audio files found")
-    found_files.sort()
+                logs.append("Loading model...")
+                yield "\n".join(logs)
+                separator.load_model(model_filename=roformer_model)
 
-    for audio_files in found_files:
-      file_path = os.path.join(path_input, audio_files)
-      prompt = [separator_location, file_path, "-m", f"{full_roformer_model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--mdxc_overlap={overlap}", f"--mdxc_segment_size={segment_size}", "--model_file_dir=./models"]
-      logs.append(f"Processing file: {audio_files}")
-      yield "\n".join(logs)
-      subprocess.run(prompt)
-      logs.append(f"File: {audio_files} processed!")
-      yield "\n".join(logs)
+                logs.append(f"Separating file: {audio_files}")
+                yield "\n".join(logs)
+                separator.separate(file_path, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
+                logs.append(f"File: {audio_files} separated!")
+                yield "\n".join(logs)
+            except Exception as e:
+                raise RuntimeError(f"Roformer batch separation failed: {e}") from e
 
-def mdx23c_batch(path_input, path_output, model, output_format, overlap, segment_size, denoise):
-  found_files.clear()
-  logs.clear()
+def mdx23c_batch(path_input, path_output, model, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh):
+    found_files.clear()
+    logs.clear()
 
-  for audio_files in os.listdir(path_input):
-    if audio_files.endswith(extensions):
-      found_files.append(audio_files)
-  total_files = len(found_files)
+    for audio_files in os.listdir(path_input):
+        if audio_files.endswith(extensions):
+            found_files.append(audio_files)
+    total_files = len(found_files)
 
-  if total_files == 0:
-    logs.append("No valid audio files.")
-    yield "\n".join(logs)
-  else:
-    logs.append(f"{total_files} audio files found")
-    found_files.sort()
+    if total_files == 0:
+        logs.append("No valid audio files.")
+        yield "\n".join(logs)
+    else:
+        logs.append(f"{total_files} audio files found")
+        found_files.sort()
 
-    for audio_files in found_files:
-      file_path = os.path.join(path_input, audio_files)
-      prompt = [separator_location, file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--mdxc_overlap={overlap}", f"--mdxc_segment_size={segment_size}", "--model_file_dir=./models"]
+        for audio_files in found_files:
+            file_path = os.path.join(path_input, audio_files)
+            base_name = os.path.splitext(os.path.basename(file_path))[0]
+            try:
+                separator = Separator(
+                    log_level=logging.WARNING,
+                    model_file_dir=models_dir,
+                    output_dir=path_output,
+                    output_format=out_format,
+                    use_autocast=use_autocast,
+                    normalization_threshold=norm_thresh,
+                    amplification_threshold=amp_thresh,
+                    mdxc_params={
+                        "segment_size": segment_size,
+                        "override_model_segment_size": override_seg_size,
+                        "batch_size": batch_size,
+                        "overlap": overlap,
+                    }
+                )
 
-      if denoise:
-        prompt.append("--mdx_enable_denoise")
+                logs.append("Loading model...")
+                yield "\n".join(logs)
+                separator.load_model(model_filename=model)
 
-      logs.append(f"Processing file: {audio_files}")
-      yield "\n".join(logs)
-      subprocess.run(prompt)
-      logs.append(f"File: {audio_files} processed!")
-      yield "\n".join(logs)
+                logs.append(f"Separating file: {audio_files}")
+                yield "\n".join(logs)
+                separator.separate(file_path, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
+                logs.append(f"File: {audio_files} separated!")
+                yield "\n".join(logs)
+            except Exception as e:
+                raise RuntimeError(f"Roformer batch separation failed: {e}") from e
 
-def mdxnet_batch(path_input, path_output, model, output_format, overlap, segment_size, denoise):
-  found_files.clear()
-  logs.clear()
+def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment_size, denoise, overlap, batch_size, norm_thresh, amp_thresh):
+    found_files.clear()
+    logs.clear()
 
-  for audio_files in os.listdir(path_input):
-    if audio_files.endswith(extensions):
-      found_files.append(audio_files)
-  total_files = len(found_files)
+    for audio_files in os.listdir(path_input):
+        if audio_files.endswith(extensions):
+            found_files.append(audio_files)
+    total_files = len(found_files)
 
-  if total_files == 0:
-    logs.append("No valid audio files.")
-    yield "\n".join(logs)
-  else:
-    logs.append(f"{total_files} audio files found")
-    found_files.sort()
+    if total_files == 0:
+        logs.append("No valid audio files.")
+        yield "\n".join(logs)
+    else:
+        logs.append(f"{total_files} audio files found")
+        found_files.sort()
 
-    for audio_files in found_files:
-      file_path = os.path.join(path_input, audio_files)
-      prompt = [separator_location, file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--mdx_overlap={overlap}", f"--mdx_segment_size={segment_size}", "--model_file_dir=./models"]
+        for audio_files in found_files:
+            file_path = os.path.join(path_input, audio_files)
+            base_name = os.path.splitext(os.path.basename(file_path))[0]
+            try:
+                separator = Separator(
+                    log_level=logging.WARNING,
+                    model_file_dir=models_dir,
+                    output_dir=path_output,
+                    output_format=out_format,
+                    use_autocast=use_autocast,
+                    normalization_threshold=norm_thresh,
+                    amplification_threshold=amp_thresh,
+                    mdx_params={
+                        "hop_length": hop_length,
+                        "segment_size": segment_size,
+                        "overlap": overlap,
+                        "batch_size": batch_size,
+                        "enable_denoise": denoise,
+                    }
+                )
 
-      if denoise:
-        prompt.append("--mdx_enable_denoise")
+                logs.append("Loading model...")
+                yield "\n".join(logs)
+                separator.load_model(model_filename=model)
 
-      logs.append(f"Processing file: {audio_files}")
-      yield "\n".join(logs)
-      subprocess.run(prompt)
-      logs.append(f"File: {audio_files} processed!")
-      yield "\n".join(logs)
+                logs.append(f"Separating file: {audio_files}")
+                yield "\n".join(logs)
+                separator.separate(file_path, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
+                logs.append(f"File: {audio_files} separated!")
+                yield "\n".join(logs)
+            except Exception as e:
+                raise RuntimeError(f"Roformer batch separation failed: {e}") from e
 
-def vrarch_batch(path_input, path_output, model, output_format, window_size, agression, tta, high_end_process):
-  found_files.clear()
-  logs.clear()
+def vrarch_batch(path_input, path_output, model, out_format, window_size, aggression, tta, post_process, post_process_threshold, high_end_process, batch_size, norm_thresh, amp_thresh):
+    found_files.clear()
+    logs.clear()
 
-  for audio_files in os.listdir(path_input):
-    if audio_files.endswith(extensions):
-      found_files.append(audio_files)
-  total_files = len(found_files)
+    for audio_files in os.listdir(path_input):
+        if audio_files.endswith(extensions):
+            found_files.append(audio_files)
+    total_files = len(found_files)
 
-  if total_files == 0:
-    logs.append("No valid audio files.")
-    yield "\n".join(logs)
-  else:
-    logs.append(f"{total_files} audio files found")
-    found_files.sort()
+    if total_files == 0:
+        logs.append("No valid audio files.")
+        yield "\n".join(logs)
+    else:
+        logs.append(f"{total_files} audio files found")
+        found_files.sort()
 
-    for audio_files in found_files:
-      file_path = os.path.join(path_input, audio_files)
-      prompt = [separator_location, file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--vr_window_size={window_size}", f"--vr_aggression={agression}", "--model_file_dir=./models"]
+        for audio_files in found_files:
+            file_path = os.path.join(path_input, audio_files)
+            base_name = os.path.splitext(os.path.basename(file_path))[0]
+            try:
+                separator = Separator(
+                    log_level=logging.WARNING,
+                    model_file_dir=models_dir,
+                    output_dir=path_output,
+                    output_format=out_format,
+                    use_autocast=use_autocast,
+                    normalization_threshold=norm_thresh,
+                    amplification_threshold=amp_thresh,
+                    vr_params={
+                        "batch_size": batch_size,
+                        "window_size": window_size,
+                        "aggression": aggression,
+                        "enable_tta": tta,
+                        "enable_post_process": post_process,
+                        "post_process_threshold": post_process_threshold,
+                        "high_end_process": high_end_process,
+                    }
+                )
 
-      if tta:
-        prompt.append("--vr_enable_tta")
-      if high_end_process:
-         prompt.append("--vr_high_end_process")
+                logs.append("Loading model...")
+                yield "\n".join(logs)
+                separator.load_model(model_filename=model)
 
-      logs.append(f"Processing file: {audio_files}")
-      yield "\n".join(logs)
-      subprocess.run(prompt)
-      logs.append(f"File: {audio_files} processed!")
-      yield "\n".join(logs)
+                logs.append(f"Separating file: {audio_files}")
+                yield "\n".join(logs)
+                separator.separate(file_path, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
+                logs.append(f"File: {audio_files} separated!")
+                yield "\n".join(logs)
+            except Exception as e:
+                raise RuntimeError(f"Roformer batch separation failed: {e}") from e
 
-def demucs_batch(path_input, path_output, model, output_format, shifts, overlap):
-  found_files.clear()
-  logs.clear()
+def demucs_batch(path_input, path_output, model, out_format, shifts, segment_size, segments_enabled, overlap, batch_size, norm_thresh, amp_thresh):
+    found_files.clear()
+    logs.clear()
 
-  for audio_files in os.listdir(path_input):
-    if audio_files.endswith(extensions):
-      found_files.append(audio_files)
-  total_files = len(found_files)
+    for audio_files in os.listdir(path_input):
+        if audio_files.endswith(extensions):
+            found_files.append(audio_files)
+    total_files = len(found_files)
 
-  if total_files == 0:
-    logs.append("No valid audio files.")
-    yield "\n".join(logs)
-  else:
-    logs.append(f"{total_files} audio files found")
-    found_files.sort()
+    if total_files == 0:
+        logs.append("No valid audio files.")
+        yield "\n".join(logs)
+    else:
+        logs.append(f"{total_files} audio files found")
+        found_files.sort()
 
-    for audio_files in found_files:
-      file_path = os.path.join(path_input, audio_files)
-      prompt = [separator_location, file_path, "-m", f"{model}", f"--output_dir={path_output}", f"--output_format={output_format}", "--normalization=0.9", f"--demucs_shifts={shifts}", f"--demucs_overlap={overlap}", "--model_file_dir=./models"]
+        for audio_files in found_files:
+            file_path = os.path.join(path_input, audio_files)
+            try:
+                separator = Separator(
+                    log_level=logging.WARNING,
+                    model_file_dir=models_dir,
+                    output_dir=path_output,
+                    output_format=out_format,
+                    use_autocast=use_autocast,
+                    normalization_threshold=norm_thresh,
+                    amplification_threshold=amp_thresh,
+                    demucs_params={
+                        "batch_size": batch_size,
+                        "segment_size": segment_size,
+                        "shifts": shifts,
+                        "overlap": overlap,
+                        "segments_enabled": segments_enabled,
+                    }
+                )
 
-      logs.append(f"Processing file: {audio_files}")
-      yield "\n".join(logs)
-      subprocess.run(prompt)
-      logs.append(f"File: {audio_files} processed!")
-      yield "\n".join(logs)
+                logs.append("Loading model...")
+                yield "\n".join(logs)
+                separator.load_model(model_filename=model)
 
+                logs.append(f"Separating file: {audio_files}")
+                yield "\n".join(logs)
+                separator.separate(file_path)
+                logs.append(f"File: {audio_files} separated!")
+                yield "\n".join(logs)
+            except Exception as e:
+                raise RuntimeError(f"Roformer batch separation failed: {e}") from e
+            
 with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 UVR5 UI 🎵") as app:
     with Translate("assets/languages/translation.yaml", placeholder_langs = ["en", "es", "it", "pt", "ms", "id", "ru", "uk", "th", "zh", "ja", "ko", "tr", "hi"]) as lang:
         gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")
         gr.Markdown(_("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)"))
         gr.Markdown(_("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)"))
         with gr.Tabs():
-
             with gr.TabItem("BS/Mel Roformer"):
                 with gr.Row():
                     roformer_model = gr.Dropdown(
@@ -448,45 +615,82 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         value = lambda : None,
                         interactive = True
                     )
-                with gr.Row():
-                    roformer_overlap = gr.Slider(
-                        minimum = 2,
-                        maximum = 4,
-                        step = 1,
-                        label = _("Overlap"),
-                        info = _("Amount of overlap between prediction windows"),
-                        value = 4,
-                        interactive = True
-                    )
-                    roformer_segment_size = gr.Slider(
-                        minimum = 32,
-                        maximum = 4000,
-                        step = 32,
-                        label = _("Segment size"),
-                        info = _("Larger consumes more resources, but may give better results"),
-                        value = 256,
-                        interactive = True
-                    )
+                with gr.Accordion(_("Advanced settings"), open = False):
+                    with gr.Group():
+                        with gr.Row():
+                            roformer_segment_size = gr.Slider(
+                                label = _("Segment size"),
+                                info = _("Larger consumes more resources, but may give better results"),
+                                minimum = 32,
+                                maximum = 4000,
+                                step = 32,
+                                value = 256,
+                                interactive = True
+                            )
+                            roformer_override_segment_size = gr.Checkbox(
+                                label = _("Override segment size"),
+                                info = _("Override model default segment size instead of using the model default value"),
+                                value = False,
+                                interactive = True
+                            )
+                        with gr.Row():
+                            roformer_overlap = gr.Slider(
+                                label = _("Overlap"),
+                                info = _("Amount of overlap between prediction windows"),
+                                minimum = 2,
+                                maximum = 10,
+                                step = 1,
+                                value = 8,
+                                interactive = True
+                            )
+                            roformer_batch_size = gr.Slider(
+                                label = _("Batch size"),
+                                info = _("Larger consumes more RAM but may process slightly faster"),
+                                minimum = 1,
+                                maximum = 16,
+                                step = 1,
+                                value = 1,
+                                interactive = True
+                            )
+                        with gr.Row():
+                            roformer_normalization_threshold = gr.Slider(
+                                label = _("Normalization threshold"),
+                                info = _("The threshold for audio normalization"),
+                                minimum = 0.1,
+                                maximum = 1,
+                                step = 0.1,
+                                value = 0.1,
+                                interactive = True
+                            )
+                            roformer_amplification_threshold = gr.Slider(
+                                label = _("Amplification threshold"),
+                                info = _("The threshold for audio amplification"),
+                                minimum = 0.1,
+                                maximum = 1,
+                                step = 0.1,
+                                value = 0.1,
+                                interactive = True
+                            )
                 with gr.Row():
                     roformer_audio = gr.Audio(
                         label = _("Input audio"),
-                        type = "numpy",
+                        type = "filepath",
                         interactive = True
                     )
                 with gr.Accordion(_("Separation by link"), open = False):
                     with gr.Row():
                         roformer_link = gr.Textbox(
-                        label = _("Link"),
-                        placeholder = _("Paste the link here"),
-                        interactive = True
-                    )
+                            label = _("Link"),
+                            placeholder = _("Paste the link here"),
+                            interactive = True
+                        )
                     with gr.Row():
                         gr.Markdown(_("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)"))
                     with gr.Row():
                         roformer_download_button = gr.Button(
-                        _("Download!"),
-                        variant = "primary"
-                    )
+                            _("Download!"),
+                            variant = "primary"
+                        )
 
                 roformer_download_button.click(download_audio, [roformer_link], [roformer_audio])
 
@@ -510,7 +714,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             interactive = False
                         )
 
-                roformer_bath_button.click(roformer_batch, [roformer_input_path, roformer_output_path, roformer_model, roformer_output_format, roformer_overlap, roformer_segment_size], [roformer_info])
+                roformer_bath_button.click(roformer_batch, [roformer_input_path, roformer_output_path, roformer_model, roformer_output_format, roformer_segment_size, roformer_override_segment_size, roformer_overlap, roformer_batch_size, roformer_normalization_threshold, roformer_amplification_threshold], [roformer_info])
 
                 with gr.Row():
                     roformer_button = gr.Button(_("Separate!"), variant = "primary")
@@ -528,8 +732,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         type = "filepath"
                     )
 
-                roformer_button.click(roformer_separator, [roformer_audio, roformer_model, roformer_output_format, roformer_overlap, roformer_segment_size], [roformer_stem1, roformer_stem2])
-            
+                roformer_button.click(roformer_separator, [roformer_audio, roformer_model, roformer_output_format, roformer_segment_size, roformer_override_segment_size, roformer_overlap, roformer_batch_size, roformer_normalization_threshold, roformer_amplification_threshold], [roformer_stem1, roformer_stem2])
+
             with gr.TabItem("MDX23C"):
                 with gr.Row():
                     mdx23c_model = gr.Dropdown(
@@ -544,51 +748,82 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         value = lambda : None,
                         interactive = True
                     )
+                with gr.Accordion(_("Advanced settings"), open = False):
+                    with gr.Group():
+                        with gr.Row():
+                            mdx23c_segment_size = gr.Slider(
+                                minimum = 32,
+                                maximum = 4000,
+                                step = 32,
+                                label = _("Segment size"),
+                                info = _("Larger consumes more resources, but may give better results"),
+                                value = 256,
+                                interactive = True
+                            )
+                            mdx23c_override_segment_size = gr.Checkbox(
+                                label = _("Override segment size"),
+                                info = _("Override model default segment size instead of using the model default value"),
+                                value = False,
+                                interactive = True
+                            )
+                        with gr.Row():
+                            mdx23c_overlap = gr.Slider(
+                                minimum = 2,
+                                maximum = 50,
+                                step = 1,
+                                label = _("Overlap"),
+                                info = _("Amount of overlap between prediction windows"),
+                                value = 8,
+                                interactive = True
+                            )
+                            mdx23c_batch_size = gr.Slider(
+                                label = _("Batch size"),
+                                info = _("Larger consumes more RAM but may process slightly faster"),
+                                minimum = 1,
+                                maximum = 16,
+                                step = 1,
+                                value = 1,
+                                interactive = True
+                            )
+                        with gr.Row():
+                            mdx23c_normalization_threshold = gr.Slider(
+                                label = _("Normalization threshold"),
+                                info = _("The threshold for audio normalization"),
+                                minimum = 0.1,
+                                maximum = 1,
+                                step = 0.1,
+                                value = 0.1,
+                                interactive = True
+                            )
+                            mdx23c_amplification_threshold = gr.Slider(
+                                label = _("Amplification threshold"),
+                                info = _("The threshold for audio amplification"),
+                                minimum = 0.1,
+                                maximum = 1,
+                                step = 0.1,
+                                value = 0.1,
+                                interactive = True
+                            )
                 with gr.Row():
-                    mdx23c_segment_size = gr.Slider(
-                        minimum = 32,
-                        maximum = 4000,
-                        step = 32,
-                        label = _("Segment size"),
-                        info = _("Larger consumes more resources, but may give better results"),
-                        value = 256,
-                        interactive = True
-                    )
-                    mdx23c_overlap = gr.Slider(
-                        minimum = 2,
-                        maximum = 50,
-                        step = 1,
-                        label = _("Overlap"),
-                        info = _("Amount of overlap between prediction windows"),
-                        value = 8,
-                        interactive = True
-                    )
-                    mdx23c_denoise = gr.Checkbox(
-                        label = _("Denoise"),
-                        info = _("Enable denoising during separation"),
-                        value = False,
-                        interactive = True
-                    )
-                with gr.Row():
-                    mdx23c_audio = gr.Audio(
+                     mdx23c_audio = gr.Audio(
                         label = _("Input audio"),
-                        type = "numpy",
+                        type = "filepath",
                         interactive = True
                     )
                 with gr.Accordion(_("Separation by link"), open = False):
                     with gr.Row():
                         mdx23c_link = gr.Textbox(
-                        label = _("Link"),
-                        placeholder = _("Paste the link here"),
-                        interactive = True
-                    )
+                            label = _("Link"),
+                            placeholder = _("Paste the link here"),
+                            interactive = True
+                        )
                     with gr.Row():
                         gr.Markdown(_("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)"))
                     with gr.Row():
                         mdx23c_download_button = gr.Button(
-                        _("Download!"),
-                        variant = "primary"
-                    )
+                            _("Download!"),
+                            variant = "primary"
+                        )
 
                 mdx23c_download_button.click(download_audio, [mdx23c_link], [mdx23c_audio])
 
@@ -612,7 +847,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             interactive = False
                         )
 
-                mdx23c_bath_button.click(mdx23c_batch, [mdx23c_input_path, mdx23c_output_path, mdx23c_model, mdx23c_output_format, mdx23c_overlap, mdx23c_segment_size, mdx23c_denoise], [mdx23c_info])
+                mdx23c_bath_button.click(mdx23c_batch, [mdx23c_input_path, mdx23c_output_path, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_override_segment_size, mdx23c_overlap, mdx23c_batch_size, mdx23c_normalization_threshold, mdx23c_amplification_threshold], [mdx23c_info])
 
                 with gr.Row():
                     mdx23c_button = gr.Button(_("Separate!"), variant = "primary")
@@ -630,8 +865,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         type = "filepath"
                     )
 
-                mdx23c_button.click(mdxc_separator, [mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_overlap, mdx23c_denoise], [mdx23c_stem1, mdx23c_stem2])
-            
+                mdx23c_button.click(mdxc_separator, [mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_override_segment_size, mdx23c_overlap, mdx23c_batch_size, mdx23c_normalization_threshold, mdx23c_amplification_threshold], [mdx23c_stem1, mdx23c_stem2])
+                
             with gr.TabItem("MDX-NET"):
                 with gr.Row():
                     mdxnet_model = gr.Dropdown(
@@ -646,49 +881,92 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         value = lambda : None,
                         interactive = True
                     )
-                with gr.Row():
-                    mdxnet_segment_size = gr.Slider(
-                        minimum = 32,
-                        maximum = 4000,
-                        step = 32,
-                        label = _("Segment size"),
-                        info = _("Larger consumes more resources, but may give better results"),
-                        value = 256,
-                        interactive = True
-                    )
-                    mdxnet_overlap = gr.Dropdown(
-                            label = _("Overlap"),
-                            choices = mdxnet_overlap_values,
-                            value = mdxnet_overlap_values[0],
-                            interactive = True
-                    )
-                    mdxnet_denoise = gr.Checkbox(
-                        label = _("Denoise"),
-                        info = _("Enable denoising during separation"),
-                        value = True,
-                        interactive = True
-                    )
+                with gr.Accordion(_("Advanced settings"), open = False):
+                    with gr.Group():
+                        with gr.Row():
+                            mdxnet_hop_length = gr.Slider(
+                                label = _("Hop length"),
+                                info = _("Usually called stride in neural networks; only change if you know what you're doing"),
+                                minimum = 32,
+                                maximum = 2048,
+                                step = 32,
+                                value = 1024,
+                                interactive = True
+                            )
+                            mdxnet_segment_size = gr.Slider(
+                                minimum = 32,
+                                maximum = 4000,
+                                step = 32,
+                                label = _("Segment size"),
+                                info = _("Larger consumes more resources, but may give better results"),
+                                value = 256,
+                                interactive = True
+                            )
+                            mdxnet_denoise = gr.Checkbox(
+                                label = _("Denoise"),
+                                info = _("Enable denoising during separation"),
+                                value = True,
+                                interactive = True
+                            )
+                        with gr.Row():
+                            mdxnet_overlap = gr.Slider(
+                                label = _("Overlap"),
+                                info = _("Amount of overlap between prediction windows"),
+                                minimum = 0.001,
+                                maximum = 0.999,
+                                step = 0.001,
+                                value = 0.25,
+                                interactive = True
+                            )
+                            mdxnet_batch_size = gr.Slider(
+                                label = _("Batch size"),
+                                info = _("Larger consumes more RAM but may process slightly faster"),
+                                minimum = 1,
+                                maximum = 16,
+                                step = 1,
+                                value = 1,
+                                interactive = True
+                            )
+                        with gr.Row():
+                            mdxnet_normalization_threshold = gr.Slider(
+                                label = _("Normalization threshold"),
+                                info = _("The threshold for audio normalization"),
+                                minimum = 0.1,
+                                maximum = 1,
+                                step = 0.1,
+                                value = 0.1,
+                                interactive = True
+                            )
+                            mdxnet_amplification_threshold = gr.Slider(
+                                label = _("Amplification threshold"),
+                                info = _("The threshold for audio amplification"),
+                                minimum = 0.1,
+                                maximum = 1,
+                                step = 0.1,
+                                value = 0.1,
+                                interactive = True
+                            )
                 with gr.Row():
                     mdxnet_audio = gr.Audio(
                         label = _("Input audio"),
-                        type = "numpy",
+                        type = "filepath",
                         interactive = True
                     )
                 with gr.Accordion(_("Separation by link"), open = False):
                     with gr.Row():
                         mdxnet_link = gr.Textbox(
-                        label = _("Link"),
-                        placeholder = _("Paste the link here"),
-                        interactive = True
-                    )
+                            label = _("Link"),
+                            placeholder = _("Paste the link here"),
+                            interactive = True
+                        )
                     with gr.Row():
                         gr.Markdown(_("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)"))
                     with gr.Row():
                         mdxnet_download_button = gr.Button(
-                        _("Download!"),
-                        variant = "primary"
-                    )
-
+                            _("Download!"),
+                            variant = "primary"
+                        )
+                
                 mdxnet_download_button.click(download_audio, [mdxnet_link], [mdxnet_audio])
 
                 with gr.Accordion(_("Batch separation"), open = False):
@@ -711,7 +989,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             interactive = False
                         )
 
-                mdxnet_bath_button.click(mdxnet_batch, [mdxnet_input_path, mdxnet_output_path, mdxnet_model, mdxnet_output_format, mdxnet_overlap, mdxnet_segment_size, mdxnet_denoise], [mdxnet_info])
+                mdxnet_bath_button.click(mdxnet_batch, [mdxnet_input_path, mdxnet_output_path, mdxnet_model, mdxnet_output_format, mdxnet_hop_length, mdxnet_segment_size, mdxnet_denoise, mdxnet_overlap, mdxnet_batch_size, mdxnet_normalization_threshold, mdxnet_amplification_threshold], [mdxnet_info])
 
                 with gr.Row():
                     mdxnet_button = gr.Button(_("Separate!"), variant = "primary")
@@ -729,7 +1007,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         type = "filepath"
                     )
 
-                mdxnet_button.click(mdxnet_separator, [mdxnet_audio, mdxnet_model, mdxnet_output_format, mdxnet_segment_size, mdxnet_overlap, mdxnet_denoise], [mdxnet_stem1, mdxnet_stem2])
+                mdxnet_button.click(mdxnet_separator, [mdxnet_audio, mdxnet_model, mdxnet_output_format, mdxnet_hop_length, mdxnet_segment_size, mdxnet_denoise, mdxnet_overlap, mdxnet_batch_size, mdxnet_normalization_threshold, mdxnet_amplification_threshold], [mdxnet_stem1, mdxnet_stem2])
 
             with gr.TabItem("VR ARCH"):
                 with gr.Row():
@@ -745,40 +1023,91 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         value = lambda : None,
                         interactive = True
                     )
-                with gr.Row():
-                    vrarch_window_size = gr.Dropdown(
-                        label = _("Window size"),
-                        choices = vrarch_window_size_values,
-                        value = vrarch_window_size_values[0],
-                        interactive = True
-                    )
-                    vrarch_agression = gr.Slider(
-                        minimum = 1,
-                        maximum = 50,
-                        step = 1,
-                        label = _("Agression"),
-                        info = _("Intensity of primary stem extraction"),
-                        value = 5,
-                        interactive = True
-                    )
-                    vrarch_tta = gr.Checkbox(
-                        label = _("TTA"),
-                        info = _("Enable Test-Time-Augmentation; slow but improves quality"),
-                        value = True,
-                        visible = True,
-                        interactive = True,
-                    )
-                    vrarch_high_end_process = gr.Checkbox(
-                        label = _("High end process"),
-                        info = _("Mirror the missing frequency range of the output"),
-                        value = False,
-                        visible = True,
-                        interactive = True,
-                    )
+                with gr.Accordion(_("Advanced settings"), open = False):
+                    with gr.Group():
+                        with gr.Row():
+                            vrarch_window_size = gr.Slider(
+                                label = _("Window size"),
+                                info = _("Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality"),
+                                minimum=320,
+                                maximum=1024,
+                                step=32,
+                                value = 512,
+                                interactive = True
+                            )
+                            vrarch_agression = gr.Slider(
+                                minimum = 1,
+                                maximum = 50,
+                                step = 1,
+                                label = _("Agression"),
+                                info = _("Intensity of primary stem extraction"),
+                                value = 5,
+                                interactive = True
+                            )
+                            vrarch_tta = gr.Checkbox(
+                                label = _("TTA"),
+                                info = _("Enable Test-Time-Augmentation; slow but improves quality"),
+                                value = True,
+                                visible = True,
+                                interactive = True
+                            )
+                        with gr.Row():
+                            vrarch_post_process = gr.Checkbox(
+                                label = _("Post process"),
+                                info = _("Identify leftover artifacts within vocal output; may improve separation for some songs"),
+                                value = False,
+                                visible = True,
+                                interactive = True
+                            )
+                            vrarch_post_process_threshold = gr.Slider(
+                                label = _("Post process threshold"),
+                                info = _("Threshold for post-processing"),
+                                minimum = 0.1,
+                                maximum = 0.3,
+                                step = 0.1,
+                                value = 0.2,
+                                interactive = True
+                            )
+                        with gr.Row():
+                            vrarch_high_end_process = gr.Checkbox(
+                                label = _("High end process"),
+                                info = _("Mirror the missing frequency range of the output"),
+                                value = False,
+                                visible = True,
+                                interactive = True,
+                            )
+                            vrarch_batch_size = gr.Slider(
+                                label = _("Batch size"),
+                                info = _("Larger consumes more RAM but may process slightly faster"),
+                                minimum = 1,
+                                maximum = 16,
+                                step = 1,
+                                value = 1,
+                                interactive = True
+                            )
+                        with gr.Row():
+                            vrarch_normalization_threshold = gr.Slider(
+                                label = _("Normalization threshold"),
+                                info = _("The threshold for audio normalization"),
+                                minimum = 0.1,
+                                maximum = 1,
+                                step = 0.1,
+                                value = 0.1,
+                                interactive = True
+                            )
+                            vrarch_amplification_threshold = gr.Slider(
+                                label = _("Amplification threshold"),
+                                info = _("The threshold for audio amplification"),
+                                minimum = 0.1,
+                                maximum = 1,
+                                step = 0.1,
+                                value = 0.1,
+                                interactive = True
+                            )
                 with gr.Row():
                     vrarch_audio = gr.Audio(
                         label = _("Input audio"),
-                        type = "numpy",
+                        type = "filepath",
                         interactive = True
                     )
                 with gr.Accordion(_("Separation by link"), open = False):
@@ -792,12 +1121,12 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         gr.Markdown(_("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)"))
                     with gr.Row():
                         vrarch_download_button = gr.Button(
-                        _("Download!"),
-                        variant = "primary"
+                            _("Download!"),
+                            variant = "primary"
                     )
 
                 vrarch_download_button.click(download_audio, [vrarch_link], [vrarch_audio])
-
+            
                 with gr.Accordion(_("Batch separation"), open = False):
                     with gr.Row():
                         vrarch_input_path = gr.Textbox(
@@ -818,7 +1147,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             interactive = False
                         )
 
-                vrarch_bath_button.click(vrarch_batch, [vrarch_input_path, vrarch_output_path, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_high_end_process], [vrarch_info])
+                vrarch_bath_button.click(vrarch_batch, [vrarch_input_path, vrarch_output_path, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_post_process, vrarch_post_process_threshold, vrarch_high_end_process, vrarch_batch_size, vrarch_normalization_threshold, vrarch_amplification_threshold], [vrarch_info])
 
                 with gr.Row():
                     vrarch_button = gr.Button(_("Separate!"), variant = "primary")
@@ -836,7 +1165,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         label = _("Stem 2")
                     )
 
-                vrarch_button.click(vrarch_separator, [vrarch_audio, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_high_end_process], [vrarch_stem1, vrarch_stem2])
+                vrarch_button.click(vrarch_separator, [vrarch_audio, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_post_process, vrarch_post_process_threshold, vrarch_high_end_process, vrarch_batch_size, vrarch_normalization_threshold, vrarch_amplification_threshold], [vrarch_stem1, vrarch_stem2])
 
             with gr.TabItem("Demucs"):
                 with gr.Row():
@@ -852,42 +1181,91 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         value = lambda : None,
                         interactive = True
                     )
-                with gr.Row():
-                    demucs_shifts = gr.Slider(
-                        minimum = 1,
-                        maximum = 20,
-                        step = 1,
-                        label = _("Shifts"),
-                        info = _("Number of predictions with random shifts, higher = slower but better quality"),
-                        value = 2,
-                        interactive = True
-                    )
-                    demucs_overlap = gr.Dropdown(
-                    label = _("Overlap"),
-                    choices = demucs_overlap_values,
-                    value = demucs_overlap_values[0],
-                    interactive = True
-                    )
+                with gr.Accordion(_("Advanced settings"), open = False):
+                    with gr.Group():
+                        with gr.Row():
+                            demucs_shifts = gr.Slider(
+                                label = _("Shifts"),
+                                info = _("Number of predictions with random shifts, higher = slower but better quality"),
+                                minimum = 1,
+                                maximum = 20,
+                                step = 1,
+                                value = 2,
+                                interactive = True
+                            )
+                            demucs_segment_size = gr.Slider(
+                                label = _("Segment size"),
+                                info = _("Size of segments into which the audio is split. Higher = slower but better quality"),
+                                minimum = 1,
+                                maximum = 100,
+                                step = 1,
+                                value = 40,
+                                interactive = True
+                            )
+                            demucs_segments_enabled = gr.Checkbox(
+                                label = _("Segment-wise processing"),
+                                info = _("Enable segment-wise processing"),
+                                value = True,
+                                interactive = True
+                            )
+                        with gr.Row():
+                            demucs_overlap = gr.Slider(
+                                label = _("Overlap"),
+                                info = _("Overlap between prediction windows. Higher = slower but better quality"),
+                                minimum=0.001,
+                                maximum=0.999,
+                                step=0.001,
+                                value = 0.25,
+                                interactive = True
+                            )
+                            demucs_batch_size = gr.Slider(
+                                label = _("Batch size"),
+                                info = _("Larger consumes more RAM but may process slightly faster"),
+                                minimum = 1,
+                                maximum = 16,
+                                step = 1,
+                                value = 1,
+                                interactive = True
+                            )
+                        with gr.Row():
+                            demucs_normalization_threshold = gr.Slider(
+                                label = _("Normalization threshold"),
+                                info = _("The threshold for audio normalization"),
+                                minimum = 0.1,
+                                maximum = 1,
+                                step = 0.1,
+                                value = 0.1,
+                                interactive = True
+                            )
+                            demucs_amplification_threshold = gr.Slider(
+                                label = _("Amplification threshold"),
+                                info = _("The threshold for audio amplification"),
+                                minimum = 0.1,
+                                maximum = 1,
+                                step = 0.1,
+                                value = 0.1,
+                                interactive = True
+                            )
                 with gr.Row():
                     demucs_audio = gr.Audio(
                         label = _("Input audio"),
-                        type = "numpy",
+                        type = "filepath",
                         interactive = True
                     )
                 with gr.Accordion(_("Separation by link"), open = False):
                     with gr.Row():
                         demucs_link = gr.Textbox(
-                        label = _("Link"),
-                        placeholder = _("Paste the link here"),
-                        interactive = True
+                            label = _("Link"),
+                            placeholder = _("Paste the link here"),
+                            interactive = True
                     )
                     with gr.Row():
                         gr.Markdown(_("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)"))
                     with gr.Row():
                         demucs_download_button = gr.Button(
-                        _("Download!"),
-                        variant = "primary"
-                    )
+                            _("Download!"),
+                            variant = "primary"
+                        )
 
                 demucs_download_button.click(download_audio, [demucs_link], [demucs_audio])
 
@@ -911,7 +1289,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             interactive = False
                         )
 
-                demucs_bath_button.click(demucs_batch, [demucs_input_path, demucs_output_path, demucs_model, demucs_output_format, demucs_shifts, demucs_overlap], [demucs_info])
+                demucs_bath_button.click(demucs_batch, [demucs_input_path, demucs_output_path, demucs_model, demucs_output_format, demucs_shifts, demucs_segment_size, demucs_segments_enabled, demucs_overlap, demucs_batch_size, demucs_normalization_threshold, demucs_amplification_threshold], [demucs_info])
 
                 with gr.Row():
                     demucs_button = gr.Button(_("Separate!"), variant = "primary")
@@ -941,9 +1319,24 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         type = "filepath",
                         label = _("Stem 4")
                     )
+                with gr.Row(visible=False) as stem6:
+                    demucs_stem5 = gr.Audio(
+                        show_download_button = True,
+                        interactive = False,
+                        type = "filepath",
+                        label = _("Stem 5")
+                    )
+                    demucs_stem6 = gr.Audio(
+                        show_download_button = True,
+                        interactive = False,
+                        type = "filepath",
+                        label = _("Stem 6")
+                    )
+
+                demucs_model.change(update_stems, inputs=[demucs_model], outputs=stem6)
                 
-                demucs_button.click(demucs_separator, [demucs_audio, demucs_model, demucs_output_format, demucs_shifts, demucs_overlap], [demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4])
-                
+                demucs_button.click(demucs_separator, [demucs_audio, demucs_model, demucs_output_format, demucs_shifts, demucs_segment_size, demucs_segments_enabled, demucs_overlap, demucs_batch_size, demucs_normalization_threshold, demucs_amplification_threshold], [demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4, demucs_stem5, demucs_stem6])
+
             with gr.TabItem(_("Themes")):
                 themes_select = gr.Dropdown(
                     label = _("Theme"),
@@ -961,7 +1354,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 )
 
             with gr.TabItem(_("Credits")):
-                    gr.Markdown(
+                gr.Markdown(
                     """
                     UVR5 UI created by **[Eddycrack 864](https://github.com/Eddycrack864).** Join **[AI HUB](https://discord.gg/aihub)** community.
                     * python-audio-separator by [beveradb](https://github.com/beveradb).
@@ -972,12 +1365,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     * Thanks to [yt_dlp](https://github.com/yt-dlp/yt-dlp) devs.
                     * Separation by link source code and improvements by [Blane187](https://huggingface.co/Blane187).
                     * Thanks to [ArisDev](https://github.com/aris-py) for porting UVR5 UI to Kaggle and improvements.
+                    * Thanks to [Bebra777228](https://github.com/Bebra777228)'s code for guiding me to improve my code.
                     
                     
                     You can donate to the original UVR5 project here:
                     [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/uvr5)
                     """
-                    )
+                )
 
 app.launch(
     share=args.share_enabled,

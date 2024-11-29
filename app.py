@@ -63,6 +63,7 @@ mdxnet_models = [
     'UVR-MDX-NET-Inst_HQ_2.onnx',
     'UVR-MDX-NET-Inst_HQ_3.onnx',
     'UVR-MDX-NET-Inst_HQ_4.onnx',
+    'UVR-MDX-NET-Inst_HQ_5.onnx',
     'UVR_MDXNET_Main.onnx',
     'UVR-MDX-NET-Inst_Main.onnx',
     'UVR_MDXNET_1_9703.onnx',

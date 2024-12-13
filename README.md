@@ -111,7 +111,7 @@ A more technical level is required for this type of use. You can use this Jupyte
 - Configure port forwarding `9999 (UVR5-UI GUI)`
 - Install necessary drivers to use the GPU
 
-You can get the notebook here: [Jupyter Notebook](https://github.com/Eddycrack864/UVR5-UI/UVR_UI_Jupyter.ipynb) by iroaK
+You can get the notebook here: [Jupyter Notebook](https://github.com/Eddycrack864/UVR5-UI/blob/main/UVR_UI_Jupyter.ipynb) by iroaK
 
 
 ## Contributions

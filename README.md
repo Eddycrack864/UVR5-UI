@@ -1,5 +1,4 @@
-<h1 align="center"><b> 🎵 UVR5 UI 🎵 <b></h1>
-
+<h1 align="center"><b> 🎵 UVR5 UI 🎵 </b></h1>
 <div align="center">
 
 [![madewithlove](https://img.shields.io/badge/made_with-%E2%9D%A4-red?style=for-the-badge&labelColor=orange)](https://github.com/Eddycrack864/UVR5-UI)
@@ -44,7 +43,7 @@ You can also try it in Hugging Faces Spaces running on Zero GPU (A100)!
 
 ### Hardware Requirements:
 * Nvidia Series 2000 (RTX) or higher.
-* At least 10Gb of disk space.
+* At least 10Gb of disk space. 
 
 > [!NOTE]  
 > Older NVIDIA GPUs will be very slow. CPU will be insanely slow. If you don't meet the hardware requirements use our [Colab](https://colab.research.google.com/github/Eddycrack864/UVR5-UI/blob/main/UVR_UI.ipynb)/[Kaggle](https://www.kaggle.com/code/eddycrack864/uvr5-ui)/[Lightning.ai](https://lightning.ai/eddycrack864/studios/uvr5-ui)/[Hugging Face](https://huggingface.co/spaces/TheStinger/UVR5_UI).
@@ -100,6 +99,20 @@ Check the status of audio-separator core:
 
 - **Windows:** Double-click `status-checker.bat`.
 - **Linux:** Run `status-checker.sh` with `chmod +x status-checker.sh` and `./status-checker.sh`.
+
+## Docker Instance
+
+A more technical level is required for this type of use. You can use this Jupyter notebook to initialize UVR5 on virtual machines with GPU. This will install the entire UVR5 from the main branch of GitHub.
+
+### Requirements/Recommendations
+- Use the docker image `>= ubuntu/ubuntu:20.04`
+- At least `20 GB of storage minimum.` (Add more space for your models/training)
+- Use Jupyter `>= 7.3.1`
+- Configure port forwarding `9999 (UVR5-UI GUI)`
+- Install necessary drivers to use the GPU
+
+You can get the notebook here: [Jupyter Notebook](https://github.com/Eddycrack864/UVR5-UI/UVR_UI_Jupyter.ipynb) by iroaK
+
 
 ## Contributions
 If you want to participate and help me with this project feel free to create an [issue](https://github.com/Eddycrack864/UVR5-UI/issues) if something goes wrong or make a [pull request](https://github.com/Eddycrack864/UVR5-UI/pulls) to improve this project.

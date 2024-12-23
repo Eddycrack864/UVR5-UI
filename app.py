@@ -13,10 +13,27 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 use_autocast = device == "cuda"
 
 if __name__ == "__main__":
-   parser = ArgumentParser(description="Separate audio into multiple stems")
-   parser.add_argument("--share", action="store_true", dest="share_enabled", default=False, help="Enable sharing")
-   parser.add_argument('--listen-port', type=int, help="The listening port that the server will use.")
-   args = parser.parse_args()
+    parser = ArgumentParser(
+       description="Separate audio into multiple stems",
+       epilog="Example: python app.py --share --listen-port 8080 --open"
+    )
+    parser.add_argument(
+       "--share",
+       action="store_true",
+       help="Enable sharing of the interface through Gradio's temporary URLs"
+    )
+    parser.add_argument(
+       "--listen-port",
+       type=int,
+       default=9999,
+       help="The listening port that the server will use (default: 9999)"
+    )
+    parser.add_argument(
+       "--open",
+       action="store_true",
+       help="Automatically open the interface in the default web browser"
+    )   
+    args = parser.parse_args()
 
 #=========================#
 #     Roformer Models     #
@@ -31,10 +48,28 @@ roformer_models = {
     'Mel-Roformer-Denoise-Aufr33': 'denoise_mel_band_roformer_aufr33_sdr_27.9959.ckpt',
     'Mel-Roformer-Denoise-Aufr33-Aggr' : 'denoise_mel_band_roformer_aufr33_aggr_sdr_27.9768.ckpt',
     'Mel-Roformer-Karaoke-Aufr33-Viperx': 'mel_band_roformer_karaoke_aufr33_viperx_sdr_10.1956.ckpt',
+    'MelBand Roformer | Vocals by Kimberley Jensen' : 'vocals_mel_band_roformer.ckpt',
+    'MelBand Roformer Kim | FT by unwa' : 'mel_band_roformer_kim_ft_unwa.ckpt',
     'MelBand Roformer Kim | Inst V1 by Unwa' : 'melband_roformer_inst_v1.ckpt',
+    'MelBand Roformer Kim | Inst V1 (E) by Unwa' : 'melband_roformer_inst_v1e.ckpt',
     'MelBand Roformer Kim | Inst V2 by Unwa' : 'melband_roformer_inst_v2.ckpt',
     'MelBand Roformer Kim | InstVoc Duality V1 by Unwa' : 'melband_roformer_instvoc_duality_v1.ckpt',
     'MelBand Roformer Kim | InstVoc Duality V2 by Unwa' : 'melband_roformer_instvox_duality_v2.ckpt',
+    'MelBand Roformer | De-Reverb by anvuew' : 'dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt',
+    'MelBand Roformer | De-Reverb Less Aggressive by anvuew' : 'dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt',
+    'MelBand Roformer | De-Reverb-Echo by Sucial' : 'dereverb-echo_mel_band_roformer_sdr_10.0169.ckpt',
+    'MelBand Roformer | De-Reverb-Echo V2 by Sucial' : 'dereverb-echo_mel_band_roformer_sdr_13.4843_v2.ckpt',
+    'MelBand Roformer Kim | SYHFT by SYH99999' : 'MelBandRoformerSYHFT.ckpt',
+    'MelBand Roformer Kim | SYHFT V2 by SYH99999' : 'MelBandRoformerSYHFTV2.ckpt',
+    'MelBand Roformer Kim | SYHFT V2.5 by SYH99999' : 'MelBandRoformerSYHFTV2.5.ckpt',
+    'MelBand Roformer Kim | SYHFT V3 by SYH99999' : 'MelBandRoformerSYHFTV3Epsilon.ckpt',
+    'MelBand Roformer Kim | Big SYHFT V1 by SYH99999' : 'MelBandRoformerBigSYHFTV1.ckpt',
+    'MelBand Roformer Kim | Big Beta 4 FT by unwa' : 'melband_roformer_big_beta4.ckpt',
+    'MelBand Roformer Kim | Big Beta 5e FT by unwa' : 'melband_roformer_big_beta5e.ckpt',
+    'BS Roformer | Chorus Male-Female by Sucial' : 'model_chorus_bs_roformer_ep_267_sdr_24.1275.ckpt',
+    'MelBand Roformer | Aspiration by Sucial' : 'aspiration_mel_band_roformer_sdr_18.9845.ckpt',
+    'MelBand Roformer | Aspiration Less Aggressive by Sucial' : 'aspiration_mel_band_roformer_less_aggr_sdr_18.1201.ckpt',
+    'MelBand Roformer | Bleed Suppressor V1 by unwa-97chris' : 'mel_band_roformer_bleed_suppressor_v1.ckpt'
 }
 
 #=========================#
@@ -44,6 +79,8 @@ mdx23c_models = [
     'MDX23C_D1581.ckpt',
     'MDX23C-8KFFT-InstVoc_HQ.ckpt',
     'MDX23C-8KFFT-InstVoc_HQ_2.ckpt',
+    'MDX23C-De-Reverb-aufr33-jarredou.ckpt',
+    'MDX23C-DrumSep-aufr33-jarredou.ckpt'
 ]
 
 #=========================#
@@ -115,6 +152,7 @@ vrarch_models = [
     'UVR-De-Echo-Aggressive.pth',
     'UVR-De-Echo-Normal.pth',
     'UVR-DeEcho-DeReverb.pth',
+    'UVR-De-Reverb-aufr33-jarredou.pth'
     'UVR-DeNoise-Lite.pth',
     'UVR-DeNoise.pth',
     'UVR-BVE-4B_SN-44100-1.pth',
@@ -597,7 +635,7 @@ def demucs_batch(path_input, path_output, model, out_format, shifts, segment_siz
                 raise RuntimeError(f"Roformer batch separation failed: {e}") from e
             
 with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 UVR5 UI 🎵") as app:
-    with Translate("assets/languages/translation.yaml", placeholder_langs = ["en", "es", "it", "pt", "ms", "id", "ru", "uk", "th", "zh", "ja", "ko", "tr", "hi"]) as lang:
+    with Translate("assets/languages/translation.yaml", placeholder_langs = ["en", "es", "it", "pt", "ms", "id", "ru", "uk", "th", "zh", "ja", "ko", "hi"]) as lang:
         gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")
         gr.Markdown(_("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)"))
         gr.Markdown(_("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)"))
@@ -1375,7 +1413,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 )
 
 app.launch(
-    share=args.share_enabled,
+    share=args.share,
     server_name="",
-    server_port=9999,
+    server_port=args.listen_port,
+    inbrowser=args.open
 )

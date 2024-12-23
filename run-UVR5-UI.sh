@@ -10,4 +10,4 @@ if [ ! -d "env" ]; then
     exit 1
 fi
 
-env/bin/python app.py
+env/bin/python app.py --open

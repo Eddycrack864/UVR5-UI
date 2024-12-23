@@ -152,7 +152,7 @@ vrarch_models = [
     'UVR-De-Echo-Aggressive.pth',
     'UVR-De-Echo-Normal.pth',
     'UVR-DeEcho-DeReverb.pth',
-    'UVR-De-Reverb-aufr33-jarredou.pth'
+    'UVR-De-Reverb-aufr33-jarredou.pth',
     'UVR-DeNoise-Lite.pth',
     'UVR-DeNoise.pth',
     'UVR-BVE-4B_SN-44100-1.pth',

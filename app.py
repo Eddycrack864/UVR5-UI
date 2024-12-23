@@ -247,7 +247,7 @@ def roformer_separator(audio, model_key, out_format, segment_size, override_seg_
         separator.load_model(model_filename=roformer_model)
 
         progress(0.7, desc="Separating audio...")
-        separation = separator.separate(audio, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
+        separation = separator.separate(audio)
 
         stems = [os.path.join(out_dir, file_name) for file_name in separation]
         return stems[1], stems[0]
@@ -277,7 +277,7 @@ def mdxc_separator(audio, model, out_format, segment_size, override_seg_size, ov
         separator.load_model(model_filename=model)
 
         progress(0.7, desc="Separating audio...")
-        separation = separator.separate(audio, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
+        separation = separator.separate(audio)
 
         stems = [os.path.join(out_dir, file_name) for file_name in separation]
         return stems[1], stems[0]
@@ -308,7 +308,7 @@ def mdxnet_separator(audio, model, out_format, hop_length, segment_size, denoise
         separator.load_model(model_filename=model)
 
         progress(0.7, desc="Separating audio...")
-        separation = separator.separate(audio, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
+        separation = separator.separate(audio)
 
         stems = [os.path.join(out_dir, file_name) for file_name in separation]
         return stems[0], stems[1]
@@ -341,7 +341,7 @@ def vrarch_separator(audio, model, out_format, window_size, aggression, tta, pos
         separator.load_model(model_filename=model)
 
         progress(0.7, desc="Separating audio...")
-        separation = separator.separate(audio, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
+        separation = separator.separate(audio)
 
         stems = [os.path.join(out_dir, file_name) for file_name in separation]
         return stems[0], stems[1]
@@ -432,7 +432,7 @@ def roformer_batch(path_input, path_output, model_key, out_format, segment_size,
 
                 logs.append(f"Separating file: {audio_files}")
                 yield "\n".join(logs)
-                separator.separate(file_path, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
+                separator.separate(file_path)
                 logs.append(f"File: {audio_files} separated!")
                 yield "\n".join(logs)
             except Exception as e:
@@ -480,7 +480,7 @@ def mdx23c_batch(path_input, path_output, model, out_format, segment_size, overr
 
                 logs.append(f"Separating file: {audio_files}")
                 yield "\n".join(logs)
-                separator.separate(file_path, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
+                separator.separate(file_path)
                 logs.append(f"File: {audio_files} separated!")
                 yield "\n".join(logs)
             except Exception as e:
@@ -529,7 +529,7 @@ def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment
 
                 logs.append(f"Separating file: {audio_files}")
                 yield "\n".join(logs)
-                separator.separate(file_path, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
+                separator.separate(file_path)
                 logs.append(f"File: {audio_files} separated!")
                 yield "\n".join(logs)
             except Exception as e:
@@ -580,7 +580,7 @@ def vrarch_batch(path_input, path_output, model, out_format, window_size, aggres
 
                 logs.append(f"Separating file: {audio_files}")
                 yield "\n".join(logs)
-                separator.separate(file_path, f"{base_name}_(Stem1)", f"{base_name}_(Stem2)")
+                separator.separate(file_path)
                 logs.append(f"File: {audio_files} separated!")
                 yield "\n".join(logs)
             except Exception as e:

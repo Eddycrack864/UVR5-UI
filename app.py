@@ -1,4 +1,7 @@
 import os
+import subprocess
+import re
+import platform
 import torch
 import logging
 import yt_dlp
@@ -11,6 +14,14 @@ from argparse import ArgumentParser
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 use_autocast = device == "cuda"
+
+if os.path.isdir("env"):
+    if platform.system() == "Windows":
+        separator_location = ".\\env\\Scripts\\audio-separator.exe"
+    elif platform.system() == "Linux":
+        separator_location = "env/bin/audio-separator"
+else:
+    separator_location = "audio-separator"
 
 if __name__ == "__main__":
     parser = ArgumentParser(
@@ -223,7 +234,27 @@ def download_audio(url, output_dir="ytdl"):
     except Exception as e:
         raise Exception(f"Error extracting audio with yt-dlp: {str(e)}")
 
-def roformer_separator(audio, model_key, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, progress=gr.Progress(track_tqdm=True)):
+def leaderboard(list_filter):
+    try:
+        result = subprocess.run(
+            [separator_location, "-l", f"--list_filter={list_filter}"],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            return f"Error: {result.stderr}"
+        
+        return "<table border='1'>" + "".join(
+            f"<tr style='{'font-weight: bold; font-size: 1.2em;' if i == 0 else ''}'>" + 
+            "".join(f"<td>{cell}</td>" for cell in re.split(r"\s{2,}", line.strip())) + 
+            "</tr>" 
+            for i, line in enumerate(re.findall(r"^(?!-+)(.+)$", result.stdout.strip(), re.MULTILINE))
+        ) + "</table>"
+    
+    except Exception as e:
+        return f"Error: {e}"
+
+def roformer_separator(audio, model_key, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
     base_name = os.path.splitext(os.path.basename(audio))[0]
     roformer_model = roformer_models[model_key]
     try:
@@ -235,6 +266,7 @@ def roformer_separator(audio, model_key, out_format, segment_size, override_seg_
             use_autocast=use_autocast,
             normalization_threshold=norm_thresh,
             amplification_threshold=amp_thresh,
+            output_single_stem=single_stem,
             mdxc_params={
                 "segment_size": segment_size,
                 "override_model_segment_size": override_seg_size,
@@ -250,11 +282,16 @@ def roformer_separator(audio, model_key, out_format, segment_size, override_seg_
         separation = separator.separate(audio)
 
         stems = [os.path.join(out_dir, file_name) for file_name in separation]
-        return stems[1], stems[0]
+
+        if single_stem.strip():
+            return stems[0], None
+        
+        return stems[0], stems[1]
+    
     except Exception as e:
         raise RuntimeError(f"Roformer separation failed: {e}") from e
     
-def mdxc_separator(audio, model, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, progress=gr.Progress(track_tqdm=True)):
+def mdxc_separator(audio, model, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
     base_name = os.path.splitext(os.path.basename(audio))[0]
     try:
         separator = Separator(
@@ -265,6 +302,7 @@ def mdxc_separator(audio, model, out_format, segment_size, override_seg_size, ov
             use_autocast=use_autocast,
             normalization_threshold=norm_thresh,
             amplification_threshold=amp_thresh,
+            output_single_stem=single_stem,
             mdxc_params={
                 "segment_size": segment_size,
                 "override_model_segment_size": override_seg_size,
@@ -280,11 +318,16 @@ def mdxc_separator(audio, model, out_format, segment_size, override_seg_size, ov
         separation = separator.separate(audio)
 
         stems = [os.path.join(out_dir, file_name) for file_name in separation]
-        return stems[1], stems[0]
+        
+        if single_stem.strip():
+            return stems[0], None
+        
+        return stems[0], stems[1]
+
     except Exception as e:
         raise RuntimeError(f"MDX23C separation failed: {e}") from e
 
-def mdxnet_separator(audio, model, out_format, hop_length, segment_size, denoise, overlap, batch_size, norm_thresh, amp_thresh, progress=gr.Progress(track_tqdm=True)):
+def mdxnet_separator(audio, model, out_format, hop_length, segment_size, denoise, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
     base_name = os.path.splitext(os.path.basename(audio))[0]
     try:
         separator = Separator(
@@ -295,6 +338,7 @@ def mdxnet_separator(audio, model, out_format, hop_length, segment_size, denoise
             use_autocast=use_autocast,
             normalization_threshold=norm_thresh,
             amplification_threshold=amp_thresh,
+            output_single_stem=single_stem,
             mdx_params={
                 "hop_length": hop_length,
                 "segment_size": segment_size,
@@ -311,11 +355,16 @@ def mdxnet_separator(audio, model, out_format, hop_length, segment_size, denoise
         separation = separator.separate(audio)
 
         stems = [os.path.join(out_dir, file_name) for file_name in separation]
+        
+        if single_stem.strip():
+            return stems[0], None
+        
         return stems[0], stems[1]
+
     except Exception as e:
         raise RuntimeError(f"MDX-NET separation failed: {e}") from e
 
-def vrarch_separator(audio, model, out_format, window_size, aggression, tta, post_process, post_process_threshold, high_end_process, batch_size, norm_thresh, amp_thresh, progress=gr.Progress(track_tqdm=True)):
+def vrarch_separator(audio, model, out_format, window_size, aggression, tta, post_process, post_process_threshold, high_end_process, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
     base_name = os.path.splitext(os.path.basename(audio))[0]
     try:
         separator = Separator(
@@ -326,6 +375,7 @@ def vrarch_separator(audio, model, out_format, window_size, aggression, tta, pos
             use_autocast=use_autocast,
             normalization_threshold=norm_thresh,
             amplification_threshold=amp_thresh,
+            output_single_stem=single_stem,
             vr_params={
                 "batch_size": batch_size,
                 "window_size": window_size,
@@ -344,7 +394,12 @@ def vrarch_separator(audio, model, out_format, window_size, aggression, tta, pos
         separation = separator.separate(audio)
 
         stems = [os.path.join(out_dir, file_name) for file_name in separation]
+        
+        if single_stem.strip():
+            return stems[0], None
+        
         return stems[0], stems[1]
+
     except Exception as e:
         raise RuntimeError(f"VR ARCH separation failed: {e}") from e
 
@@ -380,6 +435,7 @@ def demucs_separator(audio, model, out_format, shifts, segment_size, segments_en
             return stems[0], stems[1], stems[2], stems[3], stems[4], stems[5]
         else:
             return stems[0], stems[1], stems[2], stems[3], None, None
+
     except Exception as e:
         raise RuntimeError(f"Demucs separation failed: {e}") from e
 
@@ -389,7 +445,7 @@ def update_stems(model):
     else:
         return gr.update(visible=False)
 
-def roformer_batch(path_input, path_output, model_key, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh):
+def roformer_batch(path_input, path_output, model_key, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem):
     found_files.clear()
     logs.clear()
     roformer_model = roformer_models[model_key]
@@ -418,6 +474,7 @@ def roformer_batch(path_input, path_output, model_key, out_format, segment_size,
                     use_autocast=use_autocast,
                     normalization_threshold=norm_thresh,
                     amplification_threshold=amp_thresh,
+                    output_single_stem=single_stem,
                     mdxc_params={
                         "segment_size": segment_size,
                         "override_model_segment_size": override_seg_size,
@@ -438,7 +495,7 @@ def roformer_batch(path_input, path_output, model_key, out_format, segment_size,
             except Exception as e:
                 raise RuntimeError(f"Roformer batch separation failed: {e}") from e
 
-def mdx23c_batch(path_input, path_output, model, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh):
+def mdx23c_batch(path_input, path_output, model, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem):
     found_files.clear()
     logs.clear()
 
@@ -466,6 +523,7 @@ def mdx23c_batch(path_input, path_output, model, out_format, segment_size, overr
                     use_autocast=use_autocast,
                     normalization_threshold=norm_thresh,
                     amplification_threshold=amp_thresh,
+                    output_single_stem=single_stem,
                     mdxc_params={
                         "segment_size": segment_size,
                         "override_model_segment_size": override_seg_size,
@@ -486,7 +544,7 @@ def mdx23c_batch(path_input, path_output, model, out_format, segment_size, overr
             except Exception as e:
                 raise RuntimeError(f"Roformer batch separation failed: {e}") from e
 
-def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment_size, denoise, overlap, batch_size, norm_thresh, amp_thresh):
+def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment_size, denoise, overlap, batch_size, norm_thresh, amp_thresh, single_stem):
     found_files.clear()
     logs.clear()
 
@@ -514,6 +572,7 @@ def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment
                     use_autocast=use_autocast,
                     normalization_threshold=norm_thresh,
                     amplification_threshold=amp_thresh,
+                    output_single_stem=single_stem,
                     mdx_params={
                         "hop_length": hop_length,
                         "segment_size": segment_size,
@@ -535,7 +594,7 @@ def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment
             except Exception as e:
                 raise RuntimeError(f"Roformer batch separation failed: {e}") from e
 
-def vrarch_batch(path_input, path_output, model, out_format, window_size, aggression, tta, post_process, post_process_threshold, high_end_process, batch_size, norm_thresh, amp_thresh):
+def vrarch_batch(path_input, path_output, model, out_format, window_size, aggression, tta, post_process, post_process_threshold, high_end_process, batch_size, norm_thresh, amp_thresh, single_stem):
     found_files.clear()
     logs.clear()
 
@@ -563,6 +622,7 @@ def vrarch_batch(path_input, path_output, model, out_format, window_size, aggres
                     use_autocast=use_autocast,
                     normalization_threshold=norm_thresh,
                     amplification_threshold=amp_thresh,
+                    output_single_stem=single_stem,
                     vr_params={
                         "batch_size": batch_size,
                         "window_size": window_size,
@@ -710,6 +770,12 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                                 value = 0.1,
                                 interactive = True
                             )
+                        with gr.Row():
+                            roformer_single_stem = gr.Textbox(
+                                label = "Output only single stem",
+                                placeholder = "Write the stem you want, check the stems of each model on Leaderboard",
+                                interactive = True
+                            )
                 with gr.Row():
                     roformer_audio = gr.Audio(
                         label = _("Input audio"),
@@ -753,7 +819,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             interactive = False
                         )
 
-                roformer_bath_button.click(roformer_batch, [roformer_input_path, roformer_output_path, roformer_model, roformer_output_format, roformer_segment_size, roformer_override_segment_size, roformer_overlap, roformer_batch_size, roformer_normalization_threshold, roformer_amplification_threshold], [roformer_info])
+                roformer_bath_button.click(roformer_batch, [roformer_input_path, roformer_output_path, roformer_model, roformer_output_format, roformer_segment_size, roformer_override_segment_size, roformer_overlap, roformer_batch_size, roformer_normalization_threshold, roformer_amplification_threshold, roformer_single_stem], [roformer_info])
 
                 with gr.Row():
                     roformer_button = gr.Button(_("Separate!"), variant = "primary")
@@ -771,7 +837,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         type = "filepath"
                     )
 
-                roformer_button.click(roformer_separator, [roformer_audio, roformer_model, roformer_output_format, roformer_segment_size, roformer_override_segment_size, roformer_overlap, roformer_batch_size, roformer_normalization_threshold, roformer_amplification_threshold], [roformer_stem1, roformer_stem2])
+                roformer_button.click(roformer_separator, [roformer_audio, roformer_model, roformer_output_format, roformer_segment_size, roformer_override_segment_size, roformer_overlap, roformer_batch_size, roformer_normalization_threshold, roformer_amplification_threshold, roformer_single_stem], [roformer_stem1, roformer_stem2])
 
             with gr.TabItem("MDX23C"):
                 with gr.Row():
@@ -843,6 +909,12 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                                 value = 0.1,
                                 interactive = True
                             )
+                        with gr.Row():
+                            mdx23c_single_stem = gr.Textbox(
+                                label = "Output only single stem",
+                                placeholder = "Write the stem you want, check the stems of each model on Leaderboard",
+                                interactive = True
+                            )
                 with gr.Row():
                      mdx23c_audio = gr.Audio(
                         label = _("Input audio"),
@@ -886,7 +958,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             interactive = False
                         )
 
-                mdx23c_bath_button.click(mdx23c_batch, [mdx23c_input_path, mdx23c_output_path, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_override_segment_size, mdx23c_overlap, mdx23c_batch_size, mdx23c_normalization_threshold, mdx23c_amplification_threshold], [mdx23c_info])
+                mdx23c_bath_button.click(mdx23c_batch, [mdx23c_input_path, mdx23c_output_path, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_override_segment_size, mdx23c_overlap, mdx23c_batch_size, mdx23c_normalization_threshold, mdx23c_amplification_threshold, mdx23c_single_stem], [mdx23c_info])
 
                 with gr.Row():
                     mdx23c_button = gr.Button(_("Separate!"), variant = "primary")
@@ -904,7 +976,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         type = "filepath"
                     )
 
-                mdx23c_button.click(mdxc_separator, [mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_override_segment_size, mdx23c_overlap, mdx23c_batch_size, mdx23c_normalization_threshold, mdx23c_amplification_threshold], [mdx23c_stem1, mdx23c_stem2])
+                mdx23c_button.click(mdxc_separator, [mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_override_segment_size, mdx23c_overlap, mdx23c_batch_size, mdx23c_normalization_threshold, mdx23c_amplification_threshold, mdx23c_single_stem], [mdx23c_stem1, mdx23c_stem2])
                 
             with gr.TabItem("MDX-NET"):
                 with gr.Row():
@@ -985,6 +1057,12 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                                 value = 0.1,
                                 interactive = True
                             )
+                        with gr.Row():
+                            mdxnet_single_stem = gr.Textbox(
+                                label = "Output only single stem",
+                                placeholder = "Write the stem you want, check the stems of each model on Leaderboard",
+                                interactive = True
+                            )
                 with gr.Row():
                     mdxnet_audio = gr.Audio(
                         label = _("Input audio"),
@@ -1028,7 +1106,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             interactive = False
                         )
 
-                mdxnet_bath_button.click(mdxnet_batch, [mdxnet_input_path, mdxnet_output_path, mdxnet_model, mdxnet_output_format, mdxnet_hop_length, mdxnet_segment_size, mdxnet_denoise, mdxnet_overlap, mdxnet_batch_size, mdxnet_normalization_threshold, mdxnet_amplification_threshold], [mdxnet_info])
+                mdxnet_bath_button.click(mdxnet_batch, [mdxnet_input_path, mdxnet_output_path, mdxnet_model, mdxnet_output_format, mdxnet_hop_length, mdxnet_segment_size, mdxnet_denoise, mdxnet_overlap, mdxnet_batch_size, mdxnet_normalization_threshold, mdxnet_amplification_threshold, mdxnet_single_stem], [mdxnet_info])
 
                 with gr.Row():
                     mdxnet_button = gr.Button(_("Separate!"), variant = "primary")
@@ -1046,7 +1124,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         type = "filepath"
                     )
 
-                mdxnet_button.click(mdxnet_separator, [mdxnet_audio, mdxnet_model, mdxnet_output_format, mdxnet_hop_length, mdxnet_segment_size, mdxnet_denoise, mdxnet_overlap, mdxnet_batch_size, mdxnet_normalization_threshold, mdxnet_amplification_threshold], [mdxnet_stem1, mdxnet_stem2])
+                mdxnet_button.click(mdxnet_separator, [mdxnet_audio, mdxnet_model, mdxnet_output_format, mdxnet_hop_length, mdxnet_segment_size, mdxnet_denoise, mdxnet_overlap, mdxnet_batch_size, mdxnet_normalization_threshold, mdxnet_amplification_threshold, mdxnet_single_stem], [mdxnet_stem1, mdxnet_stem2])
 
             with gr.TabItem("VR ARCH"):
                 with gr.Row():
@@ -1143,6 +1221,12 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                                 value = 0.1,
                                 interactive = True
                             )
+                        with gr.Row():
+                            vrarch_single_stem = gr.Textbox(
+                                label = "Output only single stem",
+                                placeholder = "Write the stem you want, check the stems of each model on Leaderboard",
+                                interactive = True
+                            )
                 with gr.Row():
                     vrarch_audio = gr.Audio(
                         label = _("Input audio"),
@@ -1186,7 +1270,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             interactive = False
                         )
 
-                vrarch_bath_button.click(vrarch_batch, [vrarch_input_path, vrarch_output_path, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_post_process, vrarch_post_process_threshold, vrarch_high_end_process, vrarch_batch_size, vrarch_normalization_threshold, vrarch_amplification_threshold], [vrarch_info])
+                vrarch_bath_button.click(vrarch_batch, [vrarch_input_path, vrarch_output_path, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_post_process, vrarch_post_process_threshold, vrarch_high_end_process, vrarch_batch_size, vrarch_normalization_threshold, vrarch_amplification_threshold, vrarch_single_stem], [vrarch_info])
 
                 with gr.Row():
                     vrarch_button = gr.Button(_("Separate!"), variant = "primary")
@@ -1204,7 +1288,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         label = _("Stem 2")
                     )
 
-                vrarch_button.click(vrarch_separator, [vrarch_audio, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_post_process, vrarch_post_process_threshold, vrarch_high_end_process, vrarch_batch_size, vrarch_normalization_threshold, vrarch_amplification_threshold], [vrarch_stem1, vrarch_stem2])
+                vrarch_button.click(vrarch_separator, [vrarch_audio, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_post_process, vrarch_post_process_threshold, vrarch_high_end_process, vrarch_batch_size, vrarch_normalization_threshold, vrarch_amplification_threshold, vrarch_single_stem], [vrarch_stem1, vrarch_stem2])
 
             with gr.TabItem("Demucs"):
                 with gr.Row():
@@ -1375,6 +1459,20 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 demucs_model.change(update_stems, inputs=[demucs_model], outputs=stem6)
                 
                 demucs_button.click(demucs_separator, [demucs_audio, demucs_model, demucs_output_format, demucs_shifts, demucs_segment_size, demucs_segments_enabled, demucs_overlap, demucs_batch_size, demucs_normalization_threshold, demucs_amplification_threshold], [demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4, demucs_stem5, demucs_stem6])
+
+            with gr.TabItem("Leaderboard"):
+                with gr.Group():
+                    with gr.Row(equal_height=True):
+                        list_filter = gr.Dropdown(
+                            label = "List filter",
+                            info = "Filter and sort the model list by 'stem'",
+                            choices = ["vocals", "instrumental", "reverb", "echo", "noise", "crowd", "dry", "aspiration", "male", "woodwinds", "kick", "drums", "bass", "guitar", "piano", "other"],
+                            value = lambda : None
+                        )
+                        list_button = gr.Button("Show list!", variant = "primary")
+                output_list = gr.HTML(label = "Leaderboard")
+
+                list_button.click(leaderboard, inputs=list_filter, outputs=output_list)
 
             with gr.TabItem(_("Themes")):
                 themes_select = gr.Dropdown(

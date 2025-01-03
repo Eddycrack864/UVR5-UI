@@ -774,7 +774,7 @@ ja:
   Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : 望むステムを書き込み、リーダーボードの各モデルのステムを確認してください。例 インストゥルメンタル
   Leaderboard : リーダーボード
   List filter : リストフィルタ
-  Filter and sort the model list by 'stem' : 'ステム' でモデルリストをフィルタおよびソート
+  Filter and sort the model list by 'stem' : ステム でモデルリストをフィルタおよびソート
   Show list! : リストを表示！
 
 ko:
@@ -845,7 +845,7 @@ ko:
   Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : 원하는 스템을 작성하고 리더보드에서 각 모델의 스템을 확인하세요. 예 반주
   Leaderboard : 리더보드
   List filter : 목록 필터
-  Filter and sort the model list by 'stem' : '스템'으로 모델 목록을 필터링하고 정렬합니다
+  Filter and sort the model list by 'stem' : 스템 으로 모델 목록을 필터링하고 정렬합니다
   Show list! : 목록 표시!
 
 hi:
@@ -916,5 +916,5 @@ hi:
   Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : जिस स्टेम को आप चाहते हैं उसे लिखें, लीडरबोर्ड पर प्रत्येक मॉडल के स्टेम की जांच करें। उदाहरण तंत्रीय
   Leaderboard : लीडरबोर्ड
   List filter : सूची फ़िल्टर
-  Filter and sort the model list by 'stem' : 'स्टेम' द्वारा मॉडल सूची को फ़िल्टर और सॉर्ट करें
+  Filter and sort the model list by 'stem' : स्टेम द्वारा मॉडल सूची को फ़िल्टर और सॉर्ट करें
   Show list! : सूची दिखाएं!

@@ -758,7 +758,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                                 minimum = 0.1,
                                 maximum = 1,
                                 step = 0.1,
-                                value = 0.1,
+                                value = 0.9,
                                 interactive = True
                             )
                             roformer_amplification_threshold = gr.Slider(
@@ -767,7 +767,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                                 minimum = 0.1,
                                 maximum = 1,
                                 step = 0.1,
-                                value = 0.1,
+                                value = 0.7,
                                 interactive = True
                             )
                         with gr.Row():
@@ -897,7 +897,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                                 minimum = 0.1,
                                 maximum = 1,
                                 step = 0.1,
-                                value = 0.1,
+                                value = 0.9,
                                 interactive = True
                             )
                             mdx23c_amplification_threshold = gr.Slider(
@@ -906,7 +906,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                                 minimum = 0.1,
                                 maximum = 1,
                                 step = 0.1,
-                                value = 0.1,
+                                value = 0.7,
                                 interactive = True
                             )
                         with gr.Row():
@@ -1045,7 +1045,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                                 minimum = 0.1,
                                 maximum = 1,
                                 step = 0.1,
-                                value = 0.1,
+                                value = 0.9,
                                 interactive = True
                             )
                             mdxnet_amplification_threshold = gr.Slider(
@@ -1054,7 +1054,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                                 minimum = 0.1,
                                 maximum = 1,
                                 step = 0.1,
-                                value = 0.1,
+                                value = 0.7,
                                 interactive = True
                             )
                         with gr.Row():
@@ -1209,7 +1209,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                                 minimum = 0.1,
                                 maximum = 1,
                                 step = 0.1,
-                                value = 0.1,
+                                value = 0.9,
                                 interactive = True
                             )
                             vrarch_amplification_threshold = gr.Slider(
@@ -1218,7 +1218,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                                 minimum = 0.1,
                                 maximum = 1,
                                 step = 0.1,
-                                value = 0.1,
+                                value = 0.7,
                                 interactive = True
                             )
                         with gr.Row():
@@ -1357,7 +1357,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                                 minimum = 0.1,
                                 maximum = 1,
                                 step = 0.1,
-                                value = 0.1,
+                                value = 0.9,
                                 interactive = True
                             )
                             demucs_amplification_threshold = gr.Slider(
@@ -1366,7 +1366,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                                 minimum = 0.1,
                                 maximum = 1,
                                 step = 0.1,
-                                value = 0.1,
+                                value = 0.7,
                                 interactive = True
                             )
                 with gr.Row():

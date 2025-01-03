@@ -62,6 +62,12 @@ en:
   Segment-wise processing : Segment-wise processing
   Stem 5 : Stem 5
   Stem 6 : Stem 6
+  Output only single stem : Output only single stem
+  Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental
+  Leaderboard : Leaderboard
+  List filter : List filter
+  Filter and sort the model list by 'stem' : Filter and sort the model list by 'stem'
+  Show list! : Show list!
 
 es:
   # Translation by Eddycrack864
@@ -127,6 +133,12 @@ es:
   Segment-wise processing : Procesamiento por segmentos
   Stem 5 : Pista 5
   Stem 6 : Pista 6
+  Output only single stem : Salida de única pista
+  Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : Escribe la pista que quieres, consulta las pistas de cada modelo en la tabla de clasificación. Por ejemplo, Instrumental
+  Leaderboard : Tabla de clasificación
+  List filter : Lista de filtros
+  Filter and sort the model list by 'stem' : Filtra y ordena la lista de modelos por 'pista'
+  Show list! : Mostrar lista!
 
 it:
   # Thanks to Nick088 for the Italian translation !
@@ -192,6 +204,12 @@ it:
   Segment-wise processing : Elaborazione per segmenti
   Stem 5 : Traccia 5
   Stem 6 : Traccia 6
+  Output only single stem : Visualizza solo la traccia singola
+  Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : Scrivi la traccia che desideri, controlla le tracce di ciascun modello nella classifica. Ad esempio, Instrumental
+  Leaderboard : Classifica
+  List filter : Elenco filtri
+  Filter and sort the model list by 'stem' : Filtra e ordina l'elenco dei modelli per 'traccia'
+  Show list! : Mostra elenco!
 
 pt:
   # Thanks to MrM0dZ for the Portuguese (Brazil) translation !
@@ -257,6 +275,12 @@ pt:
   Segment-wise processing : Processamento por segmento
   Stem 5 : Stem 5
   Stem 6 : Stem 6
+  Output only single stem : Saída apenas de uma stem
+  Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : Escreva a stem que deseja, verifique as stems de cada modelo no Tabela de classificação. Ex. Instrumental
+  Leaderboard : Tabela de classificação
+  List filter : Filtro de lista
+  Filter and sort the model list by 'stem' : Filtrar e classificar a lista de modelos por 'stem'
+  Show list! : Mostrar lista!
 
 ms:
   # Thanks to Ryouko-Yamanda65777 for the Malay translation !
@@ -322,6 +346,12 @@ ms:
   Segment-wise processing: Pemprosesan mengikut segmen
   Stem 5: Lapis 5
   Stem 6: Lapis 6
+  Output only single stem : Output hanya satu lapis
+  Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : Tulis lapis yang anda mahu, semak lapis setiap model pada Papan pendahulu. contoh. Instrumental
+  Leaderboard : Papan pendahulu
+  List filter : Penapis senarai
+  Filter and sort the model list by 'stem' : Penapis dan susun senarai model mengikut 'lapis'
+  Show list! : Tunjukkan senarai!
 
 id:
   # Thanks to Ryouko-Yamanda65777 for the Indonesian translation !
@@ -387,6 +417,12 @@ id:
   Segment-wise processing : Pemrosesan berdasarkan segmen
   Stem 5 : Stem 5
   Stem 6 : Stem 6
+  Output only single stem : Output hanya satu stem
+  Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : Tulis stem yang Anda inginkan, periksa stem dari setiap model di Papan Peringkat. misalnya. Instrumental
+  Leaderboard : Papan Peringkat
+  List filter : Filter daftar
+  Filter and sort the model list by 'stem' : Filter dan urutkan daftar model berdasarkan 'stem'
+  Show list! : Tampilkan daftar!
 
 ru:
   If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : Если вам нравится UVR5 UI, вы можете посмотреть мое репо на [GitHub](https://github.com/Eddycrack864/UVR5-UI)
@@ -451,6 +487,12 @@ ru:
   Segment-wise processing : Сегментная обработка
   Stem 5 : Трек 5
   Stem 6 : Трек 6
+  Output only single stem : Вывод только одного трека
+  Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : Напишите трек, который вы хотите, проверьте треки каждой модели в таблице лидеров. например. Инструментальный
+  Leaderboard : Таблица лидеров
+  List filter : Фильтр списка
+  Filter and sort the model list by 'stem' : Фильтровать и сортировать список моделей по 'трек'
+  Show list! : Показать список!
 
 uk:
   If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI) : Якщо вам подобається UVR5 UI, ви можете подивитися моє репо на [GitHub](https://github.com/Eddycrack864/UVR5-UI)
@@ -515,6 +557,12 @@ uk:
   Segment-wise processing : Сегментне оброблення
   Stem 5 : Трек 5
   Stem 6 : Трек 6
+  Output only single stem : Вихід тільки одного треку
+  Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : Напишіть трек, який ви хочете, перевірте треки кожної моделі на дошці лідерів. наприклад. Інструментальний
+  Leaderboard : Дошка лідерів
+  List filter : Фільтр списку
+  Filter and sort the model list by 'stem' : Фільтрувати та сортувати список моделей за 'трек'
+  Show list! : Показати список!
 
 th:
   # Thanks to lucinamari for the Thai translation !
@@ -580,6 +628,12 @@ th:
   Segment-wise processing : การประมวลผลแบบเป็นส่วนๆ
   Stem 5 : สเต็มที่ 5
   Stem 6 : สเต็มที่ 6
+  Output only single stem : ผลลัพธ์เฉพาะสเต็มเดียว
+  Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : เขียนสเต็มที่คุณต้องการ, ตรวจสอบสเต็มของแต่ละโมเดลใน ลีดเดอร์บอร์ด ตัวอย่างเช่น ดนตรี
+  Leaderboard : ลีดเดอร์บอร์ด
+  List filter : ตัวกรองรายการ
+  Filter and sort the model list by 'stem' : กรองและเรียงลำดับรายการโมเดลตาม 'สเต็มที่'
+  Show list! : แสดงรายการ!
 
 zh:
   # Gemini translation, could be inaccurate
@@ -645,6 +699,12 @@ zh:
   Segment-wise processing : 分段处理
   Stem 5 : 干声 5
   Stem 6 : 干声 6
+  Output only single stem : 仅输出单个干声
+  Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : 写下你想要的干声，检查排行榜上每个模型的干声。例如 伴奏
+  Leaderboard : 排行榜
+  List filter : 列表过滤器
+  Filter and sort the model list by 'stem' : 通过“干声”筛选和排序模型列表
+  Show list! : 显示列表！
 
 ja:
   # Gemini translation, could be inaccurate
@@ -710,6 +770,12 @@ ja:
   Segment-wise processing : セグメントごとの処理
   Stem 5 : ステム 5
   Stem 6 : ステム 6
+  Output only single stem : 1つのステムのみを出力
+  Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : 望むステムを書き込み、リーダーボードの各モデルのステムを確認してください。例 インストゥルメンタル
+  Leaderboard : リーダーボード
+  List filter : リストフィルタ
+  Filter and sort the model list by 'stem' : 'ステム' でモデルリストをフィルタおよびソート
+  Show list! : リストを表示！
 
 ko:
   # Thanks to perariroswe for the Korean translation !
@@ -775,6 +841,12 @@ ko:
   Segment-wise processing : 세그먼트별 처리
   Stem 5 : 스템 5
   Stem 6 : 스템 6
+  Output only single stem : 단일 스템만 출력
+  Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : 원하는 스템을 작성하고 리더보드에서 각 모델의 스템을 확인하세요. 예 반주
+  Leaderboard : 리더보드
+  List filter : 목록 필터
+  Filter and sort the model list by 'stem' : '스템'으로 모델 목록을 필터링하고 정렬합니다
+  Show list! : 목록 표시!
 
 hi:
   # Thanks to Enes (Discord: asambhavpyaar) for the Hindi translation !
@@ -840,3 +912,9 @@ hi:
   Segment-wise processing : सेगमेंट-वार प्रोसेसिंग
   Stem 5 : स्टेम ५
   Stem 6 : स्टेम ६
+  Output only single stem : केवल एकल स्टेम आउटपुट करें
+  Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental : जिस स्टेम को आप चाहते हैं उसे लिखें, लीडरबोर्ड पर प्रत्येक मॉडल के स्टेम की जांच करें। उदाहरण तंत्रीय
+  Leaderboard : लीडरबोर्ड
+  List filter : सूची फ़िल्टर
+  Filter and sort the model list by 'stem' : 'स्टेम' द्वारा मॉडल सूची को फ़िल्टर और सॉर्ट करें
+  Show list! : सूची दिखाएं!

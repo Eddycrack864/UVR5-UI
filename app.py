@@ -772,8 +772,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             )
                         with gr.Row():
                             roformer_single_stem = gr.Textbox(
-                                label = "Output only single stem",
-                                placeholder = "Write the stem you want, check the stems of each model on Leaderboard",
+                                label = _("Output only single stem"),
+                                placeholder = _("Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental"),
                                 interactive = True
                             )
                 with gr.Row():
@@ -911,8 +911,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             )
                         with gr.Row():
                             mdx23c_single_stem = gr.Textbox(
-                                label = "Output only single stem",
-                                placeholder = "Write the stem you want, check the stems of each model on Leaderboard",
+                                label = _("Output only single stem"),
+                                placeholder = _("Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental"),
                                 interactive = True
                             )
                 with gr.Row():
@@ -1059,8 +1059,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             )
                         with gr.Row():
                             mdxnet_single_stem = gr.Textbox(
-                                label = "Output only single stem",
-                                placeholder = "Write the stem you want, check the stems of each model on Leaderboard",
+                                label = _("Output only single stem"),
+                                placeholder = _("Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental"),
                                 interactive = True
                             )
                 with gr.Row():
@@ -1223,8 +1223,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             )
                         with gr.Row():
                             vrarch_single_stem = gr.Textbox(
-                                label = "Output only single stem",
-                                placeholder = "Write the stem you want, check the stems of each model on Leaderboard",
+                                label = _("Output only single stem"),
+                                placeholder = _("Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental"),
                                 interactive = True
                             )
                 with gr.Row():
@@ -1460,17 +1460,17 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 
                 demucs_button.click(demucs_separator, [demucs_audio, demucs_model, demucs_output_format, demucs_shifts, demucs_segment_size, demucs_segments_enabled, demucs_overlap, demucs_batch_size, demucs_normalization_threshold, demucs_amplification_threshold], [demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4, demucs_stem5, demucs_stem6])
 
-            with gr.TabItem("Leaderboard"):
+            with gr.TabItem(_("Leaderboard")):
                 with gr.Group():
                     with gr.Row(equal_height=True):
                         list_filter = gr.Dropdown(
-                            label = "List filter",
-                            info = "Filter and sort the model list by 'stem'",
+                            label = _("List filter"),
+                            info = _("Filter and sort the model list by 'stem'"),
                             choices = ["vocals", "instrumental", "reverb", "echo", "noise", "crowd", "dry", "aspiration", "male", "woodwinds", "kick", "drums", "bass", "guitar", "piano", "other"],
                             value = lambda : None
                         )
-                        list_button = gr.Button("Show list!", variant = "primary")
-                output_list = gr.HTML(label = "Leaderboard")
+                        list_button = gr.Button(_("Show list!"), variant = "primary")
+                output_list = gr.HTML(label = _("Leaderboard"))
 
                 list_button.click(leaderboard, inputs=list_filter, outputs=output_list)
 

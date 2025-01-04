@@ -131,7 +131,6 @@ You can donate to the original UVR5 project here:
 
 ## Credits
 * python-audio-separator by [beveradb](https://github.com/beveradb).
-* gradio-i18n by [hoveychen](https://github.com/hoveychen)
 * Special thanks to [Ilaria](https://github.com/TheStingerX) for hosting this space and help 💖
 * Thanks to [Mikus](https://github.com/cappuch) for the help with the code.
 * Thanks to [Nick088](https://github.com/Nick088Official) for the help to fix roformers.

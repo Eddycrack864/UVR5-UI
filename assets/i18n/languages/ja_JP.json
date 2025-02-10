@@ -33,6 +33,7 @@
     "Mirror the missing frequency range of the output": "出力の欠落した周波数範囲をミラーリングする",
     "Shifts": "シフト",
     "Number of predictions with random shifts, higher = slower but better quality": "ランダムシフトによる予測の数、高いほど遅いが品質が向上する",
+    "Overlap between prediction windows. Higher = slower but better quality": "予測ウィンドウ間の重複. 高いほど遅いが品質が向上する",
     "Stem 3": "ステム 3",
     "Stem 4": "ステム 4",
     "Themes": "テーマ",

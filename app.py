@@ -1502,7 +1502,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 * Separation by link source code and improvements by [Blane187](https://huggingface.co/Blane187).
                 * Thanks to [ArisDev](https://github.com/aris-py) for porting UVR5 UI to Kaggle and improvements.
                 * Thanks to [Bebra777228](https://github.com/Bebra777228)'s code for guiding me to improve my code.
-                * Thanks to Nick088, MrM0dZ, Ryouko-Yamanda65777, lucinamari, perariroswe and Enes for helping translate UVR5 UI.
+                * Thanks to Nick088, MrM0dZ, Ryouko-Yamanda65777, lucinamari, perariroswe, Enes, Léo and the_undead0 for helping translate UVR5 UI.
                 
                 You can donate to the original UVR5 project here:
                 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/uvr5)

@@ -33,6 +33,7 @@
     "Mirror the missing frequency range of the output": "출력의 누락된 주파수 범위를 보정합니다",
     "Shifts": "시프트",
     "Number of predictions with random shifts, higher = slower but better quality": "랜덤 시프트 사용 예측 횟수; 높을수록 느리지만 품질 향상",
+    "Overlap between prediction windows. Higher = slower but better quality": "예측 기간 간의 오버랩. 높을수록 느리지만 품질 향상",
     "Stem 3": "스템 3",
     "Stem 4": "스템 4",
     "Themes": "테마 목록",

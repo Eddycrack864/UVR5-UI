@@ -126,8 +126,8 @@ You can donate to the original UVR5 project here:
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/uvr5)
 
 ## TO-DO
-* Add more languages
 * Add more models
+* Add more output formats
 
 ## Credits
 * python-audio-separator by [beveradb](https://github.com/beveradb).

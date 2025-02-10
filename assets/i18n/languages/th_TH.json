@@ -33,6 +33,7 @@
     "Mirror the missing frequency range of the output": "สะท้อนช่วงความถี่ที่หายไปของเอาต์พุต",
     "Shifts": "การกะระยะ",
     "Number of predictions with random shifts, higher = slower but better quality": "จำนวนการทำนายที่มีการกะระยะแบบสุ่ม, สูงมาก = ช้าแต่มีคุณภาพที่ดีกว่า",
+    "Overlap between prediction windows. Higher = slower but better quality": "ความทับซ้อนระหว่างช่วงเวลาของหน้าต่าง. สูงมาก = ช้าแต่มีคุณภาพที่ดีกว่า",
     "Stem 3": "สเต็มที่ 3",
     "Stem 4": "สเต็มที่ 4",
     "Themes": "ธีม",

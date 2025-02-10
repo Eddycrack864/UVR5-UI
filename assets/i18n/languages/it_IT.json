@@ -33,6 +33,7 @@
     "Mirror the missing frequency range of the output": "Rifletti l'intervallo di frequenze mancante dell'output",
     "Shifts": "Spostamenti",
     "Number of predictions with random shifts, higher = slower but better quality": "Numero di predizioni con spostamenti casuali, maggiore = più lento ma qualità migliore",
+    "Overlap between prediction windows. Higher = slower but better quality": "Sovrapposizione tra le finestre di predizione. Maggiore = più lento ma qualità migliore",
     "Stem 3": "Traccia 3",
     "Stem 4": "Traccia 4",
     "Themes": "Temi",

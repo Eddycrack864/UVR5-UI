@@ -33,6 +33,7 @@
     "Mirror the missing frequency range of the output": "镜像输出中缺失的频率范围",
     "Shifts": "偏移",
     "Number of predictions with random shifts, higher = slower but better quality": "随机偏移预测次数，越高越慢但质量越好",
+    "Overlap between prediction windows. Higher = slower but better quality": "预测窗口之间的重叠. 越高越慢但质量越好",
     "Stem 3": "干声 3",
     "Stem 4": "干声 4",
     "Themes": "主题",

@@ -33,6 +33,7 @@
     "Mirror the missing frequency range of the output": "Зеркальное отображение недостающего диапазона частот на выходе",
     "Shifts": "Сдвиги",
     "Number of predictions with random shifts, higher = slower but better quality": "Количество прогнозов со случайными сдвигами, больше = медленнее, но качественнее",
+    "Overlap between prediction windows. Higher = slower but better quality": "Пересечения между окнами прогнозов. больше = медленнее, но качественнее",
     "Stem 3": "Трек 3",
     "Stem 4": "Трек 4",
     "Themes": "Темы",

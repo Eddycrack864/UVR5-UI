@@ -33,6 +33,7 @@
     "Mirror the missing frequency range of the output": "Cerminkan julat frekuensi yang hilang pada output",
     "Shifts": "Peralihan",
     "Number of predictions with random shifts, higher = slower but better quality": "Bilangan ramalan dengan peralihan rawak, lebih tinggi = lebih perlahan tetapi kualiti lebih baik",
+    "Overlap between prediction windows. Higher = slower but better quality": "Pertindihan antara tetingkap ramalan. Lebih tinggi = lebih perlahan tetapi kualiti lebih baik",
     "Stem 3": "Lapis 3",
     "Stem 4": "Lapis 4",
     "Themes": "Tema",

@@ -33,6 +33,7 @@
     "Mirror the missing frequency range of the output": "Mirror the missing frequency range of the output",
     "Shifts": "Shifts",
     "Number of predictions with random shifts, higher = slower but better quality": "Number of predictions with random shifts, higher = slower but better quality",
+    "Overlap between prediction windows. Higher = slower but better quality": "Overlap between prediction windows. Higher = slower but better quality",
     "Stem 3": "Stem 3",
     "Stem 4": "Stem 4",
     "Themes": "Themes",

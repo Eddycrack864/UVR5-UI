@@ -33,6 +33,7 @@
     "Mirror the missing frequency range of the output": "Cerminkan rentang frekuensi yang hilang dari output",
     "Shifts": "Pergeseran",
     "Number of predictions with random shifts, higher = slower but better quality": "Jumlah prediksi dengan pergeseran acak, lebih tinggi = lebih lambat tetapi kualitas lebih baik",
+    "Overlap between prediction windows. Higher = slower but better quality": "Tumpang tindih antara jendela prediksi. Lebih tinggi = lebih lambat tetapi kualitas lebih baik",
     "Stem 3": "Stem 3",
     "Stem 4": "Stem 4",
     "Themes": "Tema",

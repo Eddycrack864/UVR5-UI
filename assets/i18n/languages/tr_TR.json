@@ -33,6 +33,7 @@
     "Mirror the missing frequency range of the output": "Eksik frekans aralığını çıktıda yansıt",
     "Shifts": "Kaymalar",
     "Number of predictions with random shifts, higher = slower but better quality": "Rastgele kaymalarla tahmin sayısı, yüksek = daha yavaş ama daha iyi kalite",
+    "Overlap between prediction windows. Higher = slower but better quality": "Pencereleri arasındaki örtüşme miktarı. Yüksek = daha yavaş ama daha iyi kalite",
     "Stem 3": "Kanal 3",
     "Stem 4": "Kanal 4",
     "Themes": "Temalar",

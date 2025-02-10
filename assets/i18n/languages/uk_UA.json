@@ -33,6 +33,7 @@
     "Mirror the missing frequency range of the output": "Дзеркальне відображення відсутнього діапазону частот на виході",
     "Shifts": "Здвиги",
     "Number of predictions with random shifts, higher = slower but better quality": "Кількість прогнозів із випадковими зсувами, більше = повільніше, але якісніше",
+    "Overlap between prediction windows. Higher = slower but better quality": "Перетину між вікнами прогнозів. більше = повільніше, але якісніше",
     "Stem 3": "Трек 3",
     "Stem 4": "Трек 4",
     "Themes": "Теми",

@@ -22,6 +22,12 @@ This project is based on [python-audio-separator](https://github.com/karaokenerd
 You can also try it in Hugging Faces Spaces running on Zero GPU (A100)!
 
 </div>
+ 
+<div align="center">
+
+**[Docs](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/docs.md) / [Troubleshooting](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/troubleshooting.md)**
+
+</div>
 
 ## Features: 
 * User Friendly Interface

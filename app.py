@@ -1,17 +1,24 @@
 import os
+import sys
 import subprocess
 import re
 import platform
 import torch
 import logging
 import yt_dlp
+import json
 import gradio as gr
 import assets.themes.loadThemes as loadThemes
 from audio_separator.separator import Separator
 from assets.i18n.i18n import I18nAuto
 from argparse import ArgumentParser
+from assets.presence.discord_presence import RPCManager, track_presence
 
 i18n = I18nAuto()
+
+now_dir = os.getcwd()
+sys.path.append(now_dir)
+config_file = os.path.join(now_dir, "assets", "config.json")
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 use_autocast = device == "cuda"
@@ -201,6 +208,17 @@ out_dir = "./outputs"
 models_dir = "./models"
 extensions = (".wav", ".flac", ".mp3", ".ogg", ".opus", ".m4a", ".aiff", ".ac3")
 
+def load_config_presence():
+    with open(config_file, "r", encoding="utf8") as file:
+        config = json.load(file)
+        return config["discord_presence"]
+
+def initialize_presence():
+    if load_config_presence():
+        RPCManager.start_presence()
+
+initialize_presence()
+
 def download_audio(url, output_dir="ytdl"):
 
     os.makedirs(output_dir, exist_ok=True)
@@ -255,6 +273,7 @@ def leaderboard(list_filter):
     except Exception as e:
         return f"Error: {e}"
 
+@track_presence("Performing BS/Mel Roformer Separation")
 def roformer_separator(audio, model_key, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
     base_name = os.path.splitext(os.path.basename(audio))[0]
     roformer_model = roformer_models[model_key]
@@ -291,7 +310,8 @@ def roformer_separator(audio, model_key, out_format, segment_size, override_seg_
     
     except Exception as e:
         raise RuntimeError(f"Roformer separation failed: {e}") from e
-    
+
+@track_presence("Performing MDXC Separationn")
 def mdxc_separator(audio, model, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
     base_name = os.path.splitext(os.path.basename(audio))[0]
     try:
@@ -328,6 +348,7 @@ def mdxc_separator(audio, model, out_format, segment_size, override_seg_size, ov
     except Exception as e:
         raise RuntimeError(f"MDX23C separation failed: {e}") from e
 
+@track_presence("Performing MDX-NET Separation")
 def mdxnet_separator(audio, model, out_format, hop_length, segment_size, denoise, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
     base_name = os.path.splitext(os.path.basename(audio))[0]
     try:
@@ -365,6 +386,7 @@ def mdxnet_separator(audio, model, out_format, hop_length, segment_size, denoise
     except Exception as e:
         raise RuntimeError(f"MDX-NET separation failed: {e}") from e
 
+@track_presence("Performing VR Arch Separation")
 def vrarch_separator(audio, model, out_format, window_size, aggression, tta, post_process, post_process_threshold, high_end_process, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
     base_name = os.path.splitext(os.path.basename(audio))[0]
     try:
@@ -404,6 +426,7 @@ def vrarch_separator(audio, model, out_format, window_size, aggression, tta, pos
     except Exception as e:
         raise RuntimeError(f"VR ARCH separation failed: {e}") from e
 
+@track_presence("Performing Demucs Separation")
 def demucs_separator(audio, model, out_format, shifts, segment_size, segments_enabled, overlap, batch_size, norm_thresh, amp_thresh, progress=gr.Progress(track_tqdm=True)):
     base_name = os.path.splitext(os.path.basename(audio))[0]
     try:
@@ -446,6 +469,7 @@ def update_stems(model):
     else:
         return gr.update(visible=False)
 
+@track_presence("Performing BS/Mel Roformer Batch Separation")
 def roformer_batch(path_input, path_output, model_key, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem):
     found_files.clear()
     logs.clear()
@@ -496,6 +520,7 @@ def roformer_batch(path_input, path_output, model_key, out_format, segment_size,
             except Exception as e:
                 raise RuntimeError(f"Roformer batch separation failed: {e}") from e
 
+@track_presence("Performing MDXC Batch Separation")
 def mdx23c_batch(path_input, path_output, model, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem):
     found_files.clear()
     logs.clear()
@@ -545,6 +570,7 @@ def mdx23c_batch(path_input, path_output, model, out_format, segment_size, overr
             except Exception as e:
                 raise RuntimeError(f"Roformer batch separation failed: {e}") from e
 
+@track_presence("Performing MDX-NET Batch Separation")
 def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment_size, denoise, overlap, batch_size, norm_thresh, amp_thresh, single_stem):
     found_files.clear()
     logs.clear()
@@ -595,6 +621,7 @@ def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment
             except Exception as e:
                 raise RuntimeError(f"Roformer batch separation failed: {e}") from e
 
+@track_presence("Performing VR Arch Batch Separation")
 def vrarch_batch(path_input, path_output, model, out_format, window_size, aggression, tta, post_process, post_process_threshold, high_end_process, batch_size, norm_thresh, amp_thresh, single_stem):
     found_files.clear()
     logs.clear()
@@ -647,6 +674,7 @@ def vrarch_batch(path_input, path_output, model, out_format, window_size, aggres
             except Exception as e:
                 raise RuntimeError(f"Roformer batch separation failed: {e}") from e
 
+@track_presence("Performing Demucs Batch Separation")
 def demucs_batch(path_input, path_output, model, out_format, shifts, segment_size, segments_enabled, overlap, batch_size, norm_thresh, amp_thresh):
     found_files.clear()
     logs.clear()
@@ -1503,6 +1531,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 * Thanks to [ArisDev](https://github.com/aris-py) for porting UVR5 UI to Kaggle and improvements.
                 * Thanks to [Bebra777228](https://github.com/Bebra777228)'s code for guiding me to improve my code.
                 * Thanks to Nick088, MrM0dZ, Ryouko-Yamanda65777, lucinamari, perariroswe, Enes, Léo and the_undead0 for helping translate UVR5 UI.
+                * Thanks to vadigr123 for creating the images for the Discord Rich Presence.
                 
                 You can donate to the original UVR5 project here:
                 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/uvr5)
@@ -1511,6 +1540,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
 
 app.launch(
     share=args.share,
+    favicon_path="assets/favicon.ico",
     server_name="",
     server_port=args.listen_port,
     inbrowser=args.open

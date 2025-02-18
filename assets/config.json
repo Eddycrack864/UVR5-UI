@@ -6,5 +6,6 @@
   "lang": {
     "override": false,
     "selected_lang": "en_US"
-  }
+  },
+  "discord_presence": true
 }

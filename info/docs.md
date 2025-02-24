@@ -1,26 +1,22 @@
-
 # UVR5-UI Documentation
 
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Features](#features)
 3. [Requirements](#requirements)
-4. [Getting Started](#getting-started)
-5. [Installation Instructions](#installation-instructions)
-6. [Running UVR5-UI](#running-uvr5-ui)
-7. [Updating UVR5-UI](#updating-uvr5-ui)
-8. [Docker Instance Setup](#docker-instance-setup)
-9. [Contributions](#contributions)
-10. [TO-DO](#to-do)
-11. [Credits](#credits)
-12. [Feedback and Support](#feedback-and-support)
-
----
+4. [Installation Instructions](#installation-instructions)
+5. [Running UVR5-UI](#running-uvr5-ui)
+6. [Updating UVR5-UI](#updating-uvr5-ui)
+7. [Docker Instance Setup](#docker-instance-setup)
+8. [Best Models](#best-models)
+9. [Advanced Documentation](#advanced-documentation)
+10. [Contributions](#contributions)
+11. [TO-DO](#to-do)
+12. [Credits](#credits)
+13. [Feedback and Support](#feedback-and-support)
 
 ## Introduction
 UVR5-UI is a user-friendly interface for the Ultimate Vocal Remover 5, designed to separate audio files into various stems using multiple models. Built on top of the `python-audio-separator`, it provides a Gradio UI for easier interaction, making it accessible to both novice and advanced users.
-
----
 
 ## Features
 - **User-Friendly Interface**: An intuitive Gradio UI for easy navigation and operation.
@@ -30,8 +26,6 @@ UVR5-UI is a user-friendly interface for the Ultimate Vocal Remover 5, designed 
 - **Multi-Language Support**: Available in several languages to cater to a global user base.
 - **Cross-Platform Compatibility**: Runs on Windows, Linux, and through cloud services like Colab, Kaggle, and Hugging Face Spaces.
 - **Integration with Cloud Services**: Direct links to run in Google Colab, Kaggle, and Lightning.ai.
-
----
 
 ## Requirements
 ### Hardware Requirements
@@ -53,8 +47,6 @@ sudo pacman -S ffmpeg git    # For Arch Linux
 sudo dnf install ffmpeg git  # For Fedora
 ```
 
----
-
 ## Installation Instructions
 1. **Clone the Repository**:
    ```bash
@@ -69,8 +61,6 @@ sudo dnf install ffmpeg git  # For Fedora
 
 > **Tip**: Consider running the updater script before installation to ensure the latest version.
 
----
-
 ## Running UVR5-UI
 1. **Windows**:
    - Double-click `run-UVR5-UI.bat` to launch the UI.
@@ -79,8 +69,6 @@ sudo dnf install ffmpeg git  # For Fedora
    chmod +x run-UVR5-UI.sh && ./run-UVR5-UI.sh
    ```
 
----
-
 ## Updating UVR5-UI
 To update, run the respective updater script:
 - **Windows**: Double-click `UVR5-UI-updater.bat`.
@@ -88,8 +76,6 @@ To update, run the respective updater script:
   ```bash
   chmod +x UVR5-UI-updater.sh && ./UVR5-UI-updater.sh
   ```
-
----
 
 ## Docker Instance Setup
 For advanced users, a Docker setup is available:
@@ -103,7 +89,40 @@ For advanced users, a Docker setup is available:
 2. **Jupyter Notebook**:
    - Access the notebook [here](https://github.com/Eddycrack864/UVR5-UI/blob/main/UVR_UI_Jupyter.ipynb) for setup instructions.
 
----
+## Best Models
+### Instrumental
+1. MelBand Roformer | Instrumental by becruily (Working on adding it)
+2. MelBand Roformer | INSTV6N by Gabox (Working on adding it)
+3. MelBand Roformer Kim | Inst V1 (E) by Unwa (Added)
+4. MelBand Roformer | INSTV6 by Gabox (Working on adding it)
+
+### Vocals
+1. MelBand Roformer 2024.10 (Only available on MVSEP)
+2. MelBand Roformer Bas Curtiz edition (Only available on MVSEP)
+3. MelBand Roformer Kim | FT2 Bleedlees by unwa (Working on adding it)
+4. MelBand Roformer Kim | Big Beta 5e FT by unwa (Added)
+5. MelBand Roformer | Vocals by becruily (Working on adding it)
+
+### Karaoke
+1. Mel-Roformer-Karaoke-Aufr33-Viperx (Added)
+2. UVR-BVE-4B_SN-44100-1 (Added)
+
+### De-Reverb
+1. MelBand Roformer | De-Reverb by anvuew (Added)
+2. MelBand Roformer | De-Reverb Less Aggressive by anvuew (Added)
+3. MelBand Roformer | De-Reverb-Echo Fused by Sucial (Working on adding it)
+
+### Denoise
+1. Mel-Roformer-Denoise-Aufr33 (Added)
+2. UVR-DeNoise (Added)
+3. MelBand Roformer | Denoise-Debleed by Gabox (Working on adding it)
+
+### Crowd
+1. UVR-MDX-NET_Crowd_HQ_1 (Added)
+2. Mel-Roformer-Crowd-Aufr33-Viperx (Added)
+
+## Advanced Documentation
+You can review more advanced and detailed documentation about models, UVR5 and other stuff [here](https://docs.google.com/document/d/17fjNvJzj8ZGSer7c7OFe_CNfUKbAxEh_OBv94ZdRG5c/edit?usp=sharing)
 
 ## Contributions
 Contributions are welcome! Feel free to:
@@ -112,13 +131,9 @@ Contributions are welcome! Feel free to:
 
 Star the repository if you find it useful, and consider donating to support the project.
 
----
-
 ## TO-DO
 - Expand language support.
 - Integrate additional models for enhanced functionality.
-
----
 
 ## Credits
 Special thanks to:
@@ -128,8 +143,6 @@ Special thanks to:
 - [Nick088](https://github.com/Nick088Official) for Roformer fixes.
 - [yt_dlp](https://github.com/yt-dlp/yt-dlp) developers for their support.
 - [Blane187](https://huggingface.co/Blane187) and [ArisDev](https://github.com/aris-py) for improvements and Kaggle integration.
-
----
 
 ## Feedback and Support
 - **Troubleshooting**: Check the [troubleshooting guide](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/troubleshooting.md).

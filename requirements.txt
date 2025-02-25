@@ -1,4 +1,4 @@
-audio-separator[gpu]==0.28.5
+audio-separator[gpu]==0.29.0
 scipy
 gradio==5.16.0
 yt_dlp

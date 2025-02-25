@@ -91,7 +91,7 @@ For advanced users, a Docker setup is available:
 
 ## Best Models
 ### Instrumental
-1. MelBand Roformer | Instrumental by becruily (Working on adding it)
+1. MelBand Roformer | Instrumental by becruily (Added)
 2. MelBand Roformer | INSTV6N by Gabox (Working on adding it)
 3. MelBand Roformer Kim | Inst V1 (E) by Unwa (Added)
 4. MelBand Roformer | INSTV6 by Gabox (Working on adding it)
@@ -101,7 +101,7 @@ For advanced users, a Docker setup is available:
 2. MelBand Roformer Bas Curtiz edition (Only available on MVSEP)
 3. MelBand Roformer Kim | FT2 Bleedlees by unwa (Working on adding it)
 4. MelBand Roformer Kim | Big Beta 5e FT by unwa (Added)
-5. MelBand Roformer | Vocals by becruily (Working on adding it)
+5. MelBand Roformer | Vocals by becruily (Added)
 
 ### Karaoke
 1. Mel-Roformer-Karaoke-Aufr33-Viperx (Added)
@@ -110,7 +110,7 @@ For advanced users, a Docker setup is available:
 ### De-Reverb
 1. MelBand Roformer | De-Reverb by anvuew (Added)
 2. MelBand Roformer | De-Reverb Less Aggressive by anvuew (Added)
-3. MelBand Roformer | De-Reverb-Echo Fused by Sucial (Working on adding it)
+3. MelBand Roformer | De-Reverb-Echo Fused by Sucial (Added)
 
 ### Denoise
 1. Mel-Roformer-Denoise-Aufr33 (Added)

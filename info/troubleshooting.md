@@ -21,3 +21,9 @@ This indicates that the dependencies were not installed correctly or the script 
 - Make sure you installed UVR5 UI in a folder that does not require administrator permissions.
 - Make sure the installation path does not have any special characters on it.
 - If you installed UVR5 UI by downloading the .zip from `releases` make sure you rename it from `UVR5-UI-X.X.X` to just `UVR5-UI`
+
+## How to disable Discord Rich Presence?
+
+1. Go to the `assets` folder and open `config.json`
+2. On line 10, change the state of `discord_presence` from `true` to `false`
+3. Save changes and restart UVR5 UI

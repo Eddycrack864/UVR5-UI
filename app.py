@@ -503,7 +503,7 @@ def update_stems(model):
         return gr.update(visible=False)
 
 @track_presence("Performing BS/Mel Roformer Batch Separation")
-def roformer_batch(path_input, path_output, model_key, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem):
+def roformer_batch(path_input, path_output, model_key, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress()):
     found_files.clear()
     logs.clear()
     roformer_model = roformer_models[model_key]
@@ -515,12 +515,14 @@ def roformer_batch(path_input, path_output, model_key, out_format, segment_size,
 
     if total_files == 0:
         logs.append("No valid audio files.")
-        yield "\n".join(logs)
+        return "\n".join(logs)
     else:
         logs.append(f"{total_files} audio files found")
         found_files.sort()
+        progress(0, desc="Starting processing...")
 
-        for audio_files in found_files:
+        for i, audio_files in enumerate(found_files):
+            progress((i / total_files), desc=f"Processing file {i+1}/{total_files}")
             file_path = os.path.join(path_input, audio_files)
             base_name = os.path.splitext(os.path.basename(file_path))[0]
             try:
@@ -542,19 +544,19 @@ def roformer_batch(path_input, path_output, model_key, out_format, segment_size,
                 )
 
                 logs.append("Loading model...")
-                yield "\n".join(logs)
                 separator.load_model(model_filename=roformer_model)
 
                 logs.append(f"Separating file: {audio_files}")
-                yield "\n".join(logs)
                 separator.separate(file_path)
                 logs.append(f"File: {audio_files} separated!")
-                yield "\n".join(logs)
             except Exception as e:
-                raise RuntimeError(f"Roformer batch separation failed: {e}") from e
+                raise RuntimeError(f"BS/Mel Roformer batch separation failed: {e}") from e
+        
+        progress(1.0, desc="Processing complete")
+        return "\n".join(logs)
 
 @track_presence("Performing MDXC Batch Separation")
-def mdx23c_batch(path_input, path_output, model, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem):
+def mdx23c_batch(path_input, path_output, model, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress()):
     found_files.clear()
     logs.clear()
 
@@ -565,12 +567,14 @@ def mdx23c_batch(path_input, path_output, model, out_format, segment_size, overr
 
     if total_files == 0:
         logs.append("No valid audio files.")
-        yield "\n".join(logs)
+        return "\n".join(logs)
     else:
         logs.append(f"{total_files} audio files found")
         found_files.sort()
+        progress(0, desc="Starting processing...")
 
-        for audio_files in found_files:
+        for i, audio_files in enumerate(found_files):
+            progress((i / total_files), desc=f"Processing file {i+1}/{total_files}")
             file_path = os.path.join(path_input, audio_files)
             base_name = os.path.splitext(os.path.basename(file_path))[0]
             try:
@@ -592,19 +596,19 @@ def mdx23c_batch(path_input, path_output, model, out_format, segment_size, overr
                 )
 
                 logs.append("Loading model...")
-                yield "\n".join(logs)
                 separator.load_model(model_filename=model)
 
                 logs.append(f"Separating file: {audio_files}")
-                yield "\n".join(logs)
                 separator.separate(file_path)
                 logs.append(f"File: {audio_files} separated!")
-                yield "\n".join(logs)
             except Exception as e:
-                raise RuntimeError(f"Roformer batch separation failed: {e}") from e
+                raise RuntimeError(f"MDXC batch separation failed: {e}") from e
+        
+        progress(1.0, desc="Processing complete")
+        return "\n".join(logs)
 
 @track_presence("Performing MDX-NET Batch Separation")
-def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment_size, denoise, overlap, batch_size, norm_thresh, amp_thresh, single_stem):
+def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment_size, denoise, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress()):
     found_files.clear()
     logs.clear()
 
@@ -615,12 +619,14 @@ def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment
 
     if total_files == 0:
         logs.append("No valid audio files.")
-        yield "\n".join(logs)
+        return "\n".join(logs)
     else:
         logs.append(f"{total_files} audio files found")
         found_files.sort()
+        progress(0, desc="Starting processing...")
 
-        for audio_files in found_files:
+        for i, audio_files in enumerate(found_files):
+            progress((i / total_files), desc=f"Processing file {i+1}/{total_files}")
             file_path = os.path.join(path_input, audio_files)
             base_name = os.path.splitext(os.path.basename(file_path))[0]
             try:
@@ -643,19 +649,19 @@ def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment
                 )
 
                 logs.append("Loading model...")
-                yield "\n".join(logs)
                 separator.load_model(model_filename=model)
 
                 logs.append(f"Separating file: {audio_files}")
-                yield "\n".join(logs)
                 separator.separate(file_path)
                 logs.append(f"File: {audio_files} separated!")
-                yield "\n".join(logs)
             except Exception as e:
-                raise RuntimeError(f"Roformer batch separation failed: {e}") from e
+                raise RuntimeError(f"MDX-NET batch separation failed: {e}") from e
+            
+        progress(1.0, desc="Processing complete")
+        return "\n".join(logs)
 
 @track_presence("Performing VR Arch Batch Separation")
-def vrarch_batch(path_input, path_output, model, out_format, window_size, aggression, tta, post_process, post_process_threshold, high_end_process, batch_size, norm_thresh, amp_thresh, single_stem):
+def vrarch_batch(path_input, path_output, model, out_format, window_size, aggression, tta, post_process, post_process_threshold, high_end_process, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress()):
     found_files.clear()
     logs.clear()
 
@@ -666,12 +672,14 @@ def vrarch_batch(path_input, path_output, model, out_format, window_size, aggres
 
     if total_files == 0:
         logs.append("No valid audio files.")
-        yield "\n".join(logs)
+        return "\n".join(logs)
     else:
         logs.append(f"{total_files} audio files found")
         found_files.sort()
+        progress(0, desc="Starting processing...")
 
-        for audio_files in found_files:
+        for i, audio_files in enumerate(found_files):
+            progress((i / total_files), desc=f"Processing file {i+1}/{total_files}")
             file_path = os.path.join(path_input, audio_files)
             base_name = os.path.splitext(os.path.basename(file_path))[0]
             try:
@@ -696,19 +704,19 @@ def vrarch_batch(path_input, path_output, model, out_format, window_size, aggres
                 )
 
                 logs.append("Loading model...")
-                yield "\n".join(logs)
                 separator.load_model(model_filename=model)
 
                 logs.append(f"Separating file: {audio_files}")
-                yield "\n".join(logs)
                 separator.separate(file_path)
                 logs.append(f"File: {audio_files} separated!")
-                yield "\n".join(logs)
             except Exception as e:
-                raise RuntimeError(f"Roformer batch separation failed: {e}") from e
+                raise RuntimeError(f"VR Arch batch separation failed: {e}") from e
+            
+        progress(1.0, desc="Processing complete")
+        return "\n".join(logs)
 
 @track_presence("Performing Demucs Batch Separation")
-def demucs_batch(path_input, path_output, model, out_format, shifts, segment_size, segments_enabled, overlap, batch_size, norm_thresh, amp_thresh):
+def demucs_batch(path_input, path_output, model, out_format, shifts, segment_size, segments_enabled, overlap, batch_size, norm_thresh, amp_thresh, progress=gr.Progress()):
     found_files.clear()
     logs.clear()
 
@@ -719,12 +727,14 @@ def demucs_batch(path_input, path_output, model, out_format, shifts, segment_siz
 
     if total_files == 0:
         logs.append("No valid audio files.")
-        yield "\n".join(logs)
+        return "\n".join(logs)
     else:
         logs.append(f"{total_files} audio files found")
         found_files.sort()
+        progress(0, desc="Starting processing...")
 
-        for audio_files in found_files:
+        for i, audio_files in enumerate(found_files):
+            progress((i / total_files), desc=f"Processing file {i+1}/{total_files}")
             file_path = os.path.join(path_input, audio_files)
             try:
                 separator = Separator(
@@ -745,16 +755,16 @@ def demucs_batch(path_input, path_output, model, out_format, shifts, segment_siz
                 )
 
                 logs.append("Loading model...")
-                yield "\n".join(logs)
                 separator.load_model(model_filename=model)
 
                 logs.append(f"Separating file: {audio_files}")
-                yield "\n".join(logs)
                 separator.separate(file_path)
                 logs.append(f"File: {audio_files} separated!")
-                yield "\n".join(logs)
             except Exception as e:
-                raise RuntimeError(f"Roformer batch separation failed: {e}") from e
+                raise RuntimeError(f"Demucs batch separation failed: {e}") from e
+            
+        progress(1.0, desc="Processing complete")
+        return "\n".join(logs)
             
 with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 UVR5 UI 🎵") as app:
     gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")

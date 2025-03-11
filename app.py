@@ -308,9 +308,12 @@ def leaderboard(list_filter):
 
 @track_presence("Performing BS/Mel Roformer Separation")
 def roformer_separator(audio, model_key, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
-    base_name = os.path.splitext(os.path.basename(audio))[0]
     roformer_model = roformer_models[model_key]
+    model_path = os.path.join(models_dir, roformer_model)
     try:
+        if not os.path.exists(model_path):
+            gr.Info(f"This is the first time the {model_key} model is being used. The separation will take a little longer because the model needs to be downloaded.")
+        
         separator = Separator(
             log_level=logging.WARNING,
             model_file_dir=models_dir,
@@ -346,8 +349,11 @@ def roformer_separator(audio, model_key, out_format, segment_size, override_seg_
 
 @track_presence("Performing MDXC Separationn")
 def mdxc_separator(audio, model, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
-    base_name = os.path.splitext(os.path.basename(audio))[0]
+    model_path = os.path.join(models_dir, model)
     try:
+        if not os.path.exists(model_path):
+            gr.Info(f"This is the first time the {model} model is being used. The separation will take a little longer because the model needs to be downloaded.")
+
         separator = Separator(
             log_level=logging.WARNING,
             model_file_dir=models_dir,
@@ -383,8 +389,11 @@ def mdxc_separator(audio, model, out_format, segment_size, override_seg_size, ov
 
 @track_presence("Performing MDX-NET Separation")
 def mdxnet_separator(audio, model, out_format, hop_length, segment_size, denoise, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
-    base_name = os.path.splitext(os.path.basename(audio))[0]
+    model_path = os.path.join(models_dir, model)
     try:
+        if not os.path.exists(model_path):
+            gr.Info(f"This is the first time the {model} model is being used. The separation will take a little longer because the model needs to be downloaded.")
+
         separator = Separator(
             log_level=logging.WARNING,
             model_file_dir=models_dir,
@@ -421,8 +430,11 @@ def mdxnet_separator(audio, model, out_format, hop_length, segment_size, denoise
 
 @track_presence("Performing VR Arch Separation")
 def vrarch_separator(audio, model, out_format, window_size, aggression, tta, post_process, post_process_threshold, high_end_process, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
-    base_name = os.path.splitext(os.path.basename(audio))[0]
+    model_path = os.path.join(models_dir, model)
     try:
+        if not os.path.exists(model_path):
+            gr.Info(f"This is the first time the {model} model is being used. The separation will take a little longer because the model needs to be downloaded.")
+
         separator = Separator(
             log_level=logging.WARNING,
             model_file_dir=models_dir,
@@ -461,8 +473,11 @@ def vrarch_separator(audio, model, out_format, window_size, aggression, tta, pos
 
 @track_presence("Performing Demucs Separation")
 def demucs_separator(audio, model, out_format, shifts, segment_size, segments_enabled, overlap, batch_size, norm_thresh, amp_thresh, progress=gr.Progress(track_tqdm=True)):
-    base_name = os.path.splitext(os.path.basename(audio))[0]
+    model_path = os.path.join(models_dir, model)
     try:
+        if not os.path.exists(model_path):
+            gr.Info(f"This is the first time the {model} model is being used. The separation will take a little longer because the model needs to be downloaded.")
+
         separator = Separator(
             log_level=logging.WARNING,
             model_file_dir=models_dir,
@@ -507,6 +522,10 @@ def roformer_batch(path_input, path_output, model_key, out_format, segment_size,
     found_files.clear()
     logs.clear()
     roformer_model = roformer_models[model_key]
+    model_path = os.path.join(models_dir, roformer_model)
+
+    if not os.path.exists(model_path):
+        gr.Info(f"This is the first time the {model_key} model is being used. The separation will take a little longer because the model needs to be downloaded.")
 
     for audio_files in os.listdir(path_input):
         if audio_files.endswith(extensions):
@@ -524,7 +543,6 @@ def roformer_batch(path_input, path_output, model_key, out_format, segment_size,
         for i, audio_files in enumerate(found_files):
             progress((i / total_files), desc=f"Processing file {i+1}/{total_files}")
             file_path = os.path.join(path_input, audio_files)
-            base_name = os.path.splitext(os.path.basename(file_path))[0]
             try:
                 separator = Separator(
                     log_level=logging.WARNING,
@@ -559,6 +577,10 @@ def roformer_batch(path_input, path_output, model_key, out_format, segment_size,
 def mdx23c_batch(path_input, path_output, model, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress()):
     found_files.clear()
     logs.clear()
+    model_path = os.path.join(models_dir, model)
+
+    if not os.path.exists(model_path):
+        gr.Info(f"This is the first time the {model} model is being used. The separation will take a little longer because the model needs to be downloaded.")
 
     for audio_files in os.listdir(path_input):
         if audio_files.endswith(extensions):
@@ -576,7 +598,6 @@ def mdx23c_batch(path_input, path_output, model, out_format, segment_size, overr
         for i, audio_files in enumerate(found_files):
             progress((i / total_files), desc=f"Processing file {i+1}/{total_files}")
             file_path = os.path.join(path_input, audio_files)
-            base_name = os.path.splitext(os.path.basename(file_path))[0]
             try:
                 separator = Separator(
                     log_level=logging.WARNING,
@@ -611,6 +632,10 @@ def mdx23c_batch(path_input, path_output, model, out_format, segment_size, overr
 def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment_size, denoise, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress()):
     found_files.clear()
     logs.clear()
+    model_path = os.path.join(models_dir, model)
+
+    if not os.path.exists(model_path):
+        gr.Info(f"This is the first time the {model} model is being used. The separation will take a little longer because the model needs to be downloaded.")
 
     for audio_files in os.listdir(path_input):
         if audio_files.endswith(extensions):
@@ -628,7 +653,6 @@ def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment
         for i, audio_files in enumerate(found_files):
             progress((i / total_files), desc=f"Processing file {i+1}/{total_files}")
             file_path = os.path.join(path_input, audio_files)
-            base_name = os.path.splitext(os.path.basename(file_path))[0]
             try:
                 separator = Separator(
                     log_level=logging.WARNING,
@@ -664,6 +688,10 @@ def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment
 def vrarch_batch(path_input, path_output, model, out_format, window_size, aggression, tta, post_process, post_process_threshold, high_end_process, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress()):
     found_files.clear()
     logs.clear()
+    model_path = os.path.join(models_dir, model)
+
+    if not os.path.exists(model_path):
+        gr.Info(f"This is the first time the {model} model is being used. The separation will take a little longer because the model needs to be downloaded.")
 
     for audio_files in os.listdir(path_input):
         if audio_files.endswith(extensions):
@@ -681,7 +709,6 @@ def vrarch_batch(path_input, path_output, model, out_format, window_size, aggres
         for i, audio_files in enumerate(found_files):
             progress((i / total_files), desc=f"Processing file {i+1}/{total_files}")
             file_path = os.path.join(path_input, audio_files)
-            base_name = os.path.splitext(os.path.basename(file_path))[0]
             try:
                 separator = Separator(
                     log_level=logging.WARNING,
@@ -719,6 +746,10 @@ def vrarch_batch(path_input, path_output, model, out_format, window_size, aggres
 def demucs_batch(path_input, path_output, model, out_format, shifts, segment_size, segments_enabled, overlap, batch_size, norm_thresh, amp_thresh, progress=gr.Progress()):
     found_files.clear()
     logs.clear()
+    model_path = os.path.join(models_dir, model)
+
+    if not os.path.exists(model_path):
+        gr.Info(f"This is the first time the {model} model is being used. The separation will take a little longer because the model needs to be downloaded.")
 
     for audio_files in os.listdir(path_input):
         if audio_files.endswith(extensions):

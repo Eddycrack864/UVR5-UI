@@ -31,7 +31,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "Update Complete!"
+echo "Update Complete !"
 echo
 
 read -p "Press Enter to exit..."

@@ -19,7 +19,7 @@ This project is based on [python-audio-separator](https://github.com/karaokenerd
   
 [![Hugging Face](https://huggingface.co/datasets/huggingface/badges/resolve/main/open-in-hf-spaces-xl-dark.svg?download=true)](https://huggingface.co/spaces/TheStinger/UVR5_UI)
 
-You can also try it in Hugging Faces Spaces running on Zero GPU (A100)!
+You can also try it on HuggingFace Spaces running with Zero GPU (A100)!
 
 </div>
  

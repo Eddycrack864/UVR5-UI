@@ -25,10 +25,13 @@ use_autocast = device == "cuda"
 
 if os.path.isdir("env"):
     if platform.system() == "Windows":
+        python_location = ".\\env\\python.exe"
         separator_location = ".\\env\\Scripts\\audio-separator.exe"
     elif platform.system() == "Linux":
+        python_location = "env/bin/python"
         separator_location = "env/bin/audio-separator"
 else:
+    python_location = "python"
     separator_location = "audio-separator"
 
 if __name__ == "__main__":
@@ -289,7 +292,7 @@ def download_audio(url, output_dir="ytdl"):
 def leaderboard(list_filter):
     try:
         result = subprocess.run(
-            [separator_location, "-l", f"--list_filter={list_filter}"],
+            [python_location, separator_location, "-l", f"--list_filter={list_filter}"],
             capture_output=True,
             text=True,
         )

@@ -31,7 +31,7 @@ if os.path.isdir("env"):
         python_location = "env/bin/python"
         separator_location = "env/bin/audio-separator"
 else:
-    python_location = "python"
+    python_location = None
     separator_location = "audio-separator"
 
 if __name__ == "__main__":
@@ -291,21 +291,26 @@ def download_audio(url, output_dir="ytdl"):
 
 def leaderboard(list_filter):
     try:
+        if python_location:
+            command = [python_location, separator_location, "-l", f"--list_filter={list_filter}"]
+        else:
+            command = [separator_location, "-l", f"--list_filter={list_filter}"]
+
         result = subprocess.run(
-            [python_location, separator_location, "-l", f"--list_filter={list_filter}"],
+            command,
             capture_output=True,
             text=True,
         )
         if result.returncode != 0:
             return f"Error: {result.stderr}"
-        
+
         return "<table border='1'>" + "".join(
-            f"<tr style='{'font-weight: bold; font-size: 1.2em;' if i == 0 else ''}'>" + 
-            "".join(f"<td>{cell}</td>" for cell in re.split(r"\s{2,}", line.strip())) + 
-            "</tr>" 
+            f"<tr style='{'font-weight: bold; font-size: 1.2em;' if i == 0 else ''}'>" +
+            "".join(f"<td>{cell}</td>" for cell in re.split(r"\s{2,}", line.strip())) +
+            "</tr>"
             for i, line in enumerate(re.findall(r"^(?!-+)(.+)$", result.stdout.strip(), re.MULTILINE))
         ) + "</table>"
-    
+
     except Exception as e:
         return f"Error: {e}"
 

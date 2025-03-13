@@ -48,6 +48,7 @@ sudo dnf install ffmpeg git  # For Fedora
 ```
 
 ## Installation Instructions
+### Normal Installation
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/Eddycrack864/UVR5-UI.git
@@ -76,6 +77,16 @@ To update, run the respective updater script:
   ```bash
   chmod +x UVR5-UI-updater.sh && ./UVR5-UI-updater.sh
   ```
+
+### Precompiled Version
+1. Get the precompiled version (.zip) for your PC:
+   - **[Windows](https://huggingface.co/Eddycrack864/UVR5-UI/tree/main/Windows)**
+   - **[Linux](https://huggingface.co/Eddycrack864/UVR5-UI/tree/main/Linux)**
+
+2. Extract the .zip file, I recommend using the "extract here" option.
+3. You can now use all the features of the normal installation.
+
+> **Note**: Still, to update UVR5 UI you need to install Git.
 
 ## Docker Instance Setup
 For advanced users, a Docker setup is available:

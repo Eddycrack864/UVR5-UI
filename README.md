@@ -106,6 +106,16 @@ Check the status of audio-separator core:
 - **Windows:** Double-click `status-checker.bat`.
 - **Linux:** Run `status-checker.sh` with `chmod +x status-checker.sh` and `./status-checker.sh`.
 
+## Precompiled Version
+1. Get the precompiled version (.zip) for your PC:
+   - **[Windows](https://huggingface.co/Eddycrack864/UVR5-UI/tree/main/Windows)**
+   - **[Linux](https://huggingface.co/Eddycrack864/UVR5-UI/tree/main/Linux)**
+
+2. Extract the .zip file, I recommend using the "extract here" option.
+3. You can now use all the features of the normal installation.
+
+> **Note**: Still, to update UVR5 UI you need to install Git.
+
 ## Docker Instance
 
 A more technical level is required for this type of use. You can use this Jupyter notebook to initialize UVR5 on virtual machines with GPU. This will install the entire UVR5 from the main branch of GitHub.

@@ -114,7 +114,8 @@ Check the status of audio-separator core:
 2. Extract the .zip file, I recommend using the "extract here" option.
 3. You can now use all the features of the normal installation.
 
-> **Note**: Still, to update UVR5 UI you need to install Git.
+> [!NOTE]  
+> Still, to update UVR5 UI you need to install Git.
 
 ## Docker Instance
 

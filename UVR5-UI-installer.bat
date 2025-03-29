@@ -80,8 +80,9 @@ exit /b 0
 echo Installing dependencies...
 call "%MINICONDA_DIR%\condabin\conda.bat" activate "%ENV_DIR%" || goto :error
 pip install -r "%INSTALL_DIR%\requirements.txt" || goto :error
-pip uninstall torch torchvision -y || goto :error
+pip uninstall torch torchvision pydantic -y || goto :error
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121 || goto :error
+pip install pydantic==2.10.6 || goto :error
 call "%MINICONDA_DIR%\condabin\conda.bat" deactivate
 echo Dependencies installation complete
 echo.

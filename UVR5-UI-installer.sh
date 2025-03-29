@@ -82,8 +82,9 @@ install_dependencies() {
     source "$MINICONDA_DIR/etc/profile.d/conda.sh"
     conda activate "$ENV_DIR" || exit 1
     pip install -r "$INSTALL_DIR/requirements.txt" || exit 1
-    pip uninstall torch torchvision -y || exit 1
+    pip uninstall torch torchvision pydantic -y || exit 1
     pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121 || exit 1
+    pip install pydantic==2.10.6 || exit 1
     conda deactivate
     echo "Dependencies installation complete"
     echo

@@ -102,10 +102,10 @@ For advanced users, a Docker setup is available:
 
 ## Best Models
 ### Instrumental
-1. MelBand Roformer | Instrumental by becruily (Added)
-2. MelBand Roformer | INSTV6N by Gabox (Added)
-3. MelBand Roformer Kim | Inst V1 (E) by Unwa (Added)
-4. MelBand Roformer | INSTV6 by Gabox (Added)
+1. MelBand Roformer Kim | Inst V1 (E) Plus by Unwa (Added)
+2. MelBand Roformer | INSTV7 by Gabox (Added)
+3. MelBand Roformer | Instrumental by becruily (Added)
+4. MelBand Roformer | Instrumental 3 by Gabox (Added)
 
 ### Vocals
 1. MelBand Roformer 2024.10 (Only available on MVSEP)
@@ -115,13 +115,16 @@ For advanced users, a Docker setup is available:
 5. MelBand Roformer | Vocals by becruily (Added)
 
 ### Karaoke
-1. Mel-Roformer-Karaoke-Aufr33-Viperx (Added)
-2. UVR-BVE-4B_SN-44100-1 (Added)
+1. MelBand Roformer | Karaoke by becruily (Added)
+2. Mel-Roformer-Karaoke-Aufr33-Viperx (Added)
+3. MelBand Roformer | Karaoke by Gabox (Added)
+4. UVR-BVE-4B_SN-44100-1 (Added)
 
 ### De-Reverb
 1. MelBand Roformer | De-Reverb by anvuew (Added)
-2. MelBand Roformer | De-Reverb Less Aggressive by anvuew (Added)
+2. MelBand Roformer | De-Reverb Mono by anvuew (Added)
 3. MelBand Roformer | De-Reverb-Echo Fused by Sucial (Added)
+4. MelBand Roformer | De-Reverb Less Aggressive by anvuew (Added)
 
 ### Denoise
 1. Mel-Roformer-Denoise-Aufr33 (Added)
@@ -159,4 +162,3 @@ Special thanks to:
 - **Troubleshooting**: Check the [troubleshooting guide](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/troubleshooting.md).
 - **Community**: Join the [AI HUB Discord](https://discord.gg/aihub) for support and discussions.
 - **Issues**: Report any unresolved issues [here](https://github.com/Eddycrack864/UVR5-UI/issues).
-

@@ -22,6 +22,7 @@ __pycache__/
 # Specific files
 models/*.json
 models/*.yaml
+assets/custom_settings.json
 
 # Environments
 .env

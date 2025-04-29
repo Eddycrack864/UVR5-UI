@@ -7,7 +7,9 @@ import torch
 import logging
 import yt_dlp
 import json
+import copy
 import gradio as gr
+import urllib.parse
 import assets.themes.loadThemes as loadThemes
 from audio_separator.separator import Separator
 from assets.i18n.i18n import I18nAuto
@@ -19,6 +21,9 @@ i18n = I18nAuto()
 now_dir = os.getcwd()
 sys.path.append(now_dir)
 config_file = os.path.join(now_dir, "assets", "config.json")
+models_file = os.path.join(now_dir, "assets", "models.json")
+default_settings_file = os.path.join(now_dir, "assets", "default_settings.json")
+custom_settings_file = os.path.join(now_dir, "assets", "custom_settings.json")
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 use_autocast = device == "cuda"
@@ -72,12 +77,16 @@ roformer_models = {
     'MelBand Roformer | Denoise-Debleed by Gabox' : 'mel_band_roformer_denoise_debleed_gabox.ckpt',
     'Mel-Roformer-Karaoke-Aufr33-Viperx': 'mel_band_roformer_karaoke_aufr33_viperx_sdr_10.1956.ckpt',
     'MelBand Roformer | Karaoke by Gabox' : 'mel_band_roformer_karaoke_gabox.ckpt',
+    'MelBand Roformer | Karaoke by becruily' : 'mel_band_roformer_karaoke_becruily.ckpt',
     'MelBand Roformer | Vocals by Kimberley Jensen' : 'vocals_mel_band_roformer.ckpt',
     'MelBand Roformer Kim | FT by unwa' : 'mel_band_roformer_kim_ft_unwa.ckpt',
     'MelBand Roformer Kim | FT 2 by unwa' : 'mel_band_roformer_kim_ft2_unwa.ckpt',
     'MelBand Roformer Kim | FT 2 Bleedless by unwa' : 'mel_band_roformer_kim_ft2_bleedless_unwa.ckpt',
+    'MelBand Roformer Kim | FT 3 by unwa' : 'mel_band_roformer_kim_ft3_unwa.ckpt',
     'MelBand Roformer Kim | Inst V1 by Unwa' : 'melband_roformer_inst_v1.ckpt',
+    'MelBand Roformer Kim | Inst V1 Plus by Unwa' : 'melband_roformer_inst_v1_plus.ckpt',
     'MelBand Roformer Kim | Inst V1 (E) by Unwa' : 'melband_roformer_inst_v1e.ckpt',
+    'MelBand Roformer Kim | Inst V1 (E) Plus by Unwa' : 'melband_roformer_inst_v1e_plus.ckpt',
     'MelBand Roformer Kim | Inst V2 by Unwa' : 'melband_roformer_inst_v2.ckpt',
     'MelBand Roformer Kim | InstVoc Duality V1 by Unwa' : 'melband_roformer_instvoc_duality_v1.ckpt',
     'MelBand Roformer Kim | InstVoc Duality V2 by Unwa' : 'melband_roformer_instvox_duality_v2.ckpt',
@@ -95,6 +104,7 @@ roformer_models = {
     'MelBand Roformer | Instrumental 3 by Gabox' : 'mel_band_roformer_instrumental_3_gabox.ckpt',
     'MelBand Roformer | Instrumental Bleedless V1 by Gabox' : 'mel_band_roformer_instrumental_bleedless_v1_gabox.ckpt',
     'MelBand Roformer | Instrumental Bleedless V2 by Gabox' : 'mel_band_roformer_instrumental_bleedless_v2_gabox.ckpt',
+    'MelBand Roformer | Instrumental Bleedless V3 by Gabox' : 'mel_band_roformer_instrumental_bleedless_v3_gabox.ckpt',
     'MelBand Roformer | Instrumental Fullness V1 by Gabox' : 'mel_band_roformer_instrumental_fullness_v1_gabox.ckpt',
     'MelBand Roformer | Instrumental Fullness V2 by Gabox' : 'mel_band_roformer_instrumental_fullness_v2_gabox.ckpt',
     'MelBand Roformer | Instrumental Fullness V3 by Gabox' : 'mel_band_roformer_instrumental_fullness_v3_gabox.ckpt',
@@ -104,6 +114,10 @@ roformer_models = {
     'MelBand Roformer | INSTV6 by Gabox' : 'mel_band_roformer_instrumental_instv6_gabox.ckpt',
     'MelBand Roformer | INSTV6N by Gabox' : 'mel_band_roformer_instrumental_instv6n_gabox.ckpt',
     'MelBand Roformer | INSTV7 by Gabox' : 'mel_band_roformer_instrumental_instv7_gabox.ckpt',
+    'MelBand Roformer | INSTV7N by Gabox' : 'mel_band_roformer_instrumental_instv7n_gabox.ckpt',
+    'MelBand Roformer | INSTV8 by Gabox' : 'mel_band_roformer_instrumental_instv8_gabox.ckpt',
+    'MelBand Roformer | INSTV8N by Gabox' : 'mel_band_roformer_instrumental_instv8n_gabox.ckpt',
+    'MelBand Roformer | FVX by Gabox' : 'mel_band_roformer_instrumental_fvx_gabox.ckpt',
     'MelBand Roformer | De-Reverb by anvuew' : 'dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt',
     'MelBand Roformer | De-Reverb Less Aggressive by anvuew' : 'dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt',
     'MelBand Roformer | De-Reverb Mono by anvuew' : 'dereverb_mel_band_roformer_mono_anvuew.ckpt',
@@ -120,6 +134,7 @@ roformer_models = {
     'MelBand Roformer Kim | Big Beta 4 FT by unwa' : 'melband_roformer_big_beta4.ckpt',
     'MelBand Roformer Kim | Big Beta 5e FT by unwa' : 'melband_roformer_big_beta5e.ckpt',
     'MelBand Roformer | Big Beta 6 by unwa' : 'melband_roformer_big_beta6.ckpt',
+    'MelBand Roformer | Big Beta 6X by unwa' : 'melband_roformer_big_beta6x.ckpt',
     'BS Roformer | Chorus Male-Female by Sucial' : 'model_chorus_bs_roformer_ep_267_sdr_24.1275.ckpt',
     'BS Roformer | Male-Female by aufr33' : 'bs_roformer_male_female_by_aufr33_sdr_7.2889.ckpt',
     'MelBand Roformer | Aspiration by Sucial' : 'aspiration_mel_band_roformer_sdr_18.9845.ckpt',
@@ -313,6 +328,214 @@ def leaderboard(list_filter):
 
     except Exception as e:
         return f"Error: {e}"
+    
+def get_language_settings():
+    with open(config_file, "r", encoding="utf8") as file:
+        config = json.load(file)
+
+    if config["lang"]["override"] == False:
+        return "Language automatically detected by system"
+    else:
+        return config["lang"]["selected_lang"]
+    
+def save_lang_settings(selected_language):
+    with open(config_file, "r", encoding="utf8") as file:
+        config = json.load(file)
+
+    if selected_language == "Language automatically detected by system":
+        config["lang"]["override"] = False
+    else:
+        config["lang"]["override"] = True
+        config["lang"]["selected_lang"] = selected_language
+
+    gr.Info(i18n("Language have been saved. Restart UVR5 UI to apply the changes"))
+
+    with open(config_file, "w", encoding="utf8") as file:
+        json.dump(config, file, indent=2)
+
+def alternative_model_downloader(method, key, output_dir="models", progress=gr.Progress()):
+    logs.clear()
+
+    with open(models_file, 'r', encoding='utf-8') as file:
+        model_data = json.load(file)
+    
+    if key not in model_data:
+        return f"Model '{key}' cannot be found."
+    
+    total_files = len(model_data[key])
+    progress(0, desc="Starting downloads...")
+
+    for i, url in enumerate(model_data[key]):
+        filename = os.path.basename(urllib.parse.urlparse(url).path)
+        full_name = os.path.join(output_dir, filename)
+
+        if os.path.exists(full_name):
+            logs.append(f"{filename} already exists.")
+            continue
+
+        progress((i + 0.1) / total_files, desc=f"Starting download of {filename} ({i+1}/{total_files})")
+
+        if method == 'wget':
+            cmd = ['wget', '--progress=bar:force', '-O', full_name, url]
+        elif method == 'curl':
+            cmd = ['curl', '-L', '-#', '-o', full_name, url]
+
+        try:
+            process = subprocess.Popen(
+                cmd, 
+                stdout=subprocess.PIPE, 
+                stderr=subprocess.PIPE,
+                universal_newlines=True,
+                bufsize=1
+            )
+            
+            for line in process.stderr:
+                if method == 'wget' and '%' in line:
+                    try:
+                        percent = int(line.strip().split('%')[0].split()[-1])
+                        file_progress = percent / 100.0
+                        total_progress = (i + file_progress) / total_files
+                        progress(total_progress, desc=f"File {i+1}/{total_files}: {filename} ({percent}%)")
+                    except (ValueError, IndexError):
+                        pass
+                elif method == 'curl' and '##' in line:
+                    try:
+                        hash_count = line.count('#')
+                        file_progress = min(hash_count / 50.0, 1.0)
+                        total_progress = (i + file_progress) / total_files
+                        percent = int(file_progress * 100)
+                        progress(total_progress, desc=f"File {i+1}/{total_files}: {filename} ({percent}%)")
+                    except Exception:
+                        pass
+            
+            process.wait()
+            if process.returncode != 0:
+                logs.append(f"Error downloading {filename}")
+            else:
+                logs.append(f"{filename} downloaded successfully!")
+                progress((i + 1) / total_files, desc=f"File {i+1}/{total_files} completed")
+        
+        except Exception as e:
+            logs.append(f"Error running download command: {str(e)}")
+    
+    progress(1.0, desc="Download process completed")
+    return "\n".join(logs)
+
+def read_main_config():
+    try:
+        with open(config_file, "r", encoding="utf8") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Error reading main config file '{config_file}': {e}")
+        gr.Warning(i18n("Error reading main config file"))
+    
+def write_main_config(data):
+    try:
+        with open(config_file, "w", encoding="utf8") as f:
+            json.dump(data, f, indent=2)
+    except Exception as e:
+        print(f"Error writing to main config file '{config_file}': {e}")
+        gr.Warning(i18n("Error writing to main config file"))
+
+def load_settings_from_file(filepath):
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Error reading settings file '{filepath}': {e}")
+        gr.Warning(i18n("Error reading settings file"))
+        return None
+    
+def get_initial_settings():
+    main_config = read_main_config()
+    load_custom = main_config.get('load_custom_settings', False)
+
+    settings_to_load = {}
+    default_settings = load_settings_from_file(default_settings_file)
+
+    if load_custom:
+        print("Attempting to load custom settings...")
+        custom_settings = load_settings_from_file(custom_settings_file)
+        if custom_settings:
+            settings_to_load = copy.deepcopy(default_settings)
+            for section, params in custom_settings.items():
+                if section in settings_to_load:
+                    for key, value in params.items():
+                        settings_to_load[section][key] = value
+                else:
+                    settings_to_load[section] = params
+            print("Custom settings loaded successfully.")
+        else:
+            print("Custom settings file not found or invalid. Falling back to default settings.")
+            settings_to_load = default_settings
+    else:
+        print("Loading default settings...")
+        settings_to_load = default_settings
+
+    return settings_to_load
+
+initial_settings = get_initial_settings()
+
+def get_all_components(components_dict):
+    all_comps = []
+    for section in components_dict.values():
+        all_comps.extend(section.values())
+    return all_comps
+
+def save_current_settings(*values):
+    global components
+    try:
+        current_config_data = {}
+        value_index = 0
+        for section_name, section_comps in components.items():
+            current_config_data[section_name] = {}
+            for comp_name in section_comps.keys():
+                current_config_data[section_name][comp_name] = values[value_index]
+                value_index += 1
+
+        with open(custom_settings_file, 'w', encoding='utf-8') as f:
+            json.dump(current_config_data, f, indent=4)
+
+        main_config = read_main_config()
+        main_config['load_custom_settings'] = True
+        write_main_config(main_config)
+        gr.Info(i18n("Current settings saved successfully! They will be loaded next time"))
+    except Exception as e:
+        print(f"Error saving settings: {e}")
+        gr.Warning(i18n("Error saving settings"))
+
+def reset_settings_to_default():
+    global components, default_settings_file
+    updates = []
+    all_comps_flat = get_all_components(components)
+    try:
+        default_settings = load_settings_from_file(default_settings_file)
+        for section_name, section_comps in components.items():
+            for comp_name, comp_instance in section_comps.items():
+                default_value = default_settings.get(section_name, {}).get(comp_name, None)
+
+                if isinstance(comp_instance, gr.Dropdown) and hasattr(comp_instance, 'choices') and default_value is not None:
+                    if default_value not in comp_instance.choices:
+                        print(f"Warning: Default value '{default_value}' for '{comp_name}' not in choices {comp_instance.choices}. Setting to None.")
+                        default_value = None
+
+                updates.append(gr.update(value=default_value))
+
+        main_config = read_main_config()
+        main_config['load_custom_settings'] = False
+        write_main_config(main_config)
+
+        gr.Info(i18n("Settings reset to default. Default settings will be loaded next time"))
+        return updates
+
+    except Exception as e:
+        print(f"Error resetting settings: {e}")
+        gr.Warning(i18n("Error resetting settings"))
+        return [gr.update() for _ in all_comps_flat]
+
+components = {
+    "Roformer": {}, "MDX23C": {}, "MDX-NET": {}, "VR Arch": {}, "Demucs": {}
+}
 
 @track_presence("Performing BS/Mel Roformer Separation")
 def roformer_separator(audio, model_key, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
@@ -809,19 +1032,20 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
     gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")
     gr.Markdown(i18n("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)"))
     gr.Markdown(i18n("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)"))
+    all_configurable_inputs = []
     with gr.Tabs():
         with gr.TabItem("BS/Mel Roformer"):
             with gr.Row():
                 roformer_model = gr.Dropdown(
                     label = i18n("Select the model"),
                     choices = list(roformer_models.keys()),
-                    value = lambda : None,
+                    value = initial_settings.get("Roformer", {}).get("model", None),
                     interactive = True
                 )
                 roformer_output_format = gr.Dropdown(
                     label = i18n("Select the output format"),
                     choices = output_format,
-                    value = lambda : None,
+                    value = initial_settings.get("Roformer", {}).get("output_format", None),
                     interactive = True
                 )
             with gr.Accordion(i18n("Advanced settings"), open = False):
@@ -833,13 +1057,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 32,
                             maximum = 4000,
                             step = 32,
-                            value = 256,
+                            value = initial_settings.get("Roformer", {}).get("segment_size", 256),
                             interactive = True
                         )
                         roformer_override_segment_size = gr.Checkbox(
                             label = i18n("Override segment size"),
                             info = i18n("Override model default segment size instead of using the model default value"),
-                            value = False,
+                            value = initial_settings.get("Roformer", {}).get("override_segment_size", False),
                             interactive = True
                         )
                     with gr.Row():
@@ -849,7 +1073,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 2,
                             maximum = 10,
                             step = 1,
-                            value = 8,
+                            value = initial_settings.get("Roformer", {}).get("overlap", 8),
                             interactive = True
                         )
                         roformer_batch_size = gr.Slider(
@@ -858,7 +1082,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 1,
                             maximum = 16,
                             step = 1,
-                            value = 1,
+                            value = initial_settings.get("Roformer", {}).get("batch_size", 1),
                             interactive = True
                         )
                     with gr.Row():
@@ -868,7 +1092,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 0.1,
                             maximum = 1,
                             step = 0.1,
-                            value = 0.9,
+                            value = initial_settings.get("Roformer", {}).get("normalization_threshold", 0.9),
                             interactive = True
                         )
                         roformer_amplification_threshold = gr.Slider(
@@ -877,15 +1101,30 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 0.1,
                             maximum = 1,
                             step = 0.1,
-                            value = 0.7,
+                            value = initial_settings.get("Roformer", {}).get("amplification_threshold", 0.7),
                             interactive = True
                         )
                     with gr.Row():
                         roformer_single_stem = gr.Textbox(
                             label = i18n("Output only single stem"),
                             placeholder = i18n("Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental"),
+                            value = initial_settings.get("Roformer", {}).get("single_stem", ""),
                             interactive = True
                         )
+
+                    components["Roformer"] = {
+                        "model": roformer_model,
+                        "output_format": roformer_output_format,
+                        "segment_size": roformer_segment_size,
+                        "override_segment_size": roformer_override_segment_size,
+                        "overlap": roformer_overlap,
+                        "batch_size": roformer_batch_size,
+                        "normalization_threshold": roformer_normalization_threshold,
+                        "amplification_threshold": roformer_amplification_threshold,
+                        "single_stem": roformer_single_stem
+                    }
+                    all_configurable_inputs.extend(components["Roformer"].values())
+
             with gr.Row():
                 roformer_audio = gr.Audio(
                     label = i18n("Input audio"),
@@ -954,13 +1193,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 mdx23c_model = gr.Dropdown(
                     label = i18n("Select the model"),
                     choices = mdx23c_models,
-                    value = lambda : None,
+                    value = initial_settings.get("MDX23C", {}).get("model", None),
                     interactive = True
                 )
                 mdx23c_output_format = gr.Dropdown(
                     label = i18n("Select the output format"),
                     choices = output_format,
-                    value = lambda : None,
+                    value = initial_settings.get("MDX23C", {}).get("output_format", None),
                     interactive = True
                 )
             with gr.Accordion(i18n("Advanced settings"), open = False):
@@ -972,13 +1211,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             step = 32,
                             label = i18n("Segment size"),
                             info = i18n("Larger consumes more resources, but may give better results"),
-                            value = 256,
+                            value = initial_settings.get("MDX23C", {}).get("segment_size", 256),
                             interactive = True
                         )
                         mdx23c_override_segment_size = gr.Checkbox(
                             label = i18n("Override segment size"),
                             info = i18n("Override model default segment size instead of using the model default value"),
-                            value = False,
+                            value = initial_settings.get("MDX23C", {}).get("override_segment_size", False),
                             interactive = True
                         )
                     with gr.Row():
@@ -988,7 +1227,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             step = 1,
                             label = i18n("Overlap"),
                             info = i18n("Amount of overlap between prediction windows"),
-                            value = 8,
+                            value = initial_settings.get("MDX23C", {}).get("overlap", 8),
                             interactive = True
                         )
                         mdx23c_batch_size = gr.Slider(
@@ -997,7 +1236,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 1,
                             maximum = 16,
                             step = 1,
-                            value = 1,
+                            value = initial_settings.get("MDX23C", {}).get("batch_size", 1),
                             interactive = True
                         )
                     with gr.Row():
@@ -1007,7 +1246,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 0.1,
                             maximum = 1,
                             step = 0.1,
-                            value = 0.9,
+                            value = initial_settings.get("MDX23C", {}).get("normalization_threshold", 0.9),
                             interactive = True
                         )
                         mdx23c_amplification_threshold = gr.Slider(
@@ -1016,15 +1255,30 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 0.1,
                             maximum = 1,
                             step = 0.1,
-                            value = 0.7,
+                            value = initial_settings.get("MDX23C", {}).get("amplification_threshold", 0.7),
                             interactive = True
                         )
                     with gr.Row():
                         mdx23c_single_stem = gr.Textbox(
                             label = i18n("Output only single stem"),
                             placeholder = i18n("Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental"),
+                            value = initial_settings.get("MDX23C", {}).get("single_stem", ""),
                             interactive = True
                         )
+
+                    components["MDX23C"] = {
+                        "model": mdx23c_model,
+                        "output_format": mdx23c_output_format,
+                        "segment_size": mdx23c_segment_size,
+                        "override_segment_size": mdx23c_override_segment_size,
+                        "overlap": mdx23c_overlap,
+                        "batch_size": mdx23c_batch_size,
+                        "normalization_threshold": mdx23c_normalization_threshold,
+                        "amplification_threshold": mdx23c_amplification_threshold,
+                        "single_stem": mdx23c_single_stem
+                    }
+                    all_configurable_inputs.extend(components["MDX23C"].values())
+
             with gr.Row():
                 mdx23c_audio = gr.Audio(
                     label = i18n("Input audio"),
@@ -1093,13 +1347,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 mdxnet_model = gr.Dropdown(
                     label = i18n("Select the model"),
                     choices = mdxnet_models,
-                    value = lambda : None,
+                    value = initial_settings.get("MDX-NET", {}).get("model", None),
                     interactive = True
                 )
                 mdxnet_output_format = gr.Dropdown(
                     label = i18n("Select the output format"),
                     choices = output_format,
-                    value = lambda : None,
+                    value = initial_settings.get("MDX-NET", {}).get("output_format", None),
                     interactive = True
                 )
             with gr.Accordion(i18n("Advanced settings"), open = False):
@@ -1111,7 +1365,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 32,
                             maximum = 2048,
                             step = 32,
-                            value = 1024,
+                            value = initial_settings.get("MDX-NET", {}).get("hop_length", 1024),
                             interactive = True
                         )
                         mdxnet_segment_size = gr.Slider(
@@ -1120,13 +1374,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             step = 32,
                             label = i18n("Segment size"),
                             info = i18n("Larger consumes more resources, but may give better results"),
-                            value = 256,
+                            value = initial_settings.get("MDX-NET", {}).get("segment_size", 256),
                             interactive = True
                         )
                         mdxnet_denoise = gr.Checkbox(
                             label = i18n("Denoise"),
                             info = i18n("Enable denoising during separation"),
-                            value = True,
+                            value = initial_settings.get("MDX-NET", {}).get("denoise", True),
                             interactive = True
                         )
                     with gr.Row():
@@ -1136,7 +1390,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 0.001,
                             maximum = 0.999,
                             step = 0.001,
-                            value = 0.25,
+                            value = initial_settings.get("MDX-NET", {}).get("overlap", 0.25),
                             interactive = True
                         )
                         mdxnet_batch_size = gr.Slider(
@@ -1145,7 +1399,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 1,
                             maximum = 16,
                             step = 1,
-                            value = 1,
+                            value = initial_settings.get("MDX-NET", {}).get("batch_size", 1),
                             interactive = True
                         )
                     with gr.Row():
@@ -1155,7 +1409,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 0.1,
                             maximum = 1,
                             step = 0.1,
-                            value = 0.9,
+                            value = initial_settings.get("MDX-NET", {}).get("normalization_threshold", 0.9),
                             interactive = True
                         )
                         mdxnet_amplification_threshold = gr.Slider(
@@ -1164,15 +1418,31 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 0.1,
                             maximum = 1,
                             step = 0.1,
-                            value = 0.7,
+                            value = initial_settings.get("MDX-NET", {}).get("amplification_threshold", 0.7),
                             interactive = True
                         )
                     with gr.Row():
                         mdxnet_single_stem = gr.Textbox(
                             label = i18n("Output only single stem"),
                             placeholder = i18n("Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental"),
+                            value = initial_settings.get("MDX-NET", {}).get("single_stem", ""),
                             interactive = True
                         )
+
+                    components["MDX-NET"] = {
+                        "model": mdxnet_model,
+                        "output_format": mdxnet_output_format,
+                        "hop_length": mdxnet_hop_length,
+                        "segment_size": mdxnet_segment_size,
+                        "denoise": mdxnet_denoise,
+                        "overlap": mdxnet_overlap,
+                        "batch_size": mdxnet_batch_size,
+                        "normalization_threshold": mdxnet_normalization_threshold,
+                        "amplification_threshold": mdxnet_amplification_threshold,
+                        "single_stem": mdxnet_single_stem
+                    }
+                    all_configurable_inputs.extend(components["MDX-NET"].values())
+
             with gr.Row():
                 mdxnet_audio = gr.Audio(
                     label = i18n("Input audio"),
@@ -1241,13 +1511,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 vrarch_model = gr.Dropdown(
                     label = i18n("Select the model"),
                     choices = vrarch_models,
-                    value = lambda : None,
+                    value = initial_settings.get("VR Arch", {}).get("model", None),
                     interactive = True
                 )
                 vrarch_output_format = gr.Dropdown(
                     label = i18n("Select the output format"),
                     choices = output_format,
-                    value = lambda : None,
+                    value = initial_settings.get("VR Arch", {}).get("output_format", None),
                     interactive = True
                 )
             with gr.Accordion(i18n("Advanced settings"), open = False):
@@ -1259,7 +1529,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum=320,
                             maximum=1024,
                             step=32,
-                            value = 512,
+                            value = initial_settings.get("VR Arch", {}).get("window_size", 512),
                             interactive = True
                         )
                         vrarch_agression = gr.Slider(
@@ -1268,13 +1538,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             step = 1,
                             label = i18n("Agression"),
                             info = i18n("Intensity of primary stem extraction"),
-                            value = 5,
+                            value = initial_settings.get("VR Arch", {}).get("aggression", 5),
                             interactive = True
                         )
                         vrarch_tta = gr.Checkbox(
                             label = i18n("TTA"),
                             info = i18n("Enable Test-Time-Augmentation; slow but improves quality"),
-                            value = True,
+                            value = initial_settings.get("VR Arch", {}).get("tta", True),
                             visible = True,
                             interactive = True
                         )
@@ -1282,7 +1552,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         vrarch_post_process = gr.Checkbox(
                             label = i18n("Post process"),
                             info = i18n("Identify leftover artifacts within vocal output; may improve separation for some songs"),
-                            value = False,
+                            value = initial_settings.get("VR Arch", {}).get("post_process", False),
                             visible = True,
                             interactive = True
                         )
@@ -1292,14 +1562,14 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 0.1,
                             maximum = 0.3,
                             step = 0.1,
-                            value = 0.2,
+                            value = initial_settings.get("VR Arch", {}).get("post_process_threshold", 0.2),
                             interactive = True
                         )
                     with gr.Row():
                         vrarch_high_end_process = gr.Checkbox(
                             label = i18n("High end process"),
                             info = i18n("Mirror the missing frequency range of the output"),
-                            value = False,
+                            value = initial_settings.get("VR Arch", {}).get("high_end_process", False),
                             visible = True,
                             interactive = True,
                         )
@@ -1309,7 +1579,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 1,
                             maximum = 16,
                             step = 1,
-                            value = 1,
+                            value = initial_settings.get("VR Arch", {}).get("batch_size", 1),
                             interactive = True
                         )
                     with gr.Row():
@@ -1319,7 +1589,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 0.1,
                             maximum = 1,
                             step = 0.1,
-                            value = 0.9,
+                            value = initial_settings.get("VR Arch", {}).get("normalization_threshold", 0.9),
                             interactive = True
                         )
                         vrarch_amplification_threshold = gr.Slider(
@@ -1328,15 +1598,33 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 0.1,
                             maximum = 1,
                             step = 0.1,
-                            value = 0.7,
+                            value = initial_settings.get("VR Arch", {}).get("amplification_threshold", 0.7),
                             interactive = True
                         )
                     with gr.Row():
                         vrarch_single_stem = gr.Textbox(
                             label = i18n("Output only single stem"),
                             placeholder = i18n("Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental"),
+                            value = initial_settings.get("VR Arch", {}).get("single_stem", ""),
                             interactive = True
                         )
+
+                    components["VR Arch"] = {
+                        "model": vrarch_model,
+                        "output_format": vrarch_output_format,
+                        "window_size": vrarch_window_size,
+                        "aggression": vrarch_agression,
+                        "tta": vrarch_tta,
+                        "post_process": vrarch_post_process,
+                        "post_process_threshold": vrarch_post_process_threshold,
+                        "high_end_process": vrarch_high_end_process,
+                        "batch_size": vrarch_batch_size,
+                        "normalization_threshold": vrarch_normalization_threshold,
+                        "amplification_threshold": vrarch_amplification_threshold,
+                        "single_stem": vrarch_single_stem
+                    }
+                    all_configurable_inputs.extend(components["VR Arch"].values())
+
             with gr.Row():
                 vrarch_audio = gr.Audio(
                     label = i18n("Input audio"),
@@ -1405,13 +1693,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 demucs_model = gr.Dropdown(
                     label = i18n("Select the model"),
                     choices = demucs_models,
-                    value = lambda : None,
+                    value = initial_settings.get("Demucs", {}).get("model", None),
                     interactive = True
                 )
                 demucs_output_format = gr.Dropdown(
                     label = i18n("Select the output format"),
                     choices = output_format,
-                    value = lambda : None,
+                    value = initial_settings.get("Demucs", {}).get("output_format", None),
                     interactive = True
                 )
             with gr.Accordion(i18n("Advanced settings"), open = False):
@@ -1423,7 +1711,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 1,
                             maximum = 20,
                             step = 1,
-                            value = 2,
+                            value = initial_settings.get("Demucs", {}).get("shifts", 2),
                             interactive = True
                         )
                         demucs_segment_size = gr.Slider(
@@ -1432,13 +1720,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 1,
                             maximum = 100,
                             step = 1,
-                            value = 40,
+                            value = initial_settings.get("Demucs", {}).get("segment_size", 40),
                             interactive = True
                         )
                         demucs_segments_enabled = gr.Checkbox(
                             label = i18n("Segment-wise processing"),
                             info = i18n("Enable segment-wise processing"),
-                            value = True,
+                            value = initial_settings.get("Demucs", {}).get("segments_enabled", True),
                             interactive = True
                         )
                     with gr.Row():
@@ -1448,7 +1736,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum=0.001,
                             maximum=0.999,
                             step=0.001,
-                            value = 0.25,
+                            value = initial_settings.get("Demucs", {}).get("overlap", 0.25),
                             interactive = True
                         )
                         demucs_batch_size = gr.Slider(
@@ -1457,7 +1745,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 1,
                             maximum = 16,
                             step = 1,
-                            value = 1,
+                            value = initial_settings.get("Demucs", {}).get("batch_size", 1),
                             interactive = True
                         )
                     with gr.Row():
@@ -1467,7 +1755,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 0.1,
                             maximum = 1,
                             step = 0.1,
-                            value = 0.9,
+                            value = initial_settings.get("Demucs", {}).get("normalization_threshold", 0.9),
                             interactive = True
                         )
                         demucs_amplification_threshold = gr.Slider(
@@ -1476,9 +1764,23 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             minimum = 0.1,
                             maximum = 1,
                             step = 0.1,
-                            value = 0.7,
+                            value = initial_settings.get("Demucs", {}).get("amplification_threshold", 0.7),
                             interactive = True
                         )
+
+                    components["Demucs"] = {
+                        "model": demucs_model,
+                        "output_format": demucs_output_format,
+                        "shifts": demucs_shifts,
+                        "segment_size": demucs_segment_size,
+                        "segments_enabled": demucs_segments_enabled,
+                        "overlap": demucs_overlap,
+                        "batch_size": demucs_batch_size,
+                        "normalization_threshold": demucs_normalization_threshold,
+                        "amplification_threshold": demucs_amplification_threshold
+                    }
+                    all_configurable_inputs.extend(components["Demucs"].values())
+
             with gr.Row():
                 demucs_audio = gr.Audio(
                     label = i18n("Input audio"),
@@ -1590,15 +1892,61 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 info = i18n("Select the theme you want to use. (Requires restarting the App)"),
                 choices = loadThemes.get_list(),
                 value = loadThemes.read_json(),
-                visible = True
+                interactive = True
             )
-            dummy_output = gr.Textbox(visible = False)
 
             themes_select.change(
                 fn = loadThemes.select_theme,
                 inputs = themes_select,
-                outputs = [dummy_output]
+                outputs = []
             )
+
+        with gr.TabItem(i18n("Settings")):
+            with gr.Accordion(i18n("Language selector"), open = False):
+                selected_language = gr.Dropdown(
+                    label = i18n("Language"),
+                    info = i18n("Select the language you want to use. (Requires restarting the App)"),
+                    value = get_language_settings(),
+                    choices = ["Language automatically detected by system"] + i18n._get_available_languages(),
+                    interactive = True
+                )
+
+                selected_language.change(
+                    fn = save_lang_settings,
+                    inputs = [selected_language],
+                    outputs=[]
+                )
+            with gr.Accordion(i18n("Alternative model downloader"), open = False):
+                download_method = gr.Dropdown(
+                    label = i18n("Download method"),
+                    info = i18n("Select the download method you want to use. (Must have it installed)"),
+                    value = lambda : None,
+                    choices = ["wget", "curl"],
+                    interactive = True
+                )
+                model_key_json = gr.Dropdown(
+                    label = i18n("Model to download"),
+                    info = i18n("Select the model to download using the selected method"),
+                    value = lambda : None,
+                    choices = list(roformer_models.keys()) + mdx23c_models + mdxnet_models + vrarch_models,
+                    interactive = True
+                )
+                alternative_model_downloader_button = gr.Button(i18n("Download!"), variant = "primary")
+                alternative_model_downloader_output = gr.Textbox(
+                    label = i18n("Output information"),
+                    interactive = False
+                )
+
+                alternative_model_downloader_button.click(alternative_model_downloader, [download_method, model_key_json], [alternative_model_downloader_output])
+
+            with gr.Accordion(i18n("Separation settings management"), open = False):
+                gr.Markdown(i18n("Save your current separation parameter settings or reset them to the application defaults"))
+                with gr.Row():
+                    save_settings_button = gr.Button(i18n("Save current settings"), variant = "primary")
+                    reset_settings_button = gr.Button(i18n("Reset settings to default"), variant = "primary")
+
+                save_settings_button.click(save_current_settings, all_configurable_inputs, None)
+                reset_settings_button.click(reset_settings_to_default, None, all_configurable_inputs)
 
         with gr.TabItem(i18n("Credits")):
             gr.Markdown(

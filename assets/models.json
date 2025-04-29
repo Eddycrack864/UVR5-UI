@@ -1,0 +1,515 @@
+{
+    "BS-Roformer-Viperx-1297": [
+      "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/model_bs_roformer_ep_317_sdr_12.9755.ckpt",
+      "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/model_bs_roformer_ep_317_sdr_12.9755.yaml"
+    ],
+    "BS-Roformer-Viperx-1296": [
+      "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/model_bs_roformer_ep_368_sdr_12.9628.ckpt",
+      "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/model_bs_roformer_ep_368_sdr_12.9628.yaml"
+    ],
+    "BS-Roformer-Viperx-1053": [
+      "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/model_bs_roformer_ep_937_sdr_10.5309.ckpt",
+      "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/model_bs_roformer_ep_937_sdr_10.5309.yaml"
+    ],
+    "Mel-Roformer-Viperx-1143": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/model_mel_band_roformer_ep_3005_sdr_11.4360.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/model_mel_band_roformer_ep_3005_sdr_11.4360.yaml"
+    ],
+    "BS-Roformer-De-Reverb": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/deverb_bs_roformer_8_384dim_10depth.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/deverb_bs_roformer_8_384dim_10depth_config.yaml"
+    ],
+    "Mel-Roformer-Crowd-Aufr33-Viperx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_crowd_aufr33_viperx_sdr_8.7144.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_crowd_aufr33_viperx_sdr_8.7144_config.yaml"
+    ],
+    "Mel-Roformer-Denoise-Aufr33": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/denoise_mel_band_roformer_aufr33_sdr_27.9959.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/denoise_mel_band_roformer_aufr33_sdr_27.9959_config.yaml"
+    ],
+    "Mel-Roformer-Denoise-Aufr33-Aggr": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/denoise_mel_band_roformer_aufr33_aggr_sdr_27.9768.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/denoise_mel_band_roformer_aufr33_aggr_sdr_27.9768_config.yaml"
+    ],
+    "MelBand Roformer | Denoise-Debleed by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_denoise_debleed_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "Mel-Roformer-Karaoke-Aufr33-Viperx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_karaoke_aufr33_viperx_sdr_10.1956.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_karaoke_aufr33_viperx_sdr_10.1956_config.yaml"
+    ],
+    "MelBand Roformer | Karaoke by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_karaoke_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | Karaoke by becruily": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_karaoke_becruily.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_karaoke_becruily.yaml"
+    ],
+    "MelBand Roformer | Vocals by Kimberley Jensen": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/vocals_mel_band_roformer.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/vocals_mel_band_roformer.yaml"
+    ],
+    "MelBand Roformer Kim | FT by unwa": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_kim_ft_unwa.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_kim_ft_unwa.yaml"
+    ],
+    "MelBand Roformer Kim | FT 2 by unwa": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_kim_ft2_unwa.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_kim_ft_unwa.yaml"
+    ],
+    "MelBand Roformer Kim | FT 2 Bleedless by unwa": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_kim_ft2_bleedless_unwa.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_kim_ft_unwa.yaml"
+    ],
+    "MelBand Roformer Kim | FT 3 by unwa": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_kim_ft3_unwa.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_kim_ft_unwa.yaml"
+    ],
+    "MelBand Roformer Kim | Inst V1 by Unwa": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/melband_roformer_inst_v1.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_melbandroformer_inst.yaml"
+    ],
+    "MelBand Roformer Kim | Inst V1 Plus by Unwa": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/melband_roformer_inst_v1_plus.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_melbandroformer_inst.yaml"
+    ],
+    "MelBand Roformer Kim | Inst V1 (E) by Unwa": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/melband_roformer_inst_v1e.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_melbandroformer_inst.yaml"
+    ],
+    "MelBand Roformer Kim | Inst V1 (E) Plus by Unwa": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/melband_roformer_inst_v1e_plus.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_melbandroformer_inst.yaml"
+    ],
+    "MelBand Roformer Kim | Inst V2 by Unwa": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/melband_roformer_inst_v2.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_melbandroformer_inst_v2.yaml"
+    ],
+    "MelBand Roformer Kim | InstVoc Duality V1 by Unwa": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/melband_roformer_instvoc_duality_v1.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_melbandroformer_instvoc_duality.yaml"
+    ],
+    "MelBand Roformer Kim | InstVoc Duality V2 by Unwa": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/melband_roformer_instvox_duality_v2.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_melbandroformer_instvoc_duality.yaml"
+    ],
+    "MelBand Roformer | Vocals by becruily": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_vocals_becruily.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_vocals_becruily.yaml"
+    ],
+    "MelBand Roformer | Instrumental by becruily": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_becruily.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_becruily.yaml"
+    ],
+    "MelBand Roformer | Vocals Fullness by Aname": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_vocal_fullness_aname.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_vocal_fullness_aname.yaml"
+    ],
+    "BS Roformer | Vocals by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/bs_roformer_vocals_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_bs_roformer_vocals_gabox.yaml"
+    ],
+    "MelBand Roformer | Vocals by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_vocals_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_vocals_gabox.yaml"
+    ],
+    "MelBand Roformer | Vocals FV1 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_vocals_fv1_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_vocals_gabox.yaml"
+    ],
+    "MelBand Roformer | Vocals FV2 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_vocals_fv2_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_vocals_gabox.yaml"
+    ],
+    "MelBand Roformer | Vocals FV3 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_vocals_fv3_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_vocals_gabox.yaml"
+    ],
+    "MelBand Roformer | Vocals FV4 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_vocals_fv4_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_vocals_gabox.yaml"
+    ],
+    "MelBand Roformer | Instrumental by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | Instrumental 2 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_2_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | Instrumental 3 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_3_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | Instrumental Bleedless V1 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_bleedless_v1_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | Instrumental Bleedless V2 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_bleedless_v2_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | Instrumental Bleedless V3 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_bleedless_v3_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | Instrumental Fullness V1 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_fullness_v1_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | Instrumental Fullness V2 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_fullness_v2_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | Instrumental Fullness V3 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_fullness_v3_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | Instrumental Fullness Noisy V4 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_fullness_noise_v4_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | INSTV5 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_instv5_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | INSTV5N by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_instv5n_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | INSTV6 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_instv6_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | INSTV6N by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_instv6n_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | INSTV7 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_instv7_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | INSTV7N by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_instv7n_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | INSTV8 by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_instv8_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | INSTV8N by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_instv8n_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | FVX by Gabox": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_fvx_gabox.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+    ],
+    "MelBand Roformer | De-Reverb by anvuew": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb_mel_band_roformer_anvuew.yaml"
+    ],
+    "MelBand Roformer | De-Reverb Less Aggressive by anvuew": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb_mel_band_roformer_anvuew.yaml"
+    ],
+    "MelBand Roformer | De-Reverb Mono by anvuew": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb_mel_band_roformer_mono_anvuew.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb_mel_band_roformer_anvuew.yaml"
+    ],
+    "MelBand Roformer | De-Reverb Big by Sucial": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb_big_mbr_ep_362.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_dereverb_echo_mel_band_roformer_v2.yaml"
+    ],
+    "MelBand Roformer | De-Reverb Super Big by Sucial": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb_super_big_mbr_ep_346.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_dereverb_echo_mel_band_roformer_v2.yaml"
+    ],
+    "MelBand Roformer | De-Reverb-Echo by Sucial": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb-echo_mel_band_roformer_sdr_10.0169.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_dereverb-echo_mel_band_roformer.yaml"
+    ],
+    "MelBand Roformer | De-Reverb-Echo V2 by Sucial": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb-echo_mel_band_roformer_sdr_13.4843_v2.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_dereverb-echo_mel_band_roformer_sdr_13.4843_v2.yaml"
+    ],
+    "MelBand Roformer | De-Reverb-Echo Fused by Sucial": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb_echo_mbr_fused.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_dereverb_echo_mel_band_roformer_v2.yaml"
+    ],
+    "MelBand Roformer Kim | SYHFT by SYH99999": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/MelBandRoformerSYHFT.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_vocals_mel_band_roformer_ft.yaml"
+    ],
+    "MelBand Roformer Kim | SYHFT V2 by SYH99999": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/MelBandRoformerSYHFTV2.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_vocals_mel_band_roformer_ft.yaml"
+    ],
+    "MelBand Roformer Kim | SYHFT V2.5 by SYH99999": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/MelBandRoformerSYHFTV2.5.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_vocals_mel_band_roformer_ft.yaml"
+    ],
+    "MelBand Roformer Kim | SYHFT V3 by SYH99999": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/MelBandRoformerSYHFTV3Epsilon.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_vocals_mel_band_roformer_ft.yaml"
+    ],
+    "MelBand Roformer Kim | Big SYHFT V1 by SYH99999": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/MelBandRoformerBigSYHFTV1.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_vocals_mel_band_roformer_big_v1_ft.yaml"
+    ],
+    "MelBand Roformer Kim | Big Beta 4 FT by unwa": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/melband_roformer_big_beta4.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_melbandroformer_big_beta4.yaml"
+    ],
+    "MelBand Roformer Kim | Big Beta 5e FT by unwa": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/melband_roformer_big_beta5e.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_melband_roformer_big_beta5e.yaml"
+    ],
+    "MelBand Roformer | Big Beta 6 by unwa": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/melband_roformer_big_beta6.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_melbandroformer_big_beta6.yaml"
+    ],
+    "MelBand Roformer | Big Beta 6X by unwa": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/melband_roformer_big_beta6x.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_melbandroformer_big_beta6x.yaml"
+    ],
+    "BS Roformer | Chorus Male-Female by Sucial": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/model_chorus_bs_roformer_ep_267_sdr_24.1275.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_chorus_male_female_bs_roformer.yaml"
+    ],
+    "BS Roformer | Male-Female by aufr33": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/bs_roformer_male_female_by_aufr33_sdr_7.2889.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_chorus_male_female_bs_roformer.yaml"
+    ],
+    "MelBand Roformer | Aspiration by Sucial": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/aspiration_mel_band_roformer_sdr_18.9845.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_aspiration_mel_band_roformer.yaml"
+    ],
+    "MelBand Roformer | Aspiration Less Aggressive by Sucial": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/aspiration_mel_band_roformer_less_aggr_sdr_18.1201.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_aspiration_mel_band_roformer.yaml"
+    ],
+    "MDX23C_D1581.ckpt": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/MDX23C_D1581.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/model_2_stem_061321.yaml"
+    ],
+    "MDX23C-8KFFT-InstVoc_HQ.ckpt": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/MDX23C-8KFFT-InstVoc_HQ.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/model_2_stem_full_band_8k.yaml"
+    ],
+    "MDX23C-8KFFT-InstVoc_HQ_2.ckpt": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/MDX23C-8KFFT-InstVoc_HQ_2.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/model_2_stem_full_band_8k.yaml"
+    ],
+    "MDX23C-De-Reverb-aufr33-jarredou.ckpt": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/MDX23C-De-Reverb-aufr33-jarredou.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_dereverb_mdx23c.yaml"
+    ],
+    "MDX23C-DrumSep-aufr33-jarredou.ckpt": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/MDX23C-DrumSep-aufr33-jarredou.ckpt",
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_drumsep_mdx23c.yaml"
+    ],
+    "UVR-MDX-NET-Inst_full_292.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET-Inst_full_292.onnx"
+    ],
+    "UVR-MDX-NET_Inst_187_beta.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET_Inst_187_beta.onnx"
+    ],
+    "UVR-MDX-NET_Inst_82_beta.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET_Inst_82_beta.onnx"
+    ],
+    "UVR-MDX-NET_Inst_90_beta.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET_Inst_90_beta.onnx"
+    ],
+    "UVR-MDX-NET_Main_340.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET_Main_340.onnx"
+    ],
+    "UVR-MDX-NET_Main_390.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET_Main_390.onnx"
+    ],
+    "UVR-MDX-NET_Main_406.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET_Main_406.onnx"
+    ],
+    "UVR-MDX-NET_Main_427.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET_Main_427.onnx"
+    ],
+    "UVR-MDX-NET_Main_438.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET_Main_438.onnx"
+    ],
+    "UVR-MDX-NET-Inst_HQ_1.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET-Inst_HQ_1.onnx"
+    ],
+    "UVR-MDX-NET-Inst_HQ_2.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET-Inst_HQ_2.onnx"
+    ],
+    "UVR-MDX-NET-Inst_HQ_3.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET-Inst_HQ_3.onnx"
+    ],
+    "UVR-MDX-NET-Inst_HQ_4.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET-Inst_HQ_4.onnx"
+    ],
+    "UVR-MDX-NET-Inst_HQ_5.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET-Inst_HQ_5.onnx"
+    ],
+    "UVR_MDXNET_Main.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR_MDXNET_Main.onnx"
+    ],
+    "UVR-MDX-NET-Inst_Main.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET-Inst_Main.onnx"
+    ],
+    "UVR_MDXNET_1_9703.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR_MDXNET_1_9703.onnx"
+    ],
+    "UVR_MDXNET_2_9682.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR_MDXNET_2_9682.onnx"
+    ],
+    "UVR_MDXNET_3_9662.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR_MDXNET_3_9662.onnx"
+    ],
+    "UVR-MDX-NET-Inst_1.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET-Inst_1.onnx"
+    ],
+    "UVR-MDX-NET-Inst_2.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET-Inst_2.onnx"
+    ],
+    "UVR-MDX-NET-Inst_3.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET-Inst_3.onnx"
+    ],
+    "UVR_MDXNET_KARA.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR_MDXNET_KARA.onnx"
+    ],
+    "UVR_MDXNET_KARA_2.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR_MDXNET_KARA_2.onnx"
+    ],
+    "UVR_MDXNET_9482.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR_MDXNET_9482.onnx"
+    ],
+    "UVR-MDX-NET-Voc_FT.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET-Voc_FT.onnx"
+    ],
+    "Kim_Vocal_1.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/Kim_Vocal_1.onnx"
+    ],
+    "Kim_Vocal_2.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/Kim_Vocal_2.onnx"
+    ],
+    "Kim_Inst.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/Kim_Inst.onnx"
+    ],
+    "Reverb_HQ_By_FoxJoy.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/Reverb_HQ_By_FoxJoy.onnx"
+    ],
+    "UVR-MDX-NET_Crowd_HQ_1.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-MDX-NET_Crowd_HQ_1.onnx"
+    ],
+    "kuielab_a_vocals.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/kuielab_a_vocals.onnx"
+    ],
+    "kuielab_a_other.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/kuielab_a_other.onnx"
+    ],
+    "kuielab_a_bass.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/kuielab_a_bass.onnx"
+    ],
+    "kuielab_a_drums.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/kuielab_a_drums.onnx"
+    ],
+    "kuielab_b_vocals.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/kuielab_b_vocals.onnx"
+    ],
+    "kuielab_b_other.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/kuielab_b_other.onnx"
+    ],
+    "kuielab_b_bass.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/kuielab_b_bass.onnx"
+    ],
+    "kuielab_b_drums.onnx": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/kuielab_b_drums.onnx"
+    ],
+    "1_HP-UVR.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/1_HP-UVR.pth"
+    ],
+    "2_HP-UVR.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/2_HP-UVR.pth"
+    ],
+    "3_HP-Vocal-UVR.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/3_HP-Vocal-UVR.pth"
+    ],
+    "4_HP-Vocal-UVR.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/4_HP-Vocal-UVR.pth"
+    ],
+    "5_HP-Karaoke-UVR.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/5_HP-Karaoke-UVR.pth"
+    ],
+    "6_HP-Karaoke-UVR.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/6_HP-Karaoke-UVR.pth"
+    ],
+    "7_HP2-UVR.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/7_HP2-UVR.pth"
+    ],
+    "8_HP2-UVR.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/8_HP2-UVR.pth"
+    ],
+    "9_HP2-UVR.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/9_HP2-UVR.pth"
+    ],
+    "10_SP-UVR-2B-32000-1.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/10_SP-UVR-2B-32000-1.pth"
+    ],
+    "11_SP-UVR-2B-32000-2.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/11_SP-UVR-2B-32000-2.pth"
+    ],
+    "12_SP-UVR-3B-44100.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/12_SP-UVR-3B-44100.pth"
+    ],
+    "13_SP-UVR-4B-44100-1.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/13_SP-UVR-4B-44100-1.pth"
+    ],
+    "14_SP-UVR-4B-44100-2.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/14_SP-UVR-4B-44100-2.pth"
+    ],
+    "15_SP-UVR-MID-44100-1.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/15_SP-UVR-MID-44100-1.pth"
+    ],
+    "16_SP-UVR-MID-44100-2.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/16_SP-UVR-MID-44100-2.pth"
+    ],
+    "17_HP-Wind_Inst-UVR.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/17_HP-Wind_Inst-UVR.pth"
+    ],
+    "UVR-De-Echo-Aggressive.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-De-Echo-Aggressive.pth"
+    ],
+    "UVR-De-Echo-Normal.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-De-Echo-Normal.pth"
+    ],
+    "UVR-DeEcho-DeReverb.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-DeEcho-DeReverb.pth"
+    ],
+    "UVR-De-Reverb-aufr33-jarredou.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-De-Reverb-aufr33-jarredou.pth"
+    ],
+    "UVR-DeNoise-Lite.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-DeNoise-Lite.pth"
+    ],
+    "UVR-DeNoise.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-DeNoise.pth"
+    ],
+    "UVR-BVE-4B_SN-44100-1.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-BVE-4B_SN-44100-1.pth"
+    ],
+    "MGM_HIGHEND_v4.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/MGM_HIGHEND_v4.pth"
+    ],
+    "MGM_LOWEND_A_v4.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/MGM_LOWEND_A_v4.pth"
+    ],
+    "MGM_LOWEND_B_v4.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/MGM_LOWEND_B_v4.pth"
+    ],
+    "MGM_MAIN_v4.pth": [
+        "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/MGM_MAIN_v4.pth"
+    ]
+}

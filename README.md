@@ -80,9 +80,6 @@ Run the installation script based on your operating system:
 - **Windows:** Double-click `UVR5-UI-installer.bat` (DONT RUN AS ADMINISTRATOR 🚧).
 - **Linux:** Run `UVR5-UI-installer.sh` with `chmod +x UVR5-UI-installer.sh` and `./UVR5-UI-installer.sh`.
 
-> [!TIP]
-> I personally recommend running the [updater](https://github.com/Eddycrack864/UVR5-UI#3-update-uvr5-ui-if-you-wantneed-it) before installing to make sure you have the latest changes.
-
 ### 2. Running UVR5 UI
 
 Start UVR5 UI using:
@@ -153,5 +150,4 @@ You can donate to the original UVR5 project here:
 * Thanks to [Nick088](https://github.com/Nick088Official) for the help to fix roformers.
 * Thanks to [yt_dlp](https://github.com/yt-dlp/yt-dlp) devs.
 * Separation by link source code and improvements by [NeoDev](https://github.com/TheNeodev).
-
 * Thanks to [ArisDev](https://github.com/aris-py) for porting UVR5 UI to Kaggle and improvements.

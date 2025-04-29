@@ -5,7 +5,8 @@
   },
   "lang": {
     "override": false,
-    "selected_lang": "en_US"
+    "selected_lang": "ar_AR"
   },
-  "discord_presence": true
+  "discord_presence": true,
+  "load_custom_settings": false
 }

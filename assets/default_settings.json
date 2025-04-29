@@ -1,0 +1,61 @@
+{
+    "Roformer": {
+        "model": null,
+        "output_format": null,
+        "segment_size": 256,
+        "override_segment_size": false,
+        "overlap": 8,
+        "batch_size": 1,
+        "normalization_threshold": 0.9,
+        "amplification_threshold": 0.7,
+        "single_stem": ""
+    },
+    "MDX23C": {
+        "model": null,
+        "output_format": null,
+        "segment_size": 256,
+        "override_segment_size": false,
+        "overlap": 8,
+        "batch_size": 1,
+        "normalization_threshold": 0.9,
+        "amplification_threshold": 0.7,
+        "single_stem": ""
+    },
+    "MDX-NET": {
+        "model": null,
+        "output_format": null,
+        "hop_length": 1024,
+        "segment_size": 256,
+        "denoise": true,
+        "overlap": 0.25,
+        "batch_size": 1,
+        "normalization_threshold": 0.9,
+        "amplification_threshold": 0.7,
+        "single_stem": ""
+    },
+    "VR Arch": {
+        "model": null,
+        "output_format": null,
+        "window_size": 512,
+        "aggression": 5,
+        "tta": true,
+        "post_process": false,
+        "post_process_threshold": 0.2,
+        "high_end_process": false,
+        "batch_size": 1,
+        "normalization_threshold": 0.9,
+        "amplification_threshold": 0.7,
+        "single_stem": ""
+    },
+    "Demucs": {
+        "model": null,
+        "output_format": null,
+        "shifts": 2,
+        "segment_size": 40,
+        "segments_enabled": true,
+        "overlap": 0.25,
+        "batch_size": 1,
+        "normalization_threshold": 0.9,
+        "amplification_threshold": 0.7
+    }
+}

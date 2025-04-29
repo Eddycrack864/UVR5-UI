@@ -65,3 +65,8 @@ echo UVR5 UI has been updated to the latest version.
 pause
 endlocal
 exit /b 0
+
+:error
+echo An error occurred during the update process. Please check the output above for details.
+pause
+exit /b 1

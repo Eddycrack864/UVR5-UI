@@ -6,6 +6,7 @@ set "INSTALL_DIR=%cd%"
 set "MINICONDA_DIR=%UserProfile%\Miniconda3"
 set "ENV_DIR=%INSTALL_DIR%\env"
 set "CONDA_EXE=%MINICONDA_DIR%\Scripts\conda.exe"
+set "PIP_EXE=%MINICONDA_DIR%\Scripts\pip.exe"
 
 where git > nul 2>&1
 if %errorlevel% neq 0 (
@@ -50,7 +51,7 @@ if errorlevel 1 (
 )
 
 echo Checking for updated dependencies...
-pip install -r "%INSTALL_DIR%\requirements.txt" || goto :error
+%PIP_EXE% install -r "%INSTALL_DIR%\requirements.txt" || goto :error
 
 call "%MINICONDA_DIR%\condabin\conda.bat" deactivate
 if errorlevel 1 (

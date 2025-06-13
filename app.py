@@ -1111,20 +1111,6 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             value = initial_settings.get("Roformer", {}).get("single_stem", ""),
                             interactive = True
                         )
-
-                    components["Roformer"] = {
-                        "model": roformer_model,
-                        "output_format": roformer_output_format,
-                        "segment_size": roformer_segment_size,
-                        "override_segment_size": roformer_override_segment_size,
-                        "overlap": roformer_overlap,
-                        "batch_size": roformer_batch_size,
-                        "normalization_threshold": roformer_normalization_threshold,
-                        "amplification_threshold": roformer_amplification_threshold,
-                        "single_stem": roformer_single_stem
-                    }
-                    all_configurable_inputs.extend(components["Roformer"].values())
-
             with gr.Row():
                 roformer_audio = gr.Audio(
                     label = i18n("Input audio"),
@@ -1136,6 +1122,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     roformer_link = gr.Textbox(
                         label = i18n("Link"),
                         placeholder = i18n("Paste the link here"),
+                        value = initial_settings.get("Roformer", {}).get("link", ""),
                         interactive = True
                     )
                 with gr.Row():
@@ -1153,11 +1140,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     roformer_input_path = gr.Textbox(
                         label = i18n("Input path"),
                         placeholder = i18n("Place the input path here"),
+                        value = initial_settings.get("Roformer", {}).get("input_path", ""),
                         interactive = True
                     )
                     roformer_output_path = gr.Textbox(
                         label = i18n("Output path"),
                         placeholder = i18n("Place the output path here"),
+                        value = initial_settings.get("Roformer", {}).get("output_path", ""),
                         interactive = True
                     )
                 with gr.Row():
@@ -1168,6 +1157,22 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         interactive = False
                     )
 
+            components["Roformer"] = {
+                        "model": roformer_model,
+                        "output_format": roformer_output_format,
+                        "segment_size": roformer_segment_size,
+                        "override_segment_size": roformer_override_segment_size,
+                        "overlap": roformer_overlap,
+                        "batch_size": roformer_batch_size,
+                        "normalization_threshold": roformer_normalization_threshold,
+                        "amplification_threshold": roformer_amplification_threshold,
+                        "single_stem": roformer_single_stem,
+                        "link": roformer_link,
+                        "input_path": roformer_input_path,
+                        "output_path": roformer_output_path
+                    }
+            all_configurable_inputs.extend(components["Roformer"].values())
+            
             roformer_bath_button.click(roformer_batch, [roformer_input_path, roformer_output_path, roformer_model, roformer_output_format, roformer_segment_size, roformer_override_segment_size, roformer_overlap, roformer_batch_size, roformer_normalization_threshold, roformer_amplification_threshold, roformer_single_stem], [roformer_info])
 
             with gr.Row():
@@ -1265,20 +1270,6 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             value = initial_settings.get("MDX23C", {}).get("single_stem", ""),
                             interactive = True
                         )
-
-                    components["MDX23C"] = {
-                        "model": mdx23c_model,
-                        "output_format": mdx23c_output_format,
-                        "segment_size": mdx23c_segment_size,
-                        "override_segment_size": mdx23c_override_segment_size,
-                        "overlap": mdx23c_overlap,
-                        "batch_size": mdx23c_batch_size,
-                        "normalization_threshold": mdx23c_normalization_threshold,
-                        "amplification_threshold": mdx23c_amplification_threshold,
-                        "single_stem": mdx23c_single_stem
-                    }
-                    all_configurable_inputs.extend(components["MDX23C"].values())
-
             with gr.Row():
                 mdx23c_audio = gr.Audio(
                     label = i18n("Input audio"),
@@ -1290,6 +1281,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     mdx23c_link = gr.Textbox(
                         label = i18n("Link"),
                         placeholder = i18n("Paste the link here"),
+                        value = initial_settings.get("MDX23C", {}).get("link", ""),
                         interactive = True
                     )
                 with gr.Row():
@@ -1307,11 +1299,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     mdx23c_input_path = gr.Textbox(
                         label = i18n("Input path"),
                         placeholder = i18n("Place the input path here"),
+                        value = initial_settings.get("MDX23C", {}).get("input_path", ""),
                         interactive = True
                     )
                     mdx23c_output_path = gr.Textbox(
                         label = i18n("Output path"),
                         placeholder = i18n("Place the output path here"),
+                        value = initial_settings.get("MDX23C", {}).get("output_path", ""),
                         interactive = True
                     )
                 with gr.Row():
@@ -1322,6 +1316,22 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         interactive = False
                     )
 
+            components["MDX23C"] = {
+                        "model": mdx23c_model,
+                        "output_format": mdx23c_output_format,
+                        "segment_size": mdx23c_segment_size,
+                        "override_segment_size": mdx23c_override_segment_size,
+                        "overlap": mdx23c_overlap,
+                        "batch_size": mdx23c_batch_size,
+                        "normalization_threshold": mdx23c_normalization_threshold,
+                        "amplification_threshold": mdx23c_amplification_threshold,
+                        "single_stem": mdx23c_single_stem,
+                        "link": mdx23c_link,
+                        "input_path": mdx23c_input_path,
+                        "output_path": mdx23c_output_path
+                    }
+            all_configurable_inputs.extend(components["MDX23C"].values())
+            
             mdx23c_bath_button.click(mdx23c_batch, [mdx23c_input_path, mdx23c_output_path, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_override_segment_size, mdx23c_overlap, mdx23c_batch_size, mdx23c_normalization_threshold, mdx23c_amplification_threshold, mdx23c_single_stem], [mdx23c_info])
 
             with gr.Row():
@@ -1428,21 +1438,6 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             value = initial_settings.get("MDX-NET", {}).get("single_stem", ""),
                             interactive = True
                         )
-
-                    components["MDX-NET"] = {
-                        "model": mdxnet_model,
-                        "output_format": mdxnet_output_format,
-                        "hop_length": mdxnet_hop_length,
-                        "segment_size": mdxnet_segment_size,
-                        "denoise": mdxnet_denoise,
-                        "overlap": mdxnet_overlap,
-                        "batch_size": mdxnet_batch_size,
-                        "normalization_threshold": mdxnet_normalization_threshold,
-                        "amplification_threshold": mdxnet_amplification_threshold,
-                        "single_stem": mdxnet_single_stem
-                    }
-                    all_configurable_inputs.extend(components["MDX-NET"].values())
-
             with gr.Row():
                 mdxnet_audio = gr.Audio(
                     label = i18n("Input audio"),
@@ -1454,6 +1449,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     mdxnet_link = gr.Textbox(
                         label = i18n("Link"),
                         placeholder = i18n("Paste the link here"),
+                        value = initial_settings.get("MDX-NET", {}).get("link", ""),
                         interactive = True
                     )
                 with gr.Row():
@@ -1471,11 +1467,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     mdxnet_input_path = gr.Textbox(
                         label = i18n("Input path"),
                         placeholder = i18n("Place the input path here"),
+                        value = initial_settings.get("MDX-NET", {}).get("input_path", ""),
                         interactive = True
                     )
                     mdxnet_output_path = gr.Textbox(
                         label = i18n("Output path"),
                         placeholder = i18n("Place the output path here"),
+                        value = initial_settings.get("MDX-NET", {}).get("output_path", ""),
                         interactive = True
                     )
                 with gr.Row():
@@ -1485,6 +1483,23 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         label = i18n("Output information"),
                         interactive = False
                     )
+
+            components["MDX-NET"] = {
+                        "model": mdxnet_model,
+                        "output_format": mdxnet_output_format,
+                        "hop_length": mdxnet_hop_length,
+                        "segment_size": mdxnet_segment_size,
+                        "denoise": mdxnet_denoise,
+                        "overlap": mdxnet_overlap,
+                        "batch_size": mdxnet_batch_size,
+                        "normalization_threshold": mdxnet_normalization_threshold,
+                        "amplification_threshold": mdxnet_amplification_threshold,
+                        "single_stem": mdxnet_single_stem,
+                        "link": mdxnet_link,
+                        "input_path": mdxnet_input_path,
+                        "output_path": mdxnet_output_path
+                    }
+            all_configurable_inputs.extend(components["MDX-NET"].values())
 
             mdxnet_bath_button.click(mdxnet_batch, [mdxnet_input_path, mdxnet_output_path, mdxnet_model, mdxnet_output_format, mdxnet_hop_length, mdxnet_segment_size, mdxnet_denoise, mdxnet_overlap, mdxnet_batch_size, mdxnet_normalization_threshold, mdxnet_amplification_threshold, mdxnet_single_stem], [mdxnet_info])
 
@@ -1608,23 +1623,6 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             value = initial_settings.get("VR Arch", {}).get("single_stem", ""),
                             interactive = True
                         )
-
-                    components["VR Arch"] = {
-                        "model": vrarch_model,
-                        "output_format": vrarch_output_format,
-                        "window_size": vrarch_window_size,
-                        "aggression": vrarch_agression,
-                        "tta": vrarch_tta,
-                        "post_process": vrarch_post_process,
-                        "post_process_threshold": vrarch_post_process_threshold,
-                        "high_end_process": vrarch_high_end_process,
-                        "batch_size": vrarch_batch_size,
-                        "normalization_threshold": vrarch_normalization_threshold,
-                        "amplification_threshold": vrarch_amplification_threshold,
-                        "single_stem": vrarch_single_stem
-                    }
-                    all_configurable_inputs.extend(components["VR Arch"].values())
-
             with gr.Row():
                 vrarch_audio = gr.Audio(
                     label = i18n("Input audio"),
@@ -1636,6 +1634,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     vrarch_link = gr.Textbox(
                         label = i18n("Link"),
                         placeholder = i18n("Paste the link here"),
+                        value = initial_settings.get("VR Arch", {}).get("link", ""),
                         interactive = True
                     )
                 with gr.Row():
@@ -1653,11 +1652,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     vrarch_input_path = gr.Textbox(
                         label = i18n("Input path"),
                         placeholder = i18n("Place the input path here"),
+                        value = initial_settings.get("VR Arch", {}).get("input_path", ""),
                         interactive = True
                     )
                     vrarch_output_path = gr.Textbox(
                         label = i18n("Output path"),
                         placeholder = i18n("Place the output path here"),
+                        value = initial_settings.get("VR Arch", {}).get("output_path", ""),
                         interactive = True
                     )
                 with gr.Row():
@@ -1667,6 +1668,25 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         label = i18n("Output information"),
                         interactive = False
                     )
+
+            components["VR Arch"] = {
+                        "model": vrarch_model,
+                        "output_format": vrarch_output_format,
+                        "window_size": vrarch_window_size,
+                        "aggression": vrarch_agression,
+                        "tta": vrarch_tta,
+                        "post_process": vrarch_post_process,
+                        "post_process_threshold": vrarch_post_process_threshold,
+                        "high_end_process": vrarch_high_end_process,
+                        "batch_size": vrarch_batch_size,
+                        "normalization_threshold": vrarch_normalization_threshold,
+                        "amplification_threshold": vrarch_amplification_threshold,
+                        "single_stem": vrarch_single_stem,
+                        "link": vrarch_link,
+                        "input_path": vrarch_input_path,
+                        "output_path": vrarch_output_path
+                    }
+            all_configurable_inputs.extend(components["VR Arch"].values())
 
             vrarch_bath_button.click(vrarch_batch, [vrarch_input_path, vrarch_output_path, vrarch_model, vrarch_output_format, vrarch_window_size, vrarch_agression, vrarch_tta, vrarch_post_process, vrarch_post_process_threshold, vrarch_high_end_process, vrarch_batch_size, vrarch_normalization_threshold, vrarch_amplification_threshold, vrarch_single_stem], [vrarch_info])
 
@@ -1767,20 +1787,6 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             value = initial_settings.get("Demucs", {}).get("amplification_threshold", 0.7),
                             interactive = True
                         )
-
-                    components["Demucs"] = {
-                        "model": demucs_model,
-                        "output_format": demucs_output_format,
-                        "shifts": demucs_shifts,
-                        "segment_size": demucs_segment_size,
-                        "segments_enabled": demucs_segments_enabled,
-                        "overlap": demucs_overlap,
-                        "batch_size": demucs_batch_size,
-                        "normalization_threshold": demucs_normalization_threshold,
-                        "amplification_threshold": demucs_amplification_threshold
-                    }
-                    all_configurable_inputs.extend(components["Demucs"].values())
-
             with gr.Row():
                 demucs_audio = gr.Audio(
                     label = i18n("Input audio"),
@@ -1792,6 +1798,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     demucs_link = gr.Textbox(
                         label = i18n("Link"),
                         placeholder = i18n("Paste the link here"),
+                        value = initial_settings.get("Demucs", {}).get("link", ""),
                         interactive = True
                     )
                 with gr.Row():
@@ -1809,11 +1816,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     demucs_input_path = gr.Textbox(
                         label = i18n("Input path"),
                         placeholder = i18n("Place the input path here"),
+                        value = initial_settings.get("Demucs", {}).get("input_path", ""),
                         interactive = True
                     )
                     demucs_output_path = gr.Textbox(
                         label = i18n("Output path"),
                         placeholder = i18n("Place the output path here"),
+                        value = initial_settings.get("Demucs", {}).get("output_path", ""),
                         interactive = True
                     )
                 with gr.Row():
@@ -1823,6 +1832,22 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         label = i18n("Output information"),
                         interactive = False
                     )
+
+            components["Demucs"] = {
+                        "model": demucs_model,
+                        "output_format": demucs_output_format,
+                        "shifts": demucs_shifts,
+                        "segment_size": demucs_segment_size,
+                        "segments_enabled": demucs_segments_enabled,
+                        "overlap": demucs_overlap,
+                        "batch_size": demucs_batch_size,
+                        "normalization_threshold": demucs_normalization_threshold,
+                        "amplification_threshold": demucs_amplification_threshold,
+                        "link": demucs_link,
+                        "input_path": demucs_input_path,
+                        "output_path": demucs_output_path
+                    }
+            all_configurable_inputs.extend(components["Demucs"].values())
 
             demucs_bath_button.click(demucs_batch, [demucs_input_path, demucs_output_path, demucs_model, demucs_output_format, demucs_shifts, demucs_segment_size, demucs_segments_enabled, demucs_overlap, demucs_batch_size, demucs_normalization_threshold, demucs_amplification_threshold], [demucs_info])
 
@@ -1960,7 +1985,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 * Separation by link source code and improvements by [NeoDev](https://github.com/TheNeodev).
                 * Thanks to [ArisDev](https://github.com/aris-py) for porting UVR5 UI to Kaggle and improvements.
                 * Thanks to [Bebra777228](https://github.com/Bebra777228)'s code for guiding me to improve my code.
-                * Thanks to Nick088, MrM0dZ, Ryouko-Yamanda65777, lucinamari, perariroswe, Enes, Léo and the_undead0 for helping translate UVR5 UI.
+                * Thanks to Nick088, MrM0dZ, Ryouko-Yamanda65777, lucinamari, perariroswe, Enes, Léo, the_undead0 and Storm for helping translate UVR5 UI.
                 * Thanks to vadigr123 for creating the images for the Discord Rich Presence.
                 
                 You can donate to the original UVR5 project here:

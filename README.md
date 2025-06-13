@@ -114,6 +114,8 @@ Check the status of audio-separator core:
 > [!NOTE]  
 > Still, to update UVR5 UI you need to install Git.
 
+There is also a pre-compiled version primarily for Chinese users developed by jian27, get it [here](https://www.jian27.com/html/2231.html). Just 2.6 GB! 
+
 ## Docker Instance
 
 A more technical level is required for this type of use. You can use this Jupyter notebook to initialize UVR5 on virtual machines with GPU. This will install the entire UVR5 from the main branch of GitHub.

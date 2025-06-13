@@ -8,6 +8,7 @@ REPO_URL="https://github.com/Eddycrack864/UVR5-UI"
 INSTALL_DIR="$PWD"
 ENV_DIR="$INSTALL_DIR/env"
 CONDA_EXE="$HOME/miniconda3/bin/conda"
+PIP_EXE="$HOME/miniconda3/bin/pip"
 
 error_exit() {
   echo "Error: $1"
@@ -44,7 +45,7 @@ source "$HOME/miniconda3/etc/profile.d/conda.sh"
 conda activate "$ENV_DIR" || error_exit "Failed to activate conda environment."
 
 echo "Checking for updated dependencies..."
-pip install -r "$INSTALL_DIR/requirements.txt" || error_exit "Failed to update dependencies."
+"$PIP_EXE" install -r "$INSTALL_DIR/requirements.txt" || error_exit "Failed to update dependencies."
 
 conda deactivate || error_exit "Failed to deactivate conda environment."
 echo "Conda environment updated successfully."

@@ -8,7 +8,10 @@
         "batch_size": 1,
         "normalization_threshold": 0.9,
         "amplification_threshold": 0.7,
-        "single_stem": ""
+        "single_stem": "",
+        "link": "",
+        "input_path": "",
+        "output_path": ""
     },
     "MDX23C": {
         "model": null,
@@ -19,7 +22,10 @@
         "batch_size": 1,
         "normalization_threshold": 0.9,
         "amplification_threshold": 0.7,
-        "single_stem": ""
+        "single_stem": "",
+        "link": "",
+        "input_path": "",
+        "output_path": ""
     },
     "MDX-NET": {
         "model": null,
@@ -31,7 +37,10 @@
         "batch_size": 1,
         "normalization_threshold": 0.9,
         "amplification_threshold": 0.7,
-        "single_stem": ""
+        "single_stem": "",
+        "link": "",
+        "input_path": "",
+        "output_path": ""
     },
     "VR Arch": {
         "model": null,
@@ -45,7 +54,10 @@
         "batch_size": 1,
         "normalization_threshold": 0.9,
         "amplification_threshold": 0.7,
-        "single_stem": ""
+        "single_stem": "",
+        "link": "",
+        "input_path": "",
+        "output_path": ""
     },
     "Demucs": {
         "model": null,
@@ -56,6 +68,9 @@
         "overlap": 0.25,
         "batch_size": 1,
         "normalization_threshold": 0.9,
-        "amplification_threshold": 0.7
+        "amplification_threshold": 0.7,
+        "link": "",
+        "input_path": "",
+        "output_path": ""
     }
 }

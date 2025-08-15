@@ -5,29 +5,28 @@ set -e
 echo -e "\e]2;UVR5 UI Updater\a"
 
 REPO_URL="https://github.com/Eddycrack864/UVR5-UI"
-INSTALL_DIR="$PWD"
+INSTALL_DIR="$(pwd)"
 ENV_DIR="$INSTALL_DIR/env"
-CONDA_EXE="$HOME/miniconda3/bin/conda"
-PIP_EXE="$HOME/miniconda3/bin/pip"
+PYTHON_EXE="$ENV_DIR/bin/python"
 
 error_exit() {
-  echo "Error: $1"
-  read -p "Press Enter to exit..."
-  exit 1
+    echo "Error: $1"
+    read -p "Press Enter to exit..."
+    exit 1
 }
 
 command_exists() {
-  command -v "$1" >/dev/null 2>&1
+    command -v "$1" >/dev/null 2>&1
 }
 
 if ! command_exists git; then
-  error_exit "Git is not installed. Please install Git and try again."
+    error_exit "Git is not installed. Please install Git and try again."
 fi
 
 if [ ! -d ".git" ]; then
-  git init
-  git remote add origin "$REPO_URL"
-  echo "Git repository initialized."
+    git init
+    git remote add origin "$REPO_URL"
+    echo "Git repository initialized."
 fi
 
 git fetch origin || error_exit "Failed to fetch updates. Check your internet connection or Git configuration."
@@ -36,18 +35,15 @@ git reset --hard origin/main || error_exit "Failed to reset repository. Check yo
 echo "Code updated successfully."
 echo
 
-if ! command_exists "$CONDA_EXE"; then
-  error_exit "Miniconda is not installed. Please run the installer first."
+if [ ! -f "$PYTHON_EXE" ]; then
+    error_exit "Python environment not found at '$ENV_DIR'. Please run the installer first. If you are using the pre-compiled version, you cannot fully update UVR5 UI with this script. Please download the latest version from GitHub."
 fi
 
 echo "Updating Conda environment..."
-source "$HOME/miniconda3/etc/profile.d/conda.sh"
-conda activate "$ENV_DIR" || error_exit "Failed to activate conda environment."
-
 echo "Checking for updated dependencies..."
-"$PIP_EXE" install -r "$INSTALL_DIR/requirements.txt" || error_exit "Failed to update dependencies."
 
-conda deactivate || error_exit "Failed to deactivate conda environment."
+"$PYTHON_EXE" -m pip install --upgrade -r "$INSTALL_DIR/requirements.txt" || error_exit "Failed to update dependencies."
+
 echo "Conda environment updated successfully."
 echo
 

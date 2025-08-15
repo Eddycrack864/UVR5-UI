@@ -104,21 +104,21 @@ For advanced users, a Docker setup is available:
 ### Instrumental
 1. MelBand Roformer Kim | Inst V1 (E) Plus by Unwa (Added)
 2. MelBand Roformer | INSTV7 by Gabox (Added)
-3. MelBand Roformer | Instrumental by becruily (Added)
-4. MelBand Roformer | Instrumental 3 by Gabox (Added)
+3. MelBand Roformer | Instrumental FV8 by Gabo (Added)
+4. BS Roformer | Instrumental Resurrection by unwa (Added)
 
 ### Vocals
-1. MelBand Roformer 2024.10 (Only available on MVSEP)
+1. MelBand Roformer 2025.07 (Only available on MVSEP)
 2. MelBand Roformer Bas Curtiz edition (Only available on MVSEP)
 3. MelBand Roformer Kim | FT2 Bleedlees by unwa (Added)
-4. MelBand Roformer Kim | Big Beta 5e FT by unwa (Added)
-5. MelBand Roformer | Vocals by becruily (Added)
+4. BS Roformer | Vocals Resurrection by unwa (Added)
+5. BS Roformer | Vocals Revive V2 by Unwa (Added)
 
 ### Karaoke
 1. MelBand Roformer | Karaoke by becruily (Added)
 2. Mel-Roformer-Karaoke-Aufr33-Viperx (Added)
 3. MelBand Roformer | Karaoke by Gabox (Added)
-4. UVR-BVE-4B_SN-44100-1 (Added)
+4. UVR-BVE-4B_SN-44100-2 (Added)
 
 ### De-Reverb
 1. MelBand Roformer | De-Reverb by anvuew (Added)
@@ -128,8 +128,8 @@ For advanced users, a Docker setup is available:
 
 ### Denoise
 1. Mel-Roformer-Denoise-Aufr33 (Added)
-2. UVR-DeNoise (Added)
-3. MelBand Roformer | Denoise-Debleed by Gabox (Added)
+2. MelBand Roformer | Denoise-Debleed by Gabox (Added)
+3. UVR-DeNoise (Added)
 
 ### Crowd
 1. UVR-MDX-NET_Crowd_HQ_1 (Added)

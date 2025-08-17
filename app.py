@@ -1040,6 +1040,98 @@ def demucs_batch(path_input, path_output, model, out_format, shifts, segment_siz
         progress(1.0, desc="Processing complete")
         return "\n".join(logs)
 
+def get_all_roformer_models():
+    return gr.update(choices=list(roformer_models.keys()), value=None)
+
+def get_downloaded_roformer_models():
+    downloaded_files = set()
+    if os.path.exists(models_dir) and os.path.isdir(models_dir):
+        try:
+            downloaded_files = set(os.listdir(models_dir))
+        except OSError as e:
+            print(f"Error reading directory '{models_dir}': {e}")
+            return gr.update(choices=list(roformer_models.keys()), value=None)
+    else:
+        print(f"The directory '{models_dir}' was not found")
+        return gr.update(choices=list(roformer_models.keys()), value=None)
+
+    available_models = []
+
+    for model_name, filename in roformer_models.items():
+        if filename in downloaded_files:
+            available_models.append(model_name)
+    
+    return gr.update(choices=available_models, value=None)
+
+def get_all_mdx23c_models():
+    return gr.update(choices=mdx23c_models, value=None)
+
+def get_downloaded_mdx23c_models():
+    downloaded_files = set()
+    if os.path.exists(models_dir) and os.path.isdir(models_dir):
+        try:
+            downloaded_files = set(os.listdir(models_dir))
+        except OSError as e:
+            print(f"Error reading directory '{models_dir}': {e}")
+            return gr.update(choices=mdx23c_models, value=None)
+    else:
+        print(f"The directory '{models_dir}' was not found")
+        return gr.update(choices=mdx23c_models, value=None)
+
+    available_models = []
+
+    for filename in mdx23c_models:
+        if filename in downloaded_files:
+            available_models.append(filename)
+    
+    return gr.update(choices=available_models, value=None)
+
+def get_all_mdxnet_models():
+    return gr.update(choices=mdxnet_models, value=None)
+
+def get_downloaded_mdxnet_models():
+    downloaded_files = set()
+    if os.path.exists(models_dir) and os.path.isdir(models_dir):
+        try:
+            downloaded_files = set(os.listdir(models_dir))
+        except OSError as e:
+            print(f"Error reading directory '{models_dir}': {e}")
+            return gr.update(choices=mdxnet_models, value=None)
+    else:
+        print(f"The directory '{models_dir}' was not found")
+        return gr.update(choices=mdxnet_models, value=None)
+
+    available_models = []
+
+    for filename in mdxnet_models:
+        if filename in downloaded_files:
+            available_models.append(filename)
+    
+    return gr.update(choices=available_models, value=None)
+
+def get_all_vrarch_models():
+    return gr.update(choices=vrarch_models, value=None)
+
+def get_downloaded_vrarch_models():
+    downloaded_files = set()
+    if os.path.exists(models_dir) and os.path.isdir(models_dir):
+        try:
+            downloaded_files = set(os.listdir(models_dir))
+        except OSError as e:
+            print(f"Error reading directory '{models_dir}': {e}")
+            return gr.update(choices=vrarch_models, value=None)
+    else:
+        print(f"The directory '{models_dir}' was not found")
+        return gr.update(choices=vrarch_models, value=None)
+
+    available_models = []
+
+    for filename in vrarch_models:
+        if filename in downloaded_files:
+            available_models.append(filename)
+    
+    return gr.update(choices=available_models, value=None)
+
 def read_mode_config():
     try:
         with open(config_file, "r", encoding="utf8") as f:
@@ -1077,11 +1169,32 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     value = initial_settings.get("Roformer", {}).get("model", None),
                     interactive = True
                 )
-                roformer_output_format = gr.Dropdown(
-                    label = i18n("Select the output format"),
-                    choices = output_format,
-                    value = initial_settings.get("Roformer", {}).get("output_format", None),
-                    interactive = True
+                with gr.Row():
+                    with gr.Column():
+                        roformer_all_models = gr.Button(
+                            "All models",
+                            variant = "primary"                      
+                        )
+                        roformer_downloaded_models = gr.Button(
+                            "Downloaded models only",
+                            variant = "primary"
+                        )
+                    roformer_output_format = gr.Dropdown(
+                        label = i18n("Select the output format"),
+                        choices = output_format,
+                        value = initial_settings.get("Roformer", {}).get("output_format", None),
+                        interactive = True
+                    )
+
+                roformer_all_models.click(
+                    fn = get_all_roformer_models,
+                    inputs = [],
+                    outputs = [roformer_model]
+                )
+                roformer_downloaded_models.click(
+                    fn = get_downloaded_roformer_models,
+                    inputs = [],
+                    outputs = [roformer_model]
                 )
             with gr.Accordion(i18n("Advanced settings"), open = False):
                 with gr.Group():
@@ -1236,11 +1349,32 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     value = initial_settings.get("MDX23C", {}).get("model", None),
                     interactive = True
                 )
-                mdx23c_output_format = gr.Dropdown(
-                    label = i18n("Select the output format"),
-                    choices = output_format,
-                    value = initial_settings.get("MDX23C", {}).get("output_format", None),
-                    interactive = True
+                with gr.Row():
+                    with gr.Column():
+                        mdx23c_all_models = gr.Button(
+                            "All models",
+                            variant = "primary"                      
+                        )
+                        mdx23c_downloaded_models = gr.Button(
+                            "Downloaded models only",
+                            variant = "primary"
+                        )
+                    mdx23c_output_format = gr.Dropdown(
+                        label = i18n("Select the output format"),
+                        choices = output_format,
+                        value = initial_settings.get("MDX23C", {}).get("output_format", None),
+                        interactive = True
+                    )
+
+                mdx23c_all_models.click(
+                    fn = get_all_mdx23c_models,
+                    inputs = [],
+                    outputs = [mdx23c_model]
+                )
+                mdx23c_downloaded_models.click(
+                    fn = get_downloaded_mdx23c_models,
+                    inputs = [],
+                    outputs = [mdx23c_model]
                 )
             with gr.Accordion(i18n("Advanced settings"), open = False):
                 with gr.Group():
@@ -1395,11 +1529,32 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     value = initial_settings.get("MDX-NET", {}).get("model", None),
                     interactive = True
                 )
-                mdxnet_output_format = gr.Dropdown(
-                    label = i18n("Select the output format"),
-                    choices = output_format,
-                    value = initial_settings.get("MDX-NET", {}).get("output_format", None),
-                    interactive = True
+                with gr.Row():
+                    with gr.Column():
+                        mdxnet_all_models = gr.Button(
+                            "All models",
+                            variant = "primary"                      
+                        )
+                        mdxnet_downloaded_models = gr.Button(
+                            "Downloaded models only",
+                            variant = "primary"
+                        )
+                    mdxnet_output_format = gr.Dropdown(
+                        label = i18n("Select the output format"),
+                        choices = output_format,
+                        value = initial_settings.get("MDX-NET", {}).get("output_format", None),
+                        interactive = True
+                    )
+
+                mdxnet_all_models.click(
+                    fn = get_all_mdxnet_models,
+                    inputs = [],
+                    outputs = [mdxnet_model]
+                )
+                mdxnet_downloaded_models.click(
+                    fn = get_downloaded_mdxnet_models,
+                    inputs = [],
+                    outputs = [mdxnet_model]
                 )
             with gr.Accordion(i18n("Advanced settings"), open = False):
                 with gr.Group():
@@ -1564,11 +1719,32 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     value = initial_settings.get("VR Arch", {}).get("model", None),
                     interactive = True
                 )
-                vrarch_output_format = gr.Dropdown(
-                    label = i18n("Select the output format"),
-                    choices = output_format,
-                    value = initial_settings.get("VR Arch", {}).get("output_format", None),
-                    interactive = True
+                with gr.Row():
+                    with gr.Column():
+                        vrarch_all_models = gr.Button(
+                            "All models",
+                            variant = "primary"                      
+                        )
+                        vrarch_downloaded_models = gr.Button(
+                            "Downloaded models only",
+                            variant = "primary"
+                        )
+                    vrarch_output_format = gr.Dropdown(
+                        label = i18n("Select the output format"),
+                        choices = output_format,
+                        value = initial_settings.get("VR Arch", {}).get("output_format", None),
+                        interactive = True
+                    )
+
+                vrarch_all_models.click(
+                    fn = get_all_vrarch_models,
+                    inputs = [],
+                    outputs = [vrarch_model]
+                )
+                vrarch_downloaded_models.click(
+                    fn = get_downloaded_vrarch_models,
+                    inputs = [],
+                    outputs = [vrarch_model]
                 )
             with gr.Accordion(i18n("Advanced settings"), open = False):
                 with gr.Group():

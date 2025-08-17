@@ -77,6 +77,17 @@ def select_theme(name):
     else:
         print(f"Theme {name} was not found.")
 
+def select_mode(mode: str):
+    with open(config_file, "r", encoding="utf8") as json_file:
+        config_data = json.load(json_file)
+
+    config_data["theme"]["mode"] = mode
+
+    with open(config_file, "w", encoding="utf8") as json_file:
+        json.dump(config_data, json_file, indent=2)
+
+    print(f"Mode {mode} successfully selected, restart the App.")
+    gr.Info(f"Mode {mode} successfully selected, restart the App.")
 
 def read_json():
     try:

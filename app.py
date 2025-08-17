@@ -1039,8 +1039,31 @@ def demucs_batch(path_input, path_output, model, out_format, shifts, segment_siz
             
         progress(1.0, desc="Processing complete")
         return "\n".join(logs)
+
+def read_mode_config():
+    try:
+        with open(config_file, "r", encoding="utf8") as f:
+            data = json.load(f)
+            return data.get("theme", {}).get("mode", "dark")
+    except Exception as e:
+        print(f"Error reading mode from config file '{config_file}': {e}")
+        gr.Warning(i18n("Error reading mode from config file"))
+        return "dark"
+
+mode = read_mode_config()
+
+js_func = f"""
+function refresh() {{
+    const url = new URL(window.location);
+
+    if (url.searchParams.get('__theme') !== '{mode}') {{
+        url.searchParams.set('__theme', '{mode}');
+        window.location.href = url.href;
+    }}
+}}
+"""
             
-with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 UVR5 UI 🎵") as app:
+with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 UVR5 UI 🎵", js = js_func) as app:
     gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")
     gr.Markdown(i18n("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)"))
     gr.Markdown(i18n("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)"))
@@ -1931,10 +1954,22 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 value = loadThemes.read_json(),
                 interactive = True
             )
+            mode_select = gr.Dropdown(
+                label = "Mode",
+                info = "Select the mode you want to use. (Requires restarting the App)",
+                choices = ["light", "dark"],
+                value = read_mode_config(),
+                interactive = True
+            )
 
             themes_select.change(
                 fn = loadThemes.select_theme,
                 inputs = themes_select,
+                outputs = []
+            )
+            mode_select.change(
+                fn = loadThemes.select_mode,
+                inputs = mode_select,
                 outputs = []
             )
 

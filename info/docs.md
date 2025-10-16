@@ -102,10 +102,11 @@ For advanced users, a Docker setup is available:
 
 ## Best Models
 ### Instrumental
-1. MelBand Roformer Kim | Inst V1 (E) Plus by Unwa (Added)
-2. MelBand Roformer | INSTV7 by Gabox (Added)
-3. MelBand Roformer | Instrumental FV8 by Gabo (Added)
-4. BS Roformer | Instrumental Resurrection by unwa (Added)
+1. BS Roformer | Instrumental Resurrection by unwa (Added)
+2. MelBand Roformer Kim | Inst V1 (E) Plus by Unwa (Added)
+3. MelBand Roformer | Instrumental Fullness V4 by Gabox (Pending)
+4. MelBand Roformer | Instrumental FV8b by Gabox (Pending)
+5. MelBand Roformer | INSTV7 by Gabox (Added)
 
 ### Vocals
 1. MelBand Roformer 2025.07 (Only available on MVSEP)
@@ -115,16 +116,16 @@ For advanced users, a Docker setup is available:
 5. BS Roformer | Vocals Revive V2 by Unwa (Added)
 
 ### Karaoke
-1. MelBand Roformer | Karaoke by becruily (Added)
-2. Mel-Roformer-Karaoke-Aufr33-Viperx (Added)
-3. MelBand Roformer | Karaoke by Gabox (Added)
-4. UVR-BVE-4B_SN-44100-2 (Added)
+1. BS Roformer | Karaoke by becruily-frazer (Pending)
+2. MelBand Roformer Karaoke Fusion by Gonzaluigi (Pending)
+3. MelBand Roformer | Karaoke by becruily (Added)
+4. Mel-Roformer-Karaoke-Aufr33-Viperx (Added)
 
 ### De-Reverb
 1. MelBand Roformer | De-Reverb by anvuew (Added)
-2. MelBand Roformer | De-Reverb Mono by anvuew (Added)
-3. MelBand Roformer | De-Reverb-Echo Fused by Sucial (Added)
-4. MelBand Roformer | De-Reverb Less Aggressive by anvuew (Added)
+2. BS Roformer | De-Reverb Room by anvuew (Pending)
+3. MelBand Roformer | De-Reverb Mono by anvuew (Added)
+4. MelBand Roformer | De-Reverb-Echo Fused by Sucial (Added)
 
 ### Denoise
 1. Mel-Roformer-Denoise-Aufr33 (Added)

@@ -1,7 +1,8 @@
 {
   "theme": {
     "file": null,
-    "class": "NoCrypt/miku"
+    "class": "NoCrypt/miku",
+    "mode": "dark"
   },
   "lang": {
     "override": false,

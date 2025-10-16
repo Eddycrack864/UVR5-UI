@@ -365,19 +365,35 @@ def save_lang_settings(selected_language):
     with open(config_file, "w", encoding="utf8") as file:
         json.dump(config, file, indent=2)
 
-def alternative_model_downloader(method, key, output_dir="models", progress=gr.Progress()):
+def alternative_model_downloader(method, key, source, output_dir="models", progress=gr.Progress()):
     logs.clear()
 
     with open(models_file, 'r', encoding='utf-8') as file:
         model_data = json.load(file)
-    
+
     if key not in model_data:
         return f"Model '{key}' cannot be found."
-    
-    total_files = len(model_data[key])
+
+    entry = model_data[key]
+
+    if isinstance(entry, list):
+        urls = entry
+    elif isinstance(entry, dict):
+        urls = entry.get(source, []) if source in entry else []
+        if not urls:
+            urls = entry.get('Github') or entry.get('HuggingFace') or []
+    else:
+        return f"Model entry for '{key}' has an unexpected format."
+
+    if not urls:
+        return f"No URLs found for model '{key}' using source '{source}'."
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    total_files = len(urls)
     progress(0, desc="Starting downloads...")
 
-    for i, url in enumerate(model_data[key]):
+    for i, url in enumerate(urls):
         filename = os.path.basename(urllib.parse.urlparse(url).path)
         full_name = os.path.join(output_dir, filename)
 
@@ -391,16 +407,20 @@ def alternative_model_downloader(method, key, output_dir="models", progress=gr.P
             cmd = ['wget', '--progress=bar:force', '-O', full_name, url]
         elif method == 'curl':
             cmd = ['curl', '-L', '-#', '-o', full_name, url]
+        else:
+            logs.append(f"Unsupported download method: {method}")
+            continue
 
         try:
             process = subprocess.Popen(
-                cmd, 
-                stdout=subprocess.PIPE, 
+                cmd,
+                stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 universal_newlines=True,
                 bufsize=1
             )
-            
+
+            # read stderr lines for progress
             for line in process.stderr:
                 if method == 'wget' and '%' in line:
                     try:
@@ -410,7 +430,7 @@ def alternative_model_downloader(method, key, output_dir="models", progress=gr.P
                         progress(total_progress, desc=f"File {i+1}/{total_files}: {filename} ({percent}%)")
                     except (ValueError, IndexError):
                         pass
-                elif method == 'curl' and '##' in line:
+                elif method == 'curl' and '#' in line:
                     try:
                         hash_count = line.count('#')
                         file_progress = min(hash_count / 50.0, 1.0)
@@ -419,17 +439,17 @@ def alternative_model_downloader(method, key, output_dir="models", progress=gr.P
                         progress(total_progress, desc=f"File {i+1}/{total_files}: {filename} ({percent}%)")
                     except Exception:
                         pass
-            
+
             process.wait()
             if process.returncode != 0:
                 logs.append(f"Error downloading {filename}")
             else:
                 logs.append(f"{filename} downloaded successfully!")
                 progress((i + 1) / total_files, desc=f"File {i+1}/{total_files} completed")
-        
+
         except Exception as e:
             logs.append(f"Error running download command: {str(e)}")
-    
+
     progress(1.0, desc="Download process completed")
     return "\n".join(logs)
 
@@ -2172,6 +2192,13 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     choices = ["wget", "curl"],
                     interactive = True
                 )
+                download_source = gr.Dropdown(
+                    label = i18n("Download source"),
+                    info = i18n("Select the source to download the model from (Github or HuggingFace)."),
+                    value = lambda: None,
+                    choices = ["Github", "Hugging Face"],
+                    interactive = True
+                )
                 model_key_json = gr.Dropdown(
                     label = i18n("Model to download"),
                     info = i18n("Select the model to download using the selected method"),
@@ -2185,7 +2212,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     interactive = False
                 )
 
-                alternative_model_downloader_button.click(alternative_model_downloader, [download_method, model_key_json], [alternative_model_downloader_output])
+                alternative_model_downloader_button.click(alternative_model_downloader, [download_method, model_key_json, download_source], [alternative_model_downloader_output])
 
             with gr.Accordion(i18n("Separation settings management"), open = False):
                 gr.Markdown(i18n("Save your current separation parameter settings or reset them to the application defaults"))

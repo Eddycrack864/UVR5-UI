@@ -2194,7 +2194,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 )
                 download_source = gr.Dropdown(
                     label = i18n("Download source"),
-                    info = i18n("Select the source to download the model from (Github or HuggingFace)."),
+                    info = i18n("Select the source to download the model from (Github or Hugging Face)."),
                     value = lambda: None,
                     choices = ["Github", "Hugging Face"],
                     interactive = True
@@ -2249,4 +2249,5 @@ app.launch(
     server_name="",
     server_port=args.listen_port,
     inbrowser=args.open
+
 )

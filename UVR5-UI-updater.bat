@@ -44,7 +44,7 @@ if not exist "%PYTHON_EXE%" (
 echo Updating Conda environment...
 echo Checking for updated dependencies...
 
-"%PYTHON_EXE%" -m pip install --upgrade -r "%INSTALL_DIR%\requirements.txt" || goto :error
+"%PYTHON_EXE%" -m pip install --upgrade -r "%INSTALL_DIR%\requirements.txt" --no-warn-script-location || goto :error
 
 echo Conda environment updated successfully.
 echo.
@@ -59,3 +59,4 @@ exit /b 0
 echo An error occurred during the update process. Please check the output above for details.
 pause
 exit /b 1
+

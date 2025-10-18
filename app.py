@@ -150,7 +150,8 @@ roformer_models = {
     'MelBand Roformer | Aspiration Less Aggressive by Sucial' : 'aspiration_mel_band_roformer_less_aggr_sdr_18.1201.ckpt',
     'MelBand Roformer | Bleed Suppressor V1 by unwa-97chris' : 'mel_band_roformer_bleed_suppressor_v1.ckpt',
     'BS Roformer | Vocals Resurrection by unwa' : 'bs_roformer_vocals_resurrection_unwa.ckpt',
-    'BS Roformer | Instrumental Resurrection by unwa' : 'bs_roformer_instrumental_resurrection_unwa.ckpt'
+    'BS Roformer | Instrumental Resurrection by unwa' : 'bs_roformer_instrumental_resurrection_unwa.ckpt',
+    'BS Roformer SW by jarredou' : 'BS-Roformer-SW.ckpt'
 }
 
 #=========================#
@@ -602,10 +603,14 @@ def roformer_separator(audio, model_key, out_format, segment_size, override_seg_
 
         stems = [os.path.join(out_dir, file_name) for file_name in separation]
 
+        if roformer_model == 'BS-Roformer-SW.ckpt':
+            if single_stem.strip():
+                return stems[0], None, None, None, None, None
+            return stems[0], stems[1], stems[2], stems[3], stems[4], stems[5]
+
         if single_stem.strip():
-            return stems[0], None
-        
-        return stems[0], stems[1]
+            return stems[0], None, None, None, None, None
+        return stems[0], stems[1], None, None, None, None
     
     except Exception as e:
         raise RuntimeError(f"Roformer separation failed: {e}") from e
@@ -642,10 +647,14 @@ def mdxc_separator(audio, model, out_format, segment_size, override_seg_size, ov
 
         stems = [os.path.join(out_dir, file_name) for file_name in separation]
         
+        if model == "MDX23C-DrumSep-aufr33-jarredou.ckpt":
+            if single_stem.strip():
+                return stems[0], None, None, None, None, None
+            return stems[0], stems[1], stems[2], stems[3], stems[4], stems[5]
+
         if single_stem.strip():
-            return stems[0], None
-        
-        return stems[0], stems[1]
+            return stems[0], None, None, None, None, None
+        return stems[0], stems[1], None, None, None, None
 
     except Exception as e:
         raise RuntimeError(f"MDX23C separation failed: {e}") from e
@@ -775,7 +784,13 @@ def demucs_separator(audio, model, out_format, shifts, segment_size, segments_en
         raise RuntimeError(f"Demucs separation failed: {e}") from e
 
 def update_stems(model):
-    if model == "htdemucs_6s.yaml":
+    if model == "htdemucs_6s.yaml" or model == "MDX23C-DrumSep-aufr33-jarredou.ckpt":
+        return gr.update(visible=True)
+    else:
+        return gr.update(visible=False)
+    
+def roformer_update_stems(roformer_model):
+    if roformer_model == 'BS Roformer SW by jarredou':
         return gr.update(visible=True)
     else:
         return gr.update(visible=False)
@@ -1192,11 +1207,11 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 with gr.Row():
                     with gr.Column():
                         roformer_all_models = gr.Button(
-                            "All models",
+                            i18n("All models"),
                             variant = "primary"                      
                         )
                         roformer_downloaded_models = gr.Button(
-                            "Downloaded models only",
+                            i18n("Downloaded models only"),
                             variant = "primary"
                         )
                     roformer_output_format = gr.Dropdown(
@@ -1277,6 +1292,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             label = i18n("Output only single stem"),
                             placeholder = i18n("Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental"),
                             value = initial_settings.get("Roformer", {}).get("single_stem", ""),
+                            lines = 1,
+                            max_lines = 1,
                             interactive = True
                         )
             with gr.Row():
@@ -1291,6 +1308,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         label = i18n("Link"),
                         placeholder = i18n("Paste the link here"),
                         value = initial_settings.get("Roformer", {}).get("link", ""),
+                        lines = 1,
+                        max_lines = 1,
                         interactive = True
                     )
                 with gr.Row():
@@ -1309,12 +1328,16 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         label = i18n("Input path"),
                         placeholder = i18n("Place the input path here"),
                         value = initial_settings.get("Roformer", {}).get("input_path", ""),
+                        lines = 1,
+                        max_lines = 1,
                         interactive = True
                     )
                     roformer_output_path = gr.Textbox(
                         label = i18n("Output path"),
                         placeholder = i18n("Place the output path here"),
                         value = initial_settings.get("Roformer", {}).get("output_path", ""),
+                        lines = 1,
+                        max_lines = 1,
                         interactive = True
                     )
                 with gr.Row():
@@ -1322,6 +1345,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 with gr.Row():
                     roformer_info = gr.Textbox(
                         label = i18n("Output information"),
+                        lines = 5,
                         interactive = False
                     )
 
@@ -1359,7 +1383,37 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     type = "filepath"
                 )
 
-            roformer_button.click(roformer_separator, [roformer_audio, roformer_model, roformer_output_format, roformer_segment_size, roformer_override_segment_size, roformer_overlap, roformer_batch_size, roformer_normalization_threshold, roformer_amplification_threshold, roformer_single_stem], [roformer_stem1, roformer_stem2])
+            with gr.Row(visible=False) as roformer_stem_row4:
+                roformer_stem3 = gr.Audio(
+                    show_download_button = True,
+                    interactive = False,
+                    label = i18n("Stem 3"),
+                    type = "filepath"
+                )
+                roformer_stem4 = gr.Audio(
+                    show_download_button = True,
+                    interactive = False,
+                    label = i18n("Stem 4"),
+                    type = "filepath"
+                )
+            with gr.Row(visible=False) as roformer_stem_row6:
+                roformer_stem5 = gr.Audio(
+                    show_download_button = True,
+                    interactive = False,
+                    label = i18n("Stem 5"),
+                    type = "filepath"
+                )
+                roformer_stem6 = gr.Audio(
+                    show_download_button = True,
+                    interactive = False,
+                    label = i18n("Stem 6"),
+                    type = "filepath"
+                )
+
+            roformer_model.change(roformer_update_stems, inputs=[roformer_model], outputs=roformer_stem_row4)
+            roformer_model.change(roformer_update_stems, inputs=[roformer_model], outputs=roformer_stem_row6)
+
+            roformer_button.click(roformer_separator, [roformer_audio, roformer_model, roformer_output_format, roformer_segment_size, roformer_override_segment_size, roformer_overlap, roformer_batch_size, roformer_normalization_threshold, roformer_amplification_threshold, roformer_single_stem], [roformer_stem1, roformer_stem2, roformer_stem3, roformer_stem4, roformer_stem5, roformer_stem6])
 
         with gr.TabItem("MDX23C"):
             with gr.Row():
@@ -1372,11 +1426,11 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 with gr.Row():
                     with gr.Column():
                         mdx23c_all_models = gr.Button(
-                            "All models",
+                            i18n("All models"),
                             variant = "primary"                      
                         )
                         mdx23c_downloaded_models = gr.Button(
-                            "Downloaded models only",
+                            i18n("Downloaded models only"),
                             variant = "primary"
                         )
                     mdx23c_output_format = gr.Dropdown(
@@ -1457,6 +1511,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             label = i18n("Output only single stem"),
                             placeholder = i18n("Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental"),
                             value = initial_settings.get("MDX23C", {}).get("single_stem", ""),
+                            lines = 1,
+                            max_lines = 1,
                             interactive = True
                         )
             with gr.Row():
@@ -1471,6 +1527,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         label = i18n("Link"),
                         placeholder = i18n("Paste the link here"),
                         value = initial_settings.get("MDX23C", {}).get("link", ""),
+                        lines = 1,
+                        max_lines = 1,
                         interactive = True
                     )
                 with gr.Row():
@@ -1489,12 +1547,16 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         label = i18n("Input path"),
                         placeholder = i18n("Place the input path here"),
                         value = initial_settings.get("MDX23C", {}).get("input_path", ""),
+                        lines = 1,
+                        max_lines = 1,
                         interactive = True
                     )
                     mdx23c_output_path = gr.Textbox(
                         label = i18n("Output path"),
                         placeholder = i18n("Place the output path here"),
                         value = initial_settings.get("MDX23C", {}).get("output_path", ""),
+                        lines = 1,
+                        max_lines = 1,
                         interactive = True
                     )
                 with gr.Row():
@@ -1502,6 +1564,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 with gr.Row():
                     mdx23c_info = gr.Textbox(
                         label = i18n("Output information"),
+                        lines = 5,
                         interactive = False
                     )
 
@@ -1539,7 +1602,37 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     type = "filepath"
                 )
 
-            mdx23c_button.click(mdxc_separator, [mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_override_segment_size, mdx23c_overlap, mdx23c_batch_size, mdx23c_normalization_threshold, mdx23c_amplification_threshold, mdx23c_single_stem], [mdx23c_stem1, mdx23c_stem2])
+            with gr.Row(visible=False) as mdx23c_stem_row4:
+                mdx23c_stem3 = gr.Audio(
+                    show_download_button = True,
+                    interactive = False,
+                    label = i18n("Stem 3"),
+                    type = "filepath"
+                )
+                mdx23c_stem4 = gr.Audio(
+                    show_download_button = True,
+                    interactive = False,
+                    label = i18n("Stem 4"),
+                    type = "filepath"
+                )
+            with gr.Row(visible=False) as mdx23c_stem_row6:
+                mdx23c_stem5 = gr.Audio(
+                    show_download_button = True,
+                    interactive = False,
+                    label = i18n("Stem 5"),
+                    type = "filepath"
+                )
+                mdx23c_stem6 = gr.Audio(
+                    show_download_button = True,
+                    interactive = False,
+                    label = i18n("Stem 6"),
+                    type = "filepath"
+                )
+
+            mdx23c_model.change(update_stems, inputs=[mdx23c_model], outputs=mdx23c_stem_row4)
+            mdx23c_model.change(update_stems, inputs=[mdx23c_model], outputs=mdx23c_stem_row6)
+
+            mdx23c_button.click(mdxc_separator, [mdx23c_audio, mdx23c_model, mdx23c_output_format, mdx23c_segment_size, mdx23c_override_segment_size, mdx23c_overlap, mdx23c_batch_size, mdx23c_normalization_threshold, mdx23c_amplification_threshold, mdx23c_single_stem], [mdx23c_stem1, mdx23c_stem2, mdx23c_stem3, mdx23c_stem4, mdx23c_stem5, mdx23c_stem6])
                 
         with gr.TabItem("MDX-NET"):
             with gr.Row():
@@ -1552,11 +1645,11 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 with gr.Row():
                     with gr.Column():
                         mdxnet_all_models = gr.Button(
-                            "All models",
+                            i18n("All models"),
                             variant = "primary"                      
                         )
                         mdxnet_downloaded_models = gr.Button(
-                            "Downloaded models only",
+                            i18n("Downloaded models only"),
                             variant = "primary"
                         )
                     mdxnet_output_format = gr.Dropdown(
@@ -1646,6 +1739,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             label = i18n("Output only single stem"),
                             placeholder = i18n("Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental"),
                             value = initial_settings.get("MDX-NET", {}).get("single_stem", ""),
+                            lines = 1,
+                            max_lines = 1,
                             interactive = True
                         )
             with gr.Row():
@@ -1660,6 +1755,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         label = i18n("Link"),
                         placeholder = i18n("Paste the link here"),
                         value = initial_settings.get("MDX-NET", {}).get("link", ""),
+                        lines = 1,
+                        max_lines = 1,
                         interactive = True
                     )
                 with gr.Row():
@@ -1678,12 +1775,16 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         label = i18n("Input path"),
                         placeholder = i18n("Place the input path here"),
                         value = initial_settings.get("MDX-NET", {}).get("input_path", ""),
+                        lines = 1,
+                        max_lines = 1,
                         interactive = True
                     )
                     mdxnet_output_path = gr.Textbox(
                         label = i18n("Output path"),
                         placeholder = i18n("Place the output path here"),
                         value = initial_settings.get("MDX-NET", {}).get("output_path", ""),
+                        lines = 1,
+                        max_lines = 1,
                         interactive = True
                     )
                 with gr.Row():
@@ -1691,6 +1792,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 with gr.Row():
                     mdxnet_info = gr.Textbox(
                         label = i18n("Output information"),
+                        lines = 5,
                         interactive = False
                     )
 
@@ -1742,11 +1844,11 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 with gr.Row():
                     with gr.Column():
                         vrarch_all_models = gr.Button(
-                            "All models",
+                            i18n("All models"),
                             variant = "primary"                      
                         )
                         vrarch_downloaded_models = gr.Button(
-                            "Downloaded models only",
+                            i18n("Downloaded models only"),
                             variant = "primary"
                         )
                     vrarch_output_format = gr.Dropdown(
@@ -1852,6 +1954,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                             label = i18n("Output only single stem"),
                             placeholder = i18n("Write the stem you want, check the stems of each model on Leaderboard. e.g. Instrumental"),
                             value = initial_settings.get("VR Arch", {}).get("single_stem", ""),
+                            lines = 1,
+                            max_lines = 1,
                             interactive = True
                         )
             with gr.Row():
@@ -1866,6 +1970,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         label = i18n("Link"),
                         placeholder = i18n("Paste the link here"),
                         value = initial_settings.get("VR Arch", {}).get("link", ""),
+                        lines = 1,
+                        max_lines = 1,
                         interactive = True
                     )
                 with gr.Row():
@@ -1884,12 +1990,16 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         label = i18n("Input path"),
                         placeholder = i18n("Place the input path here"),
                         value = initial_settings.get("VR Arch", {}).get("input_path", ""),
+                        lines = 1,
+                        max_lines = 1,
                         interactive = True
                     )
                     vrarch_output_path = gr.Textbox(
                         label = i18n("Output path"),
                         placeholder = i18n("Place the output path here"),
                         value = initial_settings.get("VR Arch", {}).get("output_path", ""),
+                        lines = 1,
+                        max_lines = 1,
                         interactive = True
                     )
                 with gr.Row():
@@ -1897,6 +2007,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 with gr.Row():
                     vrarch_info = gr.Textbox(
                         label = i18n("Output information"),
+                        lines = 5,
                         interactive = False
                     )
 
@@ -2030,6 +2141,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         label = i18n("Link"),
                         placeholder = i18n("Paste the link here"),
                         value = initial_settings.get("Demucs", {}).get("link", ""),
+                        lines = 1,
+                        max_lines = 1,
                         interactive = True
                     )
                 with gr.Row():
@@ -2048,12 +2161,16 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                         label = i18n("Input path"),
                         placeholder = i18n("Place the input path here"),
                         value = initial_settings.get("Demucs", {}).get("input_path", ""),
+                        lines = 1,
+                        max_lines = 1,
                         interactive = True
                     )
                     demucs_output_path = gr.Textbox(
                         label = i18n("Output path"),
                         placeholder = i18n("Place the output path here"),
                         value = initial_settings.get("Demucs", {}).get("output_path", ""),
+                        lines = 1,
+                        max_lines = 1,
                         interactive = True
                     )
                 with gr.Row():
@@ -2061,6 +2178,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 with gr.Row():
                     demucs_info = gr.Textbox(
                         label = i18n("Output information"),
+                        lines = 5,
                         interactive = False
                     )
 
@@ -2151,8 +2269,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 interactive = True
             )
             mode_select = gr.Dropdown(
-                label = "Mode",
-                info = "Select the mode you want to use. (Requires restarting the App)",
+                label = i18n("Mode"),
+                info = i18n("Select the mode you want to use. (Requires restarting the App)"),
                 choices = ["light", "dark"],
                 value = read_mode_config(),
                 interactive = True
@@ -2194,7 +2312,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 )
                 download_source = gr.Dropdown(
                     label = i18n("Download source"),
-                    info = i18n("Select the source to download the model from (Github or Hugging Face)."),
+                    info = i18n("Select the source to download the model from (Github or Hugging Face)"),
                     value = lambda: None,
                     choices = ["Github", "Hugging Face"],
                     interactive = True
@@ -2209,6 +2327,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 alternative_model_downloader_button = gr.Button(i18n("Download!"), variant = "primary")
                 alternative_model_downloader_output = gr.Textbox(
                     label = i18n("Output information"),
+                    lines = 5,
                     interactive = False
                 )
 

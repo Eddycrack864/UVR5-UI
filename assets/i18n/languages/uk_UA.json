@@ -87,5 +87,11 @@
     "Separation settings management": "Керування налаштуваннями розділення",
     "Save your current separation parameter settings or reset them to the application defaults": "Збережіть поточні налаштування параметрів розділення або скиньте їх на налаштування за замовчуванням",
     "Save current settings": "Зберегти поточні налаштування",
-    "Reset settings to default": "Скинути налаштування до налаштувань за замовчуванням"
+    "Reset settings to default": "Скинути налаштування до налаштувань за замовчуванням",
+    "All models": "Всі моделі",
+    "Downloaded models only": "Тільки завантажені моделі",
+    "Mode": "Режим",
+    "Select the mode you want to use. (Requires restarting the App)": "Виберіть режим, який ви хочете використовувати. (Потрібен перезапуск програми)",
+    "Download source": "Джерело завантаження",
+    "Select the source to download the model from (Github or Hugging Face)": "Виберіть джерело для завантаження моделі (Github або Hugging Face)"
 }

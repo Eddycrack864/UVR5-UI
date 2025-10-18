@@ -87,5 +87,11 @@
     "Separation settings management": "إدارة إعدادات الفصل",
     "Save your current separation parameter settings or reset them to the application defaults": "احفظ إعدادات معلمات الفصل الحالية أو أعد تعيينها إلى الإعدادات الافتراضية للتطبيق",
     "Save current settings": "حفظ الإعدادات الحالية",
-    "Reset settings to default": "إعادة تعيين الإعدادات إلى الوضع الافتراضي"
+    "Reset settings to default": "إعادة تعيين الإعدادات إلى الوضع الافتراضي",
+    "All models": "جميع النماذج",
+    "Downloaded models only": "النماذج التي تم تنزيلها فقط",
+    "Mode": "الوضع",
+    "Select the mode you want to use. (Requires restarting the App)": "اختر الوضع الذي تريد استخدامه. (يتطلب إعادة تشغيل التطبيق)",
+    "Download source": "مصدر التنزيل",
+    "Select the source to download the model from (Github or Hugging Face)": "حدد المصدر لتنزيل النموذج منه (Github أو Hugging Face)"
 }

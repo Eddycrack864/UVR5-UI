@@ -87,5 +87,11 @@
     "Separation settings management": "Pengurusan tetapan pemisahan",
     "Save your current separation parameter settings or reset them to the application defaults": "Simpan tetapan parameter pemisahan semasa anda atau kembalikan kepada lalai aplikasi",
     "Save current settings": "Simpan tetapan semasa",
-    "Reset settings to default": "Tetapkan semula tetapan kepada lalai"
+    "Reset settings to default": "Tetapkan semula tetapan kepada lalai",
+    "All models": "Semua model",
+    "Downloaded models only": "Hanya model yang dimuat turun",
+    "Mode": "Mod",
+    "Select the mode you want to use. (Requires restarting the App)": "Pilih mod yang ingin anda gunakan. (Memerlukan aplikasi dimulakan semula)",
+    "Download source": "Sumber muat turun",
+    "Select the source to download the model from (Github or Hugging Face)": "Pilih sumber untuk memuat turun model (Github atau Hugging Face)"
 }

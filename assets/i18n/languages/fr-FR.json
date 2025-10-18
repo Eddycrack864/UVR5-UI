@@ -87,5 +87,11 @@
     "Separation settings management": "Gestion des paramètres de séparation",
     "Save your current separation parameter settings or reset them to the application defaults": "Enregistrez vos paramètres de séparation actuels ou rétablissez les paramètres par défaut de l'application.",
     "Save current settings": "Enregistrer les paramètres actuels",
-    "Reset settings to default": "Réinitialiser les paramètres par défaut"
+    "Reset settings to default": "Réinitialiser les paramètres par défaut",
+    "All models": "Tous les modèles",
+    "Downloaded models only": "Modèles téléchargés uniquement",
+    "Mode": "Mode",
+    "Select the mode you want to use. (Requires restarting the App)": "Sélectionnez le mode que vous souhaitez utiliser. (Nécessite le redémarrage de l'application)",
+    "Download source": "Source de téléchargement",
+    "Select the source to download the model from (Github or Hugging Face)": "Sélectionnez la source pour télécharger le modèle (Github ou Hugging Face)"
 }

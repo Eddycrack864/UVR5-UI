@@ -87,5 +87,11 @@
     "Separation settings management": "分离设置管理",
     "Save your current separation parameter settings or reset them to the application defaults": "保存您当前的分离参数设置或将其重置为应用程序默认值。",
     "Save current settings": "保存当前设置",
-    "Reset settings to default": "重置为默认设置"
+    "Reset settings to default": "重置为默认设置",
+    "All models": "所有模型",
+    "Downloaded models only": "仅下载的模型",
+    "Mode": "模式",
+    "Select the mode you want to use. (Requires restarting the App)": "选择您想要使用的模式。（需要重启应用）",
+    "Download source": "下载来源",
+    "Select the source to download the model from (Github or Hugging Face)": "选择下载模型的来源（Github 或 Hugging Face）"
 }

@@ -87,5 +87,11 @@
     "Separation settings management": "분리 설정 관리",
     "Save your current separation parameter settings or reset them to the application defaults": "현재 분리 파라미터 설정을 저장하거나 애플리케이션 기본값으로 초기화합니다",
     "Save current settings": "현재 설정 저장",
-    "Reset settings to default": "기본값으로 설정 초기화"
+    "Reset settings to default": "기본값으로 설정 초기화",
+    "All models": "모든 모델",
+    "Downloaded models only": "다운로드한 모델만",
+    "Mode": "모드",
+    "Select the mode you want to use. (Requires restarting the App)": "사용할 모드를 선택하십시오. (앱 재시작 필요)",
+    "Download source": "다운로드 소스",
+    "Select the source to download the model from (Github or Hugging Face)": "모델을 다운로드할 소스를 선택하십시오 (Github 또는 Hugging Face)"
 }

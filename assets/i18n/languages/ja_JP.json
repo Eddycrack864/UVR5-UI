@@ -87,5 +87,11 @@
     "Separation settings management": "分離設定の管理",
     "Save your current separation parameter settings or reset them to the application defaults": "現在の分離パラメータ設定を保存するか、アプリケーションのデフォルト設定にリセットする",
     "Save current settings": "現在の設定を保存",
-    "Reset settings to default": "設定をデフォルトにリセット"
+    "Reset settings to default": "設定をデフォルトにリセット",
+    "All models": "すべてのモデル",
+    "Downloaded models only": "ダウンロードしたモデルのみ",
+    "Mode": "モード",
+    "Select the mode you want to use. (Requires restarting the App)": "使用するモードを選択してください。（アプリの再起動が必要です）",
+    "Download source": "ダウンロードソース",
+    "Select the source to download the model from (Github or Hugging Face)": "モデルをダウンロードするソースを選択してください（Github または Hugging Face）"
 }

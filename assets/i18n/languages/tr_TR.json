@@ -87,5 +87,11 @@
     "Separation settings management": "Ayrıştırma ayarları yönetimi",
     "Save your current separation parameter settings or reset them to the application defaults": "Mevcut ayrıştırma parametre ayarlarınızı kaydedin veya uygulama varsayılanlarına sıfırlayın",
     "Save current settings": "Mevcut ayarları kaydet",
-    "Reset settings to default": "Ayarları varsayılanlara sıfırla"
+    "Reset settings to default": "Ayarları varsayılanlara sıfırla",
+    "All models": "Tüm modeller",
+    "Downloaded models only": "Sadece indirilen modeller",
+    "Mode": "Mod",
+    "Select the mode you want to use. (Requires restarting the App)": "Kullanmak istediğiniz modu seçin. (Uygulamayı yeniden başlatmayı gerektirir)",
+    "Download source": "İndirme kaynağı",
+    "Select the source to download the model from (Github or Hugging Face)": "Modeli indirmek için kaynağı seçin (Github veya Hugging Face)"
 }

@@ -87,5 +87,11 @@
     "Separation settings management": "Quản lý cài đặt tách âm",
     "Save your current separation parameter settings or reset them to the application defaults": "Lưu các cài đặt tham số tách âm hiện tại của bạn hoặc đặt lại chúng về mặc định của ứng dụng.",
     "Save current settings": "Lưu cài đặt hiện tại",
-    "Reset settings to default": "Đặt lại cài đặt về mặc định"
+    "Reset settings to default": "Đặt lại cài đặt về mặc định",
+    "All models": "Tất cả mô hình",
+    "Downloaded models only": "Chỉ mô hình đã tải xuống",
+    "Mode": "Chế độ",
+    "Select the mode you want to use. (Requires restarting the App)": "Chọn chế độ bạn muốn sử dụng. (Yêu cầu khởi động lại Ứng dụng)",
+    "Download source": "Nguồn tải xuống",
+    "Select the source to download the model from (Github or Hugging Face)": "Chọn nguồn để tải mô hình từ (Github hoặc Hugging Face)"
 }

@@ -1,0 +1,40 @@
+[workspace]
+authors = ["corednoir <252454232+corednoir@users.noreply.github.com>"]
+channels = ["conda-forge"]
+name = "UVR5-UI"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+app = "python app.py --open"
+
+[dependencies]
+python = "==3.10.12"
+
+[pypi-dependencies]
+
+
+## not tested
+# https://pixi.prefix.dev/dev/python/pytorch/#pytorch-index
+# [feature.gpu]
+# system-requirements = { cuda = "12.0" }
+# [feature.gpu.pypi-dependencies]
+# audio-separator = { version = "==0.39.1", extras = ["gpu"]}
+# gradio = "==5.49.1"
+# yt_dlp = "*"
+# pypresence = "*"
+# torch = { version = "==2.7.0", index = "https://download.pytorch.org/whl/cu128" }
+# torchvision = { version = "*", index = "https://download.pytorch.org/whl/cu128" }
+
+[feature.cpu.pypi-dependencies]
+audio-separator = { version = ">=0.40.0, <0.41", extras = ["cpu"]}
+gradio = "==5.49.1"
+yt_dlp = "*"
+pypresence = "*"
+torch = { version = "==2.7.0", index = "https://download.pytorch.org/whl/cpu" }
+torchvision = { version = "*", index = "https://download.pytorch.org/whl/cpu" }
+
+
+[environments]
+# gpu = { features = ["gpu"] }
+default = { features = ["cpu"] }

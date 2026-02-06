@@ -151,5 +151,6 @@ You can donate to the original UVR5 project here:
 * Thanks to [Mikus](https://github.com/cappuch) for the help with the code.
 * Thanks to [Nick088](https://github.com/Nick088Official) for the help to fix roformers.
 * Thanks to [yt_dlp](https://github.com/yt-dlp/yt-dlp) devs.
-* Separation by link source code and improvements by [NeoDev](https://github.com/TheNeodev).
+* Separation by link source code and improvements by [BF667](https://github.com/BF667).
+
 * Thanks to [ArisDev](https://github.com/aris-py) for porting UVR5 UI to Kaggle and improvements.

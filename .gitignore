@@ -29,3 +29,6 @@ assets/custom_settings.json
 .venv
 env/
 venv/
+# pixi environments
+.pixi/*
+!.pixi/config.toml

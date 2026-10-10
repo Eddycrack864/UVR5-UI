@@ -2351,10 +2351,10 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                 * Thanks to [Mikus](https://github.com/cappuch) for the help with the code.
                 * Thanks to [Nick088](https://huggingface.co/Nick088) for the help to fix roformers.
                 * Thanks to [yt_dlp](https://github.com/yt-dlp/yt-dlp) devs.
-                * Separation by link source code and improvements by [NeoDev](https://github.com/TheNeodev).
+                * Separation by link source code and improvements by [AsukaDev](https://github.com/asukaa2).
                 * Thanks to [ArisDev](https://github.com/aris-py) for porting UVR5 UI to Kaggle and improvements.
                 * Thanks to [Bebra777228](https://github.com/Bebra777228)'s code for guiding me to improve my code.
-                * Thanks to Nick088, MrM0dZ, Ryouko-Yamanda65777, lucinamari, perariroswe, Enes, Léo, the_undead0 and Storm for helping translate UVR5 UI.
+                * Thanks to Nick088, MrM0dZ, AsukaDev, lucinamari, perariroswe, Enes, Léo, the_undead0 and Storm for helping translate UVR5 UI.
                 * Thanks to vadigr123 for creating the images for the Discord Rich Presence.
                 
                 You can donate to the original UVR5 project here:

@@ -29,3 +29,14 @@ assets/custom_settings.json
 .venv
 env/
 venv/
+
+# User data (preferences, custom settings) - survives updater's git reset
+user_data/
+assets/config.json
+
+# Downloaded audio from links
+ytdl/*
+!ytdl/.gitkeep
+
+# Tooling
+.pytest_cache/

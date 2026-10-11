@@ -87,6 +87,17 @@ Start UVR5 UI using:
 - **Windows:** Double-click `run-UVR5-UI.bat`.
 - **Linux:** Run `run-UVR5-UI.sh` with `chmod +x run-UVR5-UI.sh` and `./run-UVR5-UI.sh`.
 
+Extra options can be added to the run scripts (or to `python app.py`):
+
+| Option | Description |
+|---|---|
+| `--share` | Create a temporary public Gradio link |
+| `--listen-port 8080` | Use another port (default: 9999) |
+| `--server-name 0.0.0.0` | Make the UI reachable from other devices on your network |
+| `--open` | Open the UI in your browser (the run scripts already do this) |
+
+Example: `run-UVR5-UI.bat --share --listen-port 8080`
+
 ### 3. Update UVR5 UI (If you want/need it)
 
 Update UVR5 UI using (git needed):
@@ -94,14 +105,44 @@ Update UVR5 UI using (git needed):
 - **Windows:** Double-click `UVR5-UI-updater.bat`.
 - **Linux:** Run `UVR5-UI-updater.sh` with `chmod +x UVR5-UI-updater.sh` and `./UVR5-UI-updater.sh`.
 
+Your preferences (language, theme, saved separation settings) live in the `user_data/` folder and your models in `models/`; updating never touches them.
+
 If you find an error when installing or running the program please consult [this troubleshooting file](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/troubleshooting.md) first, if your error is not described there please create an [issue](https://github.com/Eddycrack864/UVR5-UI/issues)
 
 ### 4. Debug (If you want/need it)
 
 Check the status of audio-separator core:
 
-- **Windows:** Double-click `status-checker.bat`.
-- **Linux:** Run `status-checker.sh` with `chmod +x status-checker.sh` and `./status-checker.sh`.
+- **Windows:** Double-click `info/status-checker.bat`.
+- **Linux:** Run `info/status-checker.sh` with `chmod +x info/status-checker.sh` and `./info/status-checker.sh`.
+
+## Development
+
+The app is a Python package, `uvr5_ui/`, organised in layers:
+
+| Path | What lives there |
+|---|---|
+| `app.py` | Thin launcher (`python app.py [options]`, or `python -m uvr5_ui`) |
+| `uvr5_ui/core/` | Separation, model catalog, downloads, leaderboard. No Gradio imports, testable on its own |
+| `uvr5_ui/core/separation/specs.py` | One declarative `ArchSpec` per architecture (parameters, ranges, defaults). All separation tabs and the separation service are generated from it |
+| `uvr5_ui/ui/` | Gradio layer: one module per tab in `ui/tabs/`, plus shared widgets and handler adapters |
+| `uvr5_ui/config/` | App config (`assets/config.default.json` merged with `user_data/config.json`) and separation presets |
+| `assets/` | Data only: model catalog (`models.json`), default settings, translations, themes |
+
+Common tasks:
+
+```bash
+# Install the test tools (once) and run the tests
+env/python.exe -m pip install -r requirements-dev.txt   # Linux: env/bin/python
+env/python.exe -m pytest
+
+# Check that every translatable string exists in assets/i18n/languages/en_US.json
+env/python.exe tools/i18n_scan.py --check
+```
+
+- **Add a model:** add an entry to `assets/models.json` (`id`, `arch`, `filename`, download `sources`). It appears in its tab automatically.
+- **Add a parameter:** add a `ParamSpec` to its architecture in `uvr5_ui/core/separation/specs.py` and its default to `assets/default_settings.json`.
+- **Translations:** the English text passed to `i18n("...")` is the key in every language file, so changing it breaks existing translations.
 
 ## Precompiled Version
 1. Get the precompiled version (.zip) for your PC:

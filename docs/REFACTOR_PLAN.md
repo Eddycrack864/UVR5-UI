@@ -1,5 +1,12 @@
 # Plan: Refactor de arquitectura de UVR5 UI
 
+> **Estado: implementado** en la rama `refactor/architecture` (ver `CLAUDE.md`). Diferencias con este plan:
+> - Fase 3 no adaptó el `app.py` legacy a los servicios nuevos; el cambio se hizo directamente en la Fase 4, que reescribió la UI.
+> - Las fases 4, 5 y 6 quedaron en un solo commit porque tocaban los mismos archivos de UI.
+> - Los handlers usan inputs como set (`dict[componente, valor]`); la inyección de `gr.Progress` funciona con esa forma en Gradio 5.49.1.
+> - El descargador alternativo agrega el método "Python (built-in)" como default, y los updaters respaldan el `assets/config.json` legacy en `user_data/` antes del `git reset`.
+> - Se agregó una normalización de fines de línea en un commit propio (ignorado en blame vía `.git-blame-ignore-revs`).
+
 ## Contexto
 
 UVR5 UI es una app Gradio 5.49.1 (sobre `audio-separator==0.39.1`) que hoy vive casi entera en `app.py` (~2370 líneas). El proyecto lleva unos 2 años sin mantenimiento y se quiere modernizar, empezando por la arquitectura. **No se cambia ninguna versión de dependencias en este trabajo** (eso va en otra fase). Decisiones que tomó el usuario:

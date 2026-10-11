@@ -1,0 +1,9 @@
+* text=auto
+
+# Shell scripts must keep LF or they break on Linux
+*.sh text eol=lf
+# Batch files must keep CRLF or cmd.exe can misparse labels
+*.bat text eol=crlf
+
+*.ico binary
+*.png binary

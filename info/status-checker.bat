@@ -3,15 +3,15 @@ title UVR5 UI Status
 
 cd /d "%~dp0"
 
-if exist "..\env\python.exe" (
-    ..\env\python.exe ..\env\Scripts\audio-separator.exe -e
+if exist "..\env\Scripts\audio-separator.exe" (
+    ..\env\Scripts\audio-separator.exe -e
 ) else (
-    echo "Searching for global python..."
-    where python > nul 2>&1
-    if %errorlevel% equ 0 (
-        python ..\env\Scripts\audio-separator.exe -e
+    echo Searching for a global audio-separator installation...
+    where audio-separator > nul 2>&1
+    if errorlevel 1 (
+        echo Error: audio-separator not found. Run 'UVR5-UI-installer.bat' first.
     ) else (
-        echo "Error: Python not found."
+        audio-separator -e
     )
 )
 

@@ -22,7 +22,7 @@ Marca cada fase como `[x]` al terminarla y commitea este archivo junto con la fa
 - [x] Fase 5: Servicios secundarios y bugfixes (leaderboard por API, descargador, yt-dlp, errores)
 - [x] Fase 6: UX adicional (toggle Discord, device visible, concurrencia)
 - [x] Fase 7: Herramientas de i18n (`tools/i18n_scan.py --check`)
-- [ ] Fase 8: Scripts de instalación y ejecución
+- [x] Fase 8: Scripts de instalación y ejecución
 - [ ] Fase 9: Documentación y limpieza (borrar los módulos legacy de `assets/`, actualizar este archivo)
 
 ### Arquitectura objetivo (resumen)

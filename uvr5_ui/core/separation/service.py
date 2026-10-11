@@ -51,6 +51,9 @@ def separate_file(
     except Exception as e:
         cache.clear()
         raise SeparationError(f"{spec.tab_label} separation failed: {e}") from e
+    if not outputs:
+        # audio-separator logs and swallows per-file errors, returning no outputs
+        raise SeparationError(f"{spec.tab_label} separation produced no output, check the console for details")
 
     return [StemResult(os.path.join(output_dir, name), parse_stem_label(name)) for name in outputs]
 
@@ -97,10 +100,11 @@ def separate_batch(
         progress(i / total, f"Processing file {i + 1}/{total}")
         yield f"Separating file: {file.name}"
         try:
-            separator.separate(str(file))
+            if not separator.separate(str(file)):
+                raise SeparationError("no output produced, check the console for details")
             yield f"File: {file.name} separated!"
         except Exception as e:
-            logger.exception("Batch separation failed for %s", file)
+            logger.warning("Batch separation failed for %s: %s", file, e)
             failed.append(file.name)
             yield f"Error separating {file.name}: {e}"
 

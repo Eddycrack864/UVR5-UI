@@ -3,30 +3,38 @@ import sys
 import subprocess
 import re
 import platform
-import torch
 import logging
 import yt_dlp
 import json
 import copy
 import gradio as gr
 import urllib.parse
-import assets.themes.loadThemes as loadThemes
 from audio_separator.separator import Separator
-from assets.i18n.i18n import I18nAuto
 from argparse import ArgumentParser
-from assets.presence.discord_presence import RPCManager, track_presence
+import functools
+from uvr5_ui import paths
+from uvr5_ui.config.store import get_config, migrate_legacy_user_data
+from uvr5_ui.core.device import use_autocast as _use_autocast
+from uvr5_ui.i18n import i18n, AUTO_LANGUAGE
+from uvr5_ui.integrations.discord_presence import presence
+from uvr5_ui.ui import theme as loadThemes
 
-i18n = I18nAuto()
+migrate_legacy_user_data()
+config = get_config()
+models_file = str(paths.MODELS_CATALOG_FILE)
+default_settings_file = str(paths.DEFAULT_SETTINGS_FILE)
+custom_settings_file = str(paths.CUSTOM_SETTINGS_FILE)
 
-now_dir = os.getcwd()
-sys.path.append(now_dir)
-config_file = os.path.join(now_dir, "assets", "config.json")
-models_file = os.path.join(now_dir, "assets", "models.json")
-default_settings_file = os.path.join(now_dir, "assets", "default_settings.json")
-custom_settings_file = os.path.join(now_dir, "assets", "custom_settings.json")
+use_autocast = _use_autocast()
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-use_autocast = device == "cuda"
+def track_presence(arch_id, batch=False):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            with presence.track(arch_id, batch):
+                return func(*args, **kwargs)
+        return wrapper
+    return decorator
 
 if os.path.isdir("env"):
     if platform.system() == "Windows":
@@ -272,16 +280,8 @@ out_dir = "./outputs"
 models_dir = "./models"
 extensions = (".wav", ".flac", ".mp3", ".ogg", ".opus", ".m4a", ".aiff", ".ac3")
 
-def load_config_presence():
-    with open(config_file, "r", encoding="utf8") as file:
-        config = json.load(file)
-        return config["discord_presence"]
-
-def initialize_presence():
-    if load_config_presence():
-        RPCManager.start_presence()
-
-initialize_presence()
+if config.get("discord_presence", False):
+    presence.start()
 
 def download_audio(url, output_dir="ytdl"):
 
@@ -343,28 +343,18 @@ def leaderboard(list_filter):
         return f"Error: {e}"
     
 def get_language_settings():
-    with open(config_file, "r", encoding="utf8") as file:
-        config = json.load(file)
-
-    if config["lang"]["override"] == False:
-        return "Language automatically detected by system"
-    else:
-        return config["lang"]["selected_lang"]
+    if not config.get("lang.override", False):
+        return AUTO_LANGUAGE
+    return config.get("lang.selected_lang")
     
 def save_lang_settings(selected_language):
-    with open(config_file, "r", encoding="utf8") as file:
-        config = json.load(file)
-
-    if selected_language == "Language automatically detected by system":
-        config["lang"]["override"] = False
+    if selected_language == AUTO_LANGUAGE:
+        config.set("lang.override", False)
     else:
-        config["lang"]["override"] = True
-        config["lang"]["selected_lang"] = selected_language
+        config.set("lang.override", True)
+        config.set("lang.selected_lang", selected_language)
 
     gr.Info(i18n("Language have been saved. Restart UVR5 UI to apply the changes"))
-
-    with open(config_file, "w", encoding="utf8") as file:
-        json.dump(config, file, indent=2)
 
 def alternative_model_downloader(method, key, source, output_dir="models", progress=gr.Progress()):
     logs.clear()
@@ -454,22 +444,6 @@ def alternative_model_downloader(method, key, source, output_dir="models", progr
     progress(1.0, desc="Download process completed")
     return "\n".join(logs)
 
-def read_main_config():
-    try:
-        with open(config_file, "r", encoding="utf8") as f:
-            return json.load(f)
-    except Exception as e:
-        print(f"Error reading main config file '{config_file}': {e}")
-        gr.Warning(i18n("Error reading main config file"))
-    
-def write_main_config(data):
-    try:
-        with open(config_file, "w", encoding="utf8") as f:
-            json.dump(data, f, indent=2)
-    except Exception as e:
-        print(f"Error writing to main config file '{config_file}': {e}")
-        gr.Warning(i18n("Error writing to main config file"))
-
 def load_settings_from_file(filepath):
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -480,8 +454,7 @@ def load_settings_from_file(filepath):
         return None
     
 def get_initial_settings():
-    main_config = read_main_config()
-    load_custom = main_config.get('load_custom_settings', False)
+    load_custom = config.get('load_custom_settings', False)
 
     settings_to_load = {}
     default_settings = load_settings_from_file(default_settings_file)
@@ -526,12 +499,11 @@ def save_current_settings(*values):
                 current_config_data[section_name][comp_name] = values[value_index]
                 value_index += 1
 
+        os.makedirs(os.path.dirname(custom_settings_file), exist_ok=True)
         with open(custom_settings_file, 'w', encoding='utf-8') as f:
             json.dump(current_config_data, f, indent=4)
 
-        main_config = read_main_config()
-        main_config['load_custom_settings'] = True
-        write_main_config(main_config)
+        config.set('load_custom_settings', True)
         gr.Info(i18n("Current settings saved successfully! They will be loaded next time"))
     except Exception as e:
         print(f"Error saving settings: {e}")
@@ -554,9 +526,7 @@ def reset_settings_to_default():
 
                 updates.append(gr.update(value=default_value))
 
-        main_config = read_main_config()
-        main_config['load_custom_settings'] = False
-        write_main_config(main_config)
+        config.set('load_custom_settings', False)
 
         gr.Info(i18n("Settings reset to default. Default settings will be loaded next time"))
         return updates
@@ -570,7 +540,7 @@ components = {
     "Roformer": {}, "MDX23C": {}, "MDX-NET": {}, "VR Arch": {}, "Demucs": {}
 }
 
-@track_presence("Performing BS/Mel Roformer Separation")
+@track_presence("roformer")
 def roformer_separator(audio, model_key, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
     roformer_model = roformer_models[model_key]
     model_path = os.path.join(models_dir, roformer_model)
@@ -615,7 +585,7 @@ def roformer_separator(audio, model_key, out_format, segment_size, override_seg_
     except Exception as e:
         raise RuntimeError(f"Roformer separation failed: {e}") from e
 
-@track_presence("Performing MDXC Separationn")
+@track_presence("mdx23c")
 def mdxc_separator(audio, model, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
     model_path = os.path.join(models_dir, model)
     try:
@@ -659,7 +629,7 @@ def mdxc_separator(audio, model, out_format, segment_size, override_seg_size, ov
     except Exception as e:
         raise RuntimeError(f"MDX23C separation failed: {e}") from e
 
-@track_presence("Performing MDX-NET Separation")
+@track_presence("mdxnet")
 def mdxnet_separator(audio, model, out_format, hop_length, segment_size, denoise, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
     model_path = os.path.join(models_dir, model)
     try:
@@ -700,7 +670,7 @@ def mdxnet_separator(audio, model, out_format, hop_length, segment_size, denoise
     except Exception as e:
         raise RuntimeError(f"MDX-NET separation failed: {e}") from e
 
-@track_presence("Performing VR Arch Separation")
+@track_presence("vrarch")
 def vrarch_separator(audio, model, out_format, window_size, aggression, tta, post_process, post_process_threshold, high_end_process, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress(track_tqdm=True)):
     model_path = os.path.join(models_dir, model)
     try:
@@ -743,7 +713,7 @@ def vrarch_separator(audio, model, out_format, window_size, aggression, tta, pos
     except Exception as e:
         raise RuntimeError(f"VR ARCH separation failed: {e}") from e
 
-@track_presence("Performing Demucs Separation")
+@track_presence("demucs")
 def demucs_separator(audio, model, out_format, shifts, segment_size, segments_enabled, overlap, batch_size, norm_thresh, amp_thresh, progress=gr.Progress(track_tqdm=True)):
     model_path = os.path.join(models_dir, model)
     try:
@@ -795,7 +765,7 @@ def roformer_update_stems(roformer_model):
     else:
         return gr.update(visible=False)
 
-@track_presence("Performing BS/Mel Roformer Batch Separation")
+@track_presence("roformer", batch=True)
 def roformer_batch(path_input, path_output, model_key, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress()):
     found_files.clear()
     logs.clear()
@@ -851,7 +821,7 @@ def roformer_batch(path_input, path_output, model_key, out_format, segment_size,
         progress(1.0, desc="Processing complete")
         return "\n".join(logs)
 
-@track_presence("Performing MDXC Batch Separation")
+@track_presence("mdx23c", batch=True)
 def mdx23c_batch(path_input, path_output, model, out_format, segment_size, override_seg_size, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress()):
     found_files.clear()
     logs.clear()
@@ -906,7 +876,7 @@ def mdx23c_batch(path_input, path_output, model, out_format, segment_size, overr
         progress(1.0, desc="Processing complete")
         return "\n".join(logs)
 
-@track_presence("Performing MDX-NET Batch Separation")
+@track_presence("mdxnet", batch=True)
 def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment_size, denoise, overlap, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress()):
     found_files.clear()
     logs.clear()
@@ -962,7 +932,7 @@ def mdxnet_batch(path_input, path_output, model, out_format, hop_length, segment
         progress(1.0, desc="Processing complete")
         return "\n".join(logs)
 
-@track_presence("Performing VR Arch Batch Separation")
+@track_presence("vrarch", batch=True)
 def vrarch_batch(path_input, path_output, model, out_format, window_size, aggression, tta, post_process, post_process_threshold, high_end_process, batch_size, norm_thresh, amp_thresh, single_stem, progress=gr.Progress()):
     found_files.clear()
     logs.clear()
@@ -1020,7 +990,7 @@ def vrarch_batch(path_input, path_output, model, out_format, window_size, aggres
         progress(1.0, desc="Processing complete")
         return "\n".join(logs)
 
-@track_presence("Performing Demucs Batch Separation")
+@track_presence("demucs", batch=True)
 def demucs_batch(path_input, path_output, model, out_format, shifts, segment_size, segments_enabled, overlap, batch_size, norm_thresh, amp_thresh, progress=gr.Progress()):
     found_files.clear()
     logs.clear()
@@ -1168,14 +1138,15 @@ def get_downloaded_vrarch_models():
     return gr.update(choices=available_models, value=None)
 
 def read_mode_config():
-    try:
-        with open(config_file, "r", encoding="utf8") as f:
-            data = json.load(f)
-            return data.get("theme", {}).get("mode", "dark")
-    except Exception as e:
-        print(f"Error reading mode from config file '{config_file}': {e}")
-        gr.Warning(i18n("Error reading mode from config file"))
-        return "dark"
+    return loadThemes.current_mode()
+
+def select_theme(name):
+    if loadThemes.select_theme(name):
+        gr.Info(f"Theme {name} successfully selected, restart the App.")
+
+def select_mode(mode):
+    loadThemes.select_mode(mode)
+    gr.Info(f"Mode {mode} successfully selected, restart the App.")
 
 mode = read_mode_config()
 
@@ -1190,7 +1161,7 @@ function refresh() {{
 }}
 """
             
-with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 UVR5 UI 🎵", js = js_func) as app:
+with gr.Blocks(theme = loadThemes.load_theme() or "NoCrypt/miku", title = "🎵 UVR5 UI 🎵", js = js_func) as app:
     gr.Markdown("<h1> 🎵 UVR5 UI 🎵 </h1>")
     gr.Markdown(i18n("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)"))
     gr.Markdown(i18n("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)"))
@@ -2264,8 +2235,8 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
             themes_select = gr.Dropdown(
                 label = i18n("Theme"),
                 info = i18n("Select the theme you want to use. (Requires restarting the App)"),
-                choices = loadThemes.get_list(),
-                value = loadThemes.read_json(),
+                choices = loadThemes.list_themes(),
+                value = loadThemes.current_theme_name(),
                 interactive = True
             )
             mode_select = gr.Dropdown(
@@ -2277,12 +2248,12 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
             )
 
             themes_select.change(
-                fn = loadThemes.select_theme,
+                fn = select_theme,
                 inputs = themes_select,
                 outputs = []
             )
             mode_select.change(
-                fn = loadThemes.select_mode,
+                fn = select_mode,
                 inputs = mode_select,
                 outputs = []
             )
@@ -2293,7 +2264,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
                     label = i18n("Language"),
                     info = i18n("Select the language you want to use. (Requires restarting the App)"),
                     value = get_language_settings(),
-                    choices = ["Language automatically detected by system"] + i18n._get_available_languages(),
+                    choices = [AUTO_LANGUAGE] + i18n.available_languages(),
                     interactive = True
                 )
 
@@ -2364,7 +2335,7 @@ with gr.Blocks(theme = loadThemes.load_json() or "NoCrypt/miku", title = "🎵 U
 
 app.launch(
     share=args.share,
-    favicon_path="assets/favicon.ico",
+    favicon_path=str(paths.FAVICON),
     server_name="",
     server_port=args.listen_port,
     inbrowser=args.open

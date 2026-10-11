@@ -14,6 +14,7 @@ from argparse import ArgumentParser
 import functools
 from uvr5_ui import paths
 from uvr5_ui.config.store import get_config, migrate_legacy_user_data
+from uvr5_ui.core.models.catalog import get_catalog
 from uvr5_ui.core.device import use_autocast as _use_autocast
 from uvr5_ui.i18n import i18n, AUTO_LANGUAGE
 from uvr5_ui.integrations.discord_presence import presence
@@ -21,7 +22,6 @@ from uvr5_ui.ui import theme as loadThemes
 
 migrate_legacy_user_data()
 config = get_config()
-models_file = str(paths.MODELS_CATALOG_FILE)
 default_settings_file = str(paths.DEFAULT_SETTINGS_FILE)
 custom_settings_file = str(paths.CUSTOM_SETTINGS_FILE)
 
@@ -70,198 +70,16 @@ if __name__ == "__main__":
     )   
     args = parser.parse_args()
 
-#=========================#
-#     Roformer Models     #
-#=========================#
-roformer_models = {
-    'BS-Roformer-Viperx-1297': 'model_bs_roformer_ep_317_sdr_12.9755.ckpt',
-    'BS-Roformer-Viperx-1296': 'model_bs_roformer_ep_368_sdr_12.9628.ckpt',
-    'BS-Roformer-Viperx-1053': 'model_bs_roformer_ep_937_sdr_10.5309.ckpt',
-    'Mel-Roformer-Viperx-1143': 'model_mel_band_roformer_ep_3005_sdr_11.4360.ckpt',
-    'BS-Roformer-De-Reverb': 'deverb_bs_roformer_8_384dim_10depth.ckpt',
-    'Mel-Roformer-Crowd-Aufr33-Viperx': 'mel_band_roformer_crowd_aufr33_viperx_sdr_8.7144.ckpt',
-    'Mel-Roformer-Denoise-Aufr33': 'denoise_mel_band_roformer_aufr33_sdr_27.9959.ckpt',
-    'Mel-Roformer-Denoise-Aufr33-Aggr' : 'denoise_mel_band_roformer_aufr33_aggr_sdr_27.9768.ckpt',
-    'MelBand Roformer | Denoise-Debleed by Gabox' : 'mel_band_roformer_denoise_debleed_gabox.ckpt',
-    'Mel-Roformer-Karaoke-Aufr33-Viperx': 'mel_band_roformer_karaoke_aufr33_viperx_sdr_10.1956.ckpt',
-    'MelBand Roformer | Karaoke by Gabox' : 'mel_band_roformer_karaoke_gabox.ckpt',
-    'MelBand Roformer | Karaoke V2 by Gabox' : 'mel_band_roformer_karaoke_gabox_v2.ckpt',
-    'MelBand Roformer | Karaoke by becruily' : 'mel_band_roformer_karaoke_becruily.ckpt',
-    'MelBand Roformer | Vocals by Kimberley Jensen' : 'vocals_mel_band_roformer.ckpt',
-    'MelBand Roformer Kim | FT by unwa' : 'mel_band_roformer_kim_ft_unwa.ckpt',
-    'MelBand Roformer Kim | FT 2 by unwa' : 'mel_band_roformer_kim_ft2_unwa.ckpt',
-    'MelBand Roformer Kim | FT 2 Bleedless by unwa' : 'mel_band_roformer_kim_ft2_bleedless_unwa.ckpt',
-    'MelBand Roformer Kim | FT 3 by unwa' : 'mel_band_roformer_kim_ft3_unwa.ckpt',
-    'MelBand Roformer Kim | Inst V1 by Unwa' : 'melband_roformer_inst_v1.ckpt',
-    'MelBand Roformer Kim | Inst V1 Plus by Unwa' : 'melband_roformer_inst_v1_plus.ckpt',
-    'MelBand Roformer Kim | Inst V1 (E) by Unwa' : 'melband_roformer_inst_v1e.ckpt',
-    'MelBand Roformer Kim | Inst V1 (E) Plus by Unwa' : 'melband_roformer_inst_v1e_plus.ckpt',
-    'MelBand Roformer Kim | Inst V2 by Unwa' : 'melband_roformer_inst_v2.ckpt',
-    'MelBand Roformer Kim | InstVoc Duality V1 by Unwa' : 'melband_roformer_instvoc_duality_v1.ckpt',
-    'MelBand Roformer Kim | InstVoc Duality V2 by Unwa' : 'melband_roformer_instvox_duality_v2.ckpt',
-    'MelBand Roformer | Vocals by becruily' : 'mel_band_roformer_vocals_becruily.ckpt',
-    'MelBand Roformer | Instrumental by becruily' : 'mel_band_roformer_instrumental_becruily.ckpt',
-    'MelBand Roformer | Vocals Fullness by Aname' : 'mel_band_roformer_vocal_fullness_aname.ckpt',
-    'BS Roformer | Vocals by Gabox' : 'bs_roformer_vocals_gabox.ckpt',
-    'MelBand Roformer | Vocals by Gabox' : 'mel_band_roformer_vocals_gabox.ckpt',
-    'MelBand Roformer | Vocals V2 by Gabox' : 'mel_band_roformer_vocals_v2_gabox.ckpt',
-    'MelBand Roformer | Vocals FV1 by Gabox' : 'mel_band_roformer_vocals_fv1_gabox.ckpt',
-    'MelBand Roformer | Vocals FV2 by Gabox' : 'mel_band_roformer_vocals_fv2_gabox.ckpt',
-    'MelBand Roformer | Vocals FV3 by Gabox' : 'mel_band_roformer_vocals_fv3_gabox.ckpt',
-    'MelBand Roformer | Vocals FV4 by Gabox' : 'mel_band_roformer_vocals_fv4_gabox.ckpt',
-    'MelBand Roformer | Vocals FV5 by Gabox' : 'mel_band_roformer_vocals_fv5_gabox.ckpt',
-    'MelBand Roformer | Vocals FV6 by Gabox' : 'mel_band_roformer_vocals_fv6_gabox.ckpt',
-    'MelBand Roformer | Instrumental by Gabox' : 'mel_band_roformer_instrumental_gabox.ckpt',
-    'MelBand Roformer | Instrumental 2 by Gabox' : 'mel_band_roformer_instrumental_2_gabox.ckpt',
-    'MelBand Roformer | Instrumental 3 by Gabox' : 'mel_band_roformer_instrumental_3_gabox.ckpt',
-    'MelBand Roformer | Instrumental Bleedless V1 by Gabox' : 'mel_band_roformer_instrumental_bleedless_v1_gabox.ckpt',
-    'MelBand Roformer | Instrumental Bleedless V2 by Gabox' : 'mel_band_roformer_instrumental_bleedless_v2_gabox.ckpt',
-    'MelBand Roformer | Instrumental Bleedless V3 by Gabox' : 'mel_band_roformer_instrumental_bleedless_v3_gabox.ckpt',
-    'MelBand Roformer | Instrumental Fullness V1 by Gabox' : 'mel_band_roformer_instrumental_fullness_v1_gabox.ckpt',
-    'MelBand Roformer | Instrumental Fullness V2 by Gabox' : 'mel_band_roformer_instrumental_fullness_v2_gabox.ckpt',
-    'MelBand Roformer | Instrumental Fullness V3 by Gabox' : 'mel_band_roformer_instrumental_fullness_v3_gabox.ckpt',
-    'MelBand Roformer | Instrumental Fullness Noisy V4 by Gabox' : 'mel_band_roformer_instrumental_fullness_noise_v4_gabox.ckpt',
-    'MelBand Roformer | INSTV5 by Gabox' : 'mel_band_roformer_instrumental_instv5_gabox.ckpt',
-    'MelBand Roformer | INSTV5N by Gabox' : 'mel_band_roformer_instrumental_instv5n_gabox.ckpt',
-    'MelBand Roformer | INSTV6 by Gabox' : 'mel_band_roformer_instrumental_instv6_gabox.ckpt',
-    'MelBand Roformer | INSTV6N by Gabox' : 'mel_band_roformer_instrumental_instv6n_gabox.ckpt',
-    'MelBand Roformer | INSTV7 by Gabox' : 'mel_band_roformer_instrumental_instv7_gabox.ckpt',
-    'MelBand Roformer | INSTV7N by Gabox' : 'mel_band_roformer_instrumental_instv7n_gabox.ckpt',
-    'MelBand Roformer | INSTV8 by Gabox' : 'mel_band_roformer_instrumental_instv8_gabox.ckpt',
-    'MelBand Roformer | INSTV8N by Gabox' : 'mel_band_roformer_instrumental_instv8n_gabox.ckpt',
-    'MelBand Roformer | Instrumental FV7z by Gabox' : 'mel_band_roformer_instrumental_fv7z_gabox.ckpt',
-    'MelBand Roformer | Instrumental FV8 by Gabox' : 'mel_band_roformer_instrumental_fv8_gabox.ckpt',
-    'MelBand Roformer | Instrumental FVX by Gabox' : 'mel_band_roformer_instrumental_fvx_gabox.ckpt',
-    'MelBand Roformer | De-Reverb by anvuew' : 'dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt',
-    'MelBand Roformer | De-Reverb Less Aggressive by anvuew' : 'dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt',
-    'MelBand Roformer | De-Reverb Mono by anvuew' : 'dereverb_mel_band_roformer_mono_anvuew.ckpt',
-    'MelBand Roformer | De-Reverb Big by Sucial' : 'dereverb_big_mbr_ep_362.ckpt',
-    'MelBand Roformer | De-Reverb Super Big by Sucial' : 'dereverb_super_big_mbr_ep_346.ckpt',
-    'MelBand Roformer | De-Reverb-Echo by Sucial' : 'dereverb-echo_mel_band_roformer_sdr_10.0169.ckpt',
-    'MelBand Roformer | De-Reverb-Echo V2 by Sucial' : 'dereverb-echo_mel_band_roformer_sdr_13.4843_v2.ckpt',
-    'MelBand Roformer | De-Reverb-Echo Fused by Sucial' : 'dereverb_echo_mbr_fused.ckpt',
-    'MelBand Roformer Kim | SYHFT by SYH99999' : 'MelBandRoformerSYHFT.ckpt',
-    'MelBand Roformer Kim | SYHFT V2 by SYH99999' : 'MelBandRoformerSYHFTV2.ckpt',
-    'MelBand Roformer Kim | SYHFT V2.5 by SYH99999' : 'MelBandRoformerSYHFTV2.5.ckpt',
-    'MelBand Roformer Kim | SYHFT V3 by SYH99999' : 'MelBandRoformerSYHFTV3Epsilon.ckpt',
-    'MelBand Roformer Kim | Big SYHFT V1 by SYH99999' : 'MelBandRoformerBigSYHFTV1.ckpt',
-    'MelBand Roformer Kim | Big Beta 4 FT by unwa' : 'melband_roformer_big_beta4.ckpt',
-    'MelBand Roformer Kim | Big Beta 5e FT by unwa' : 'melband_roformer_big_beta5e.ckpt',
-    'MelBand Roformer | Big Beta 6 by unwa' : 'melband_roformer_big_beta6.ckpt',
-    'MelBand Roformer | Big Beta 6X by unwa' : 'melband_roformer_big_beta6x.ckpt',
-    'BS Roformer | Vocals Revive by Unwa' : 'bs_roformer_vocals_revive_unwa.ckpt',
-    'BS Roformer | Vocals Revive V2 by Unwa' : 'bs_roformer_vocals_revive_v2_unwa.ckpt',
-    'BS Roformer | Vocals Revive V3e by Unwa' : 'bs_roformer_vocals_revive_v3e_unwa.ckpt',
-    'BS Roformer | Chorus Male-Female by Sucial' : 'model_chorus_bs_roformer_ep_267_sdr_24.1275.ckpt',
-    'BS Roformer | Male-Female by aufr33' : 'bs_roformer_male_female_by_aufr33_sdr_7.2889.ckpt',
-    'MelBand Roformer | Aspiration by Sucial' : 'aspiration_mel_band_roformer_sdr_18.9845.ckpt',
-    'MelBand Roformer | Aspiration Less Aggressive by Sucial' : 'aspiration_mel_band_roformer_less_aggr_sdr_18.1201.ckpt',
-    'MelBand Roformer | Bleed Suppressor V1 by unwa-97chris' : 'mel_band_roformer_bleed_suppressor_v1.ckpt',
-    'BS Roformer | Vocals Resurrection by unwa' : 'bs_roformer_vocals_resurrection_unwa.ckpt',
-    'BS Roformer | Instrumental Resurrection by unwa' : 'bs_roformer_instrumental_resurrection_unwa.ckpt',
-    'BS Roformer SW by jarredou' : 'BS-Roformer-SW.ckpt'
-}
+catalog = get_catalog()
+roformer_models = {m.id: m.filename for m in catalog.by_arch("roformer")}
+mdx23c_models = catalog.ids("mdx23c")
+mdxnet_models = catalog.ids("mdxnet")
+vrarch_models = catalog.ids("vrarch")
+demucs_models = catalog.ids("demucs")
 
-#=========================#
-#      MDX23C Models      #
-#=========================#
-mdx23c_models = [
-    'MDX23C_D1581.ckpt',
-    'MDX23C-8KFFT-InstVoc_HQ.ckpt',
-    'MDX23C-8KFFT-InstVoc_HQ_2.ckpt',
-    'MDX23C-De-Reverb-aufr33-jarredou.ckpt',
-    'MDX23C-DrumSep-aufr33-jarredou.ckpt'
-]
-
-#=========================#
-#     MDXN-NET Models     #
-#=========================#
-mdxnet_models = [
-    'UVR-MDX-NET-Inst_full_292.onnx',
-    'UVR-MDX-NET_Inst_187_beta.onnx',
-    'UVR-MDX-NET_Inst_82_beta.onnx',
-    'UVR-MDX-NET_Inst_90_beta.onnx',
-    'UVR-MDX-NET_Main_340.onnx',
-    'UVR-MDX-NET_Main_390.onnx',
-    'UVR-MDX-NET_Main_406.onnx',
-    'UVR-MDX-NET_Main_427.onnx',
-    'UVR-MDX-NET_Main_438.onnx',
-    'UVR-MDX-NET-Inst_HQ_1.onnx',
-    'UVR-MDX-NET-Inst_HQ_2.onnx',
-    'UVR-MDX-NET-Inst_HQ_3.onnx',
-    'UVR-MDX-NET-Inst_HQ_4.onnx',
-    'UVR-MDX-NET-Inst_HQ_5.onnx',
-    'UVR_MDXNET_Main.onnx',
-    'UVR-MDX-NET-Inst_Main.onnx',
-    'UVR_MDXNET_1_9703.onnx',
-    'UVR_MDXNET_2_9682.onnx',
-    'UVR_MDXNET_3_9662.onnx',
-    'UVR-MDX-NET-Inst_1.onnx',
-    'UVR-MDX-NET-Inst_2.onnx',
-    'UVR-MDX-NET-Inst_3.onnx',
-    'UVR_MDXNET_KARA.onnx',
-    'UVR_MDXNET_KARA_2.onnx',
-    'UVR_MDXNET_9482.onnx',
-    'UVR-MDX-NET-Voc_FT.onnx',
-    'Kim_Vocal_1.onnx',
-    'Kim_Vocal_2.onnx',
-    'Kim_Inst.onnx',
-    'Reverb_HQ_By_FoxJoy.onnx',
-    'UVR-MDX-NET_Crowd_HQ_1.onnx',
-    'kuielab_a_vocals.onnx',
-    'kuielab_a_other.onnx',
-    'kuielab_a_bass.onnx',
-    'kuielab_a_drums.onnx',
-    'kuielab_b_vocals.onnx',
-    'kuielab_b_other.onnx',
-    'kuielab_b_bass.onnx',
-    'kuielab_b_drums.onnx',
-]
-
-#========================#
-#     VR-ARCH Models     #
-#========================#
-vrarch_models = [
-    '1_HP-UVR.pth',
-    '2_HP-UVR.pth',
-    '3_HP-Vocal-UVR.pth',
-    '4_HP-Vocal-UVR.pth',
-    '5_HP-Karaoke-UVR.pth',
-    '6_HP-Karaoke-UVR.pth',
-    '7_HP2-UVR.pth',
-    '8_HP2-UVR.pth',
-    '9_HP2-UVR.pth',
-    '10_SP-UVR-2B-32000-1.pth',
-    '11_SP-UVR-2B-32000-2.pth',
-    '12_SP-UVR-3B-44100.pth',
-    '13_SP-UVR-4B-44100-1.pth',
-    '14_SP-UVR-4B-44100-2.pth',
-    '15_SP-UVR-MID-44100-1.pth',
-    '16_SP-UVR-MID-44100-2.pth',
-    '17_HP-Wind_Inst-UVR.pth',
-    'UVR-De-Echo-Aggressive.pth',
-    'UVR-De-Echo-Normal.pth',
-    'UVR-DeEcho-DeReverb.pth',
-    'UVR-De-Reverb-aufr33-jarredou.pth',
-    'UVR-DeNoise-Lite.pth',
-    'UVR-DeNoise.pth',
-    'UVR-BVE-4B_SN-44100-1.pth',
-    'UVR-BVE-4B_SN-44100-2.pth',
-    'MGM_HIGHEND_v4.pth',
-    'MGM_LOWEND_A_v4.pth',
-    'MGM_LOWEND_B_v4.pth',
-    'MGM_MAIN_v4.pth',
-]
-
-#=======================#
-#     DEMUCS Models     #
-#=======================#
-demucs_models = [
-    'htdemucs_ft.yaml',
-    'htdemucs_6s.yaml',
-    'htdemucs.yaml',
-    'hdemucs_mmi.yaml',
-]
+def model_choices(arch, downloaded_only):
+    models = catalog.downloaded(arch) if downloaded_only else catalog.by_arch(arch)
+    return gr.update(choices=[m.id for m in models], value=None)
 
 output_format = [
     'wav',
@@ -359,22 +177,11 @@ def save_lang_settings(selected_language):
 def alternative_model_downloader(method, key, source, output_dir="models", progress=gr.Progress()):
     logs.clear()
 
-    with open(models_file, 'r', encoding='utf-8') as file:
-        model_data = json.load(file)
-
-    if key not in model_data:
+    model = catalog.find(key)
+    if model is None:
         return f"Model '{key}' cannot be found."
 
-    entry = model_data[key]
-
-    if isinstance(entry, list):
-        urls = entry
-    elif isinstance(entry, dict):
-        urls = entry.get(source, []) if source in entry else []
-        if not urls:
-            urls = entry.get('Github') or entry.get('HuggingFace') or []
-    else:
-        return f"Model entry for '{key}' has an unexpected format."
+    urls = model.urls({"Github": "github", "Hugging Face": "huggingface"}.get(source, "github"))
 
     if not urls:
         return f"No URLs found for model '{key}' using source '{source}'."
@@ -1045,98 +852,6 @@ def demucs_batch(path_input, path_output, model, out_format, shifts, segment_siz
         progress(1.0, desc="Processing complete")
         return "\n".join(logs)
 
-def get_all_roformer_models():
-    return gr.update(choices=list(roformer_models.keys()), value=None)
-
-def get_downloaded_roformer_models():
-    downloaded_files = set()
-    if os.path.exists(models_dir) and os.path.isdir(models_dir):
-        try:
-            downloaded_files = set(os.listdir(models_dir))
-        except OSError as e:
-            print(f"Error reading directory '{models_dir}': {e}")
-            return gr.update(choices=list(roformer_models.keys()), value=None)
-    else:
-        print(f"The directory '{models_dir}' was not found")
-        return gr.update(choices=list(roformer_models.keys()), value=None)
-
-    available_models = []
-
-    for model_name, filename in roformer_models.items():
-        if filename in downloaded_files:
-            available_models.append(model_name)
-    
-    return gr.update(choices=available_models, value=None)
-
-def get_all_mdx23c_models():
-    return gr.update(choices=mdx23c_models, value=None)
-
-def get_downloaded_mdx23c_models():
-    downloaded_files = set()
-    if os.path.exists(models_dir) and os.path.isdir(models_dir):
-        try:
-            downloaded_files = set(os.listdir(models_dir))
-        except OSError as e:
-            print(f"Error reading directory '{models_dir}': {e}")
-            return gr.update(choices=mdx23c_models, value=None)
-    else:
-        print(f"The directory '{models_dir}' was not found")
-        return gr.update(choices=mdx23c_models, value=None)
-
-    available_models = []
-
-    for filename in mdx23c_models:
-        if filename in downloaded_files:
-            available_models.append(filename)
-    
-    return gr.update(choices=available_models, value=None)
-
-def get_all_mdxnet_models():
-    return gr.update(choices=mdxnet_models, value=None)
-
-def get_downloaded_mdxnet_models():
-    downloaded_files = set()
-    if os.path.exists(models_dir) and os.path.isdir(models_dir):
-        try:
-            downloaded_files = set(os.listdir(models_dir))
-        except OSError as e:
-            print(f"Error reading directory '{models_dir}': {e}")
-            return gr.update(choices=mdxnet_models, value=None)
-    else:
-        print(f"The directory '{models_dir}' was not found")
-        return gr.update(choices=mdxnet_models, value=None)
-
-    available_models = []
-
-    for filename in mdxnet_models:
-        if filename in downloaded_files:
-            available_models.append(filename)
-    
-    return gr.update(choices=available_models, value=None)
-
-def get_all_vrarch_models():
-    return gr.update(choices=vrarch_models, value=None)
-
-def get_downloaded_vrarch_models():
-    downloaded_files = set()
-    if os.path.exists(models_dir) and os.path.isdir(models_dir):
-        try:
-            downloaded_files = set(os.listdir(models_dir))
-        except OSError as e:
-            print(f"Error reading directory '{models_dir}': {e}")
-            return gr.update(choices=vrarch_models, value=None)
-    else:
-        print(f"The directory '{models_dir}' was not found")
-        return gr.update(choices=vrarch_models, value=None)
-
-    available_models = []
-
-    for filename in vrarch_models:
-        if filename in downloaded_files:
-            available_models.append(filename)
-    
-    return gr.update(choices=available_models, value=None)
-
 def read_mode_config():
     return loadThemes.current_mode()
 
@@ -1193,12 +908,12 @@ with gr.Blocks(theme = loadThemes.load_theme() or "NoCrypt/miku", title = "🎵 
                     )
 
                 roformer_all_models.click(
-                    fn = get_all_roformer_models,
+                    fn = lambda: model_choices("roformer", False),
                     inputs = [],
                     outputs = [roformer_model]
                 )
                 roformer_downloaded_models.click(
-                    fn = get_downloaded_roformer_models,
+                    fn = lambda: model_choices("roformer", True),
                     inputs = [],
                     outputs = [roformer_model]
                 )
@@ -1412,12 +1127,12 @@ with gr.Blocks(theme = loadThemes.load_theme() or "NoCrypt/miku", title = "🎵 
                     )
 
                 mdx23c_all_models.click(
-                    fn = get_all_mdx23c_models,
+                    fn = lambda: model_choices("mdx23c", False),
                     inputs = [],
                     outputs = [mdx23c_model]
                 )
                 mdx23c_downloaded_models.click(
-                    fn = get_downloaded_mdx23c_models,
+                    fn = lambda: model_choices("mdx23c", True),
                     inputs = [],
                     outputs = [mdx23c_model]
                 )
@@ -1631,12 +1346,12 @@ with gr.Blocks(theme = loadThemes.load_theme() or "NoCrypt/miku", title = "🎵 
                     )
 
                 mdxnet_all_models.click(
-                    fn = get_all_mdxnet_models,
+                    fn = lambda: model_choices("mdxnet", False),
                     inputs = [],
                     outputs = [mdxnet_model]
                 )
                 mdxnet_downloaded_models.click(
-                    fn = get_downloaded_mdxnet_models,
+                    fn = lambda: model_choices("mdxnet", True),
                     inputs = [],
                     outputs = [mdxnet_model]
                 )
@@ -1830,12 +1545,12 @@ with gr.Blocks(theme = loadThemes.load_theme() or "NoCrypt/miku", title = "🎵 
                     )
 
                 vrarch_all_models.click(
-                    fn = get_all_vrarch_models,
+                    fn = lambda: model_choices("vrarch", False),
                     inputs = [],
                     outputs = [vrarch_model]
                 )
                 vrarch_downloaded_models.click(
-                    fn = get_downloaded_vrarch_models,
+                    fn = lambda: model_choices("vrarch", True),
                     inputs = [],
                     outputs = [vrarch_model]
                 )
@@ -2292,7 +2007,7 @@ with gr.Blocks(theme = loadThemes.load_theme() or "NoCrypt/miku", title = "🎵 
                     label = i18n("Model to download"),
                     info = i18n("Select the model to download using the selected method"),
                     value = lambda : None,
-                    choices = list(roformer_models.keys()) + mdx23c_models + mdxnet_models + vrarch_models,
+                    choices = [m.id for m in catalog.downloadable()],
                     interactive = True
                 )
                 alternative_model_downloader_button = gr.Button(i18n("Download!"), variant = "primary")

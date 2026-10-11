@@ -16,7 +16,7 @@ Marca cada fase como `[x]` al terminarla y commitea este archivo junto con la fa
 
 - [x] Fase 0: Preparación (plan en repo, CLAUDE.md, `.gitattributes`, `requirements-dev.txt`, `pyproject.toml`, `.gitignore`, `tests/conftest.py`)
 - [x] Fase 1: Esqueleto e infraestructura (`paths`, `ConfigStore` + migración a `user_data/`, i18n, theme, discord presence, device)
-- [ ] Fase 2: Catálogo de modelos (`assets/models.json` v2 + `core/models/catalog.py`)
+- [x] Fase 2: Catálogo de modelos (`assets/models.json` v2 + `core/models/catalog.py`)
 - [ ] Fase 3: Núcleo de separación (`ArchSpec`/`ParamSpec`, `service.py`, `runtime.py`)
 - [ ] Fase 4: Descomposición de la UI (`ui/tabs/*`, `create_app`, `main.py`, `app.py` fino)
 - [ ] Fase 5: Servicios secundarios y bugfixes (leaderboard por API, descargador, yt-dlp, errores)

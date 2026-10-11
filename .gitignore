@@ -40,3 +40,6 @@ ytdl/*
 
 # Tooling
 .pytest_cache/
+
+#AI Development
+/.claude

@@ -50,7 +50,7 @@ def stem_outputs() -> list[gr.Audio]:
                     label=i18n(STEM_LABELS[index - 1]),
                     type="filepath",
                     interactive=False,
-                    show_download_button=True,
+                    buttons=["download"],
                     visible=index <= 2,
                 ))
     return stems

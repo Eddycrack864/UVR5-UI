@@ -15,18 +15,21 @@ def main(argv: list[str] | None = None) -> None:
     migrate_legacy_user_data()
 
     from uvr5_ui.integrations.discord_presence import presence
-    from uvr5_ui.ui.app import create_app
+    from uvr5_ui.ui.app import create_app, launch_kwargs
+    from uvr5_ui.ui.context import AppContext
 
     if get_config().get("discord_presence", False):
         presence.start()
 
     try:
-        create_app().queue().launch(
+        ctx = AppContext.create()
+        create_app(ctx).queue().launch(
             share=options.share,
             favicon_path=str(paths.FAVICON),
             server_name=options.server_name,
             server_port=options.listen_port,
             inbrowser=options.open_browser,
+            **launch_kwargs(ctx),
         )
     finally:
         presence.stop()

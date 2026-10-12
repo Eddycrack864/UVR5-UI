@@ -32,5 +32,5 @@ def render_themes_tab(ctx: AppContext) -> None:
         theme.select_mode(mode, ctx.config)
         gr.Info(f"Mode {mode} successfully selected, restart the App.")
 
-    themes_select.change(select_theme, inputs=[themes_select], show_api=False)
-    mode_select.change(select_mode, inputs=[mode_select], show_api=False)
+    themes_select.change(select_theme, inputs=[themes_select], api_visibility="undocumented")
+    mode_select.change(select_mode, inputs=[mode_select], api_visibility="undocumented")

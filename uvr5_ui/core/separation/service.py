@@ -52,7 +52,7 @@ def separate_file(
         cache.clear()
         raise SeparationError(f"{spec.tab_label} separation failed: {e}") from e
     if not outputs:
-        # audio-separator logs and swallows per-file errors, returning no outputs
+        # audio-separator raises on a failed file (older versions returned []); keep the guard just in case
         raise SeparationError(f"{spec.tab_label} separation produced no output, check the console for details")
 
     return [StemResult(os.path.join(output_dir, name), parse_stem_label(name)) for name in outputs]

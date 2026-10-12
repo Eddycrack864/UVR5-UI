@@ -73,7 +73,7 @@ def render_settings_tab(ctx: AppContext, separation_tabs: list[SeparationTab]) -
             ctx.config.set("lang.selected_lang", language)
         gr.Info(i18n("Language have been saved. Restart UVR5 UI to apply the changes"))
 
-    selected_language.change(save_language, inputs=[selected_language], show_api=False)
+    selected_language.change(save_language, inputs=[selected_language], api_visibility="undocumented")
 
     # Alternative model downloader
     @user_errors
@@ -122,14 +122,14 @@ def render_settings_tab(ctx: AppContext, separation_tabs: list[SeparationTab]) -
         gr.Info(i18n("Settings reset to default. Default settings will be loaded next time"))
         return updates
 
-    save_button.click(save_settings, inputs=all_inputs, show_api=False)
-    reset_button.click(reset_settings, outputs=all_inputs, show_api=False)
+    save_button.click(save_settings, inputs=all_inputs, api_visibility="undocumented")
+    reset_button.click(reset_settings, outputs=all_inputs, api_visibility="undocumented")
 
     # Discord
     def save_discord(enabled):
         ctx.config.set("discord_presence", bool(enabled))
 
-    discord_presence.change(save_discord, inputs=[discord_presence], show_api=False)
+    discord_presence.change(save_discord, inputs=[discord_presence], api_visibility="undocumented")
 
 
 def _current_language(ctx: AppContext) -> str:

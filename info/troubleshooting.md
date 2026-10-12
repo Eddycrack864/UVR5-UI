@@ -24,9 +24,11 @@ This indicates that the dependencies were not installed correctly or the script 
 
 ## 3. How to disable Discord Rich Presence?
 
-1. Go to the `assets` folder and open `config.json`
-2. On line 10, change the state of `discord_presence` from `true` to `false`
-3. Save changes and restart UVR5 UI
+1. Open UVR5 UI and go to the `Settings` tab
+2. Open the `Discord Rich Presence` section and uncheck `Show UVR5 UI activity on Discord`
+3. Restart UVR5 UI
+
+The setting is saved in `user_data/config.json` (`"discord_presence": false`). Older versions kept it in `assets/config.json`, which is no longer used.
 
 ## 4. Failed building wheel for diffq (Linux)
 

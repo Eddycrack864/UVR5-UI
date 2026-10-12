@@ -10,7 +10,7 @@ from uvr5_ui.config.store import get_config, migrate_legacy_user_data
 def main(argv: list[str] | None = None) -> None:
     options = parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s [%(name)s] %(message)s")
-    for noisy in ("httpx", "httpcore", "urllib3", "gradio"):
+    for noisy in ("httpx", "httpx2", "httpcore", "urllib3", "gradio"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
     migrate_legacy_user_data()
 

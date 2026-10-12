@@ -149,6 +149,7 @@ echo.
 echo UVR5 UI now uses Python %PYTHON_VERSION%, but your Python environment is older.
 echo It can be rebuilt automatically: this downloads about 3 GB and needs about 6 GB of free disk space.
 echo If anything goes wrong, your current environment is restored.
+echo Close UVR5 UI before continuing.
 echo.
 choice /c YN /m "Rebuild the Python environment now"
 if errorlevel 2 (
@@ -177,7 +178,12 @@ if errorlevel 1 (
 )
 
 echo Removing the previous environment...
-rmdir /s /q "%OLD_ENV_DIR%"
+rmdir /s /q "%OLD_ENV_DIR%" > nul 2>&1
+if exist "%OLD_ENV_DIR%" (
+    rem Windows lets a running UVR5 UI keep its files in use after the rename
+    echo Some files of the previous environment are still in use. Close UVR5 UI and delete the
+    echo "env_old" folder, or it will be removed the next time you run the updater.
+)
 echo Python environment rebuilt successfully.
 exit /b 0
 

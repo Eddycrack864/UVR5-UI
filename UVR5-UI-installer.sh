@@ -155,6 +155,7 @@ offer_rebuild() {
     echo "UVR5 UI now uses Python $PYTHON_VERSION, but your Python environment is older."
     echo "It can be rebuilt automatically: this downloads about 3 GB and needs about 6 GB of free disk space."
     echo "If anything goes wrong, your current environment is restored."
+    echo "Close UVR5 UI before continuing."
     echo
     local answer="n"
     if [ -t 0 ]; then

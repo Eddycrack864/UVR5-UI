@@ -28,6 +28,8 @@ assets/custom_settings.json
 .env
 .venv
 env/
+env313/
+env_old/
 venv/
 
 # User data (preferences, custom settings) - survives updater's git reset

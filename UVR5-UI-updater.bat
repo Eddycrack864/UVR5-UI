@@ -50,23 +50,16 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+rem ===== Do not edit anything above this line. =====
+rem Older updaters keep reading this file at the same byte position after "git reset" rewrites it,
+rem so everything above must stay byte-identical. Put new update steps below.
+
 echo Code updated successfully.
 echo.
 
-if not exist "%PYTHON_EXE%" (
-    echo Error: Python environment not found at "%ENV_DIR%". Please run the installer first.
-    pause
-    exit /b 1
-)
+call "%INSTALL_DIR%\UVR5-UI-installer.bat" --update || goto :error
 
-echo Updating Conda environment...
-echo Checking for updated dependencies...
-
-"%PYTHON_EXE%" -m pip install --upgrade -r "%INSTALL_DIR%\requirements.txt" --no-warn-script-location || goto :error
-
-echo Conda environment updated successfully.
 echo.
-
 echo Update Complete!
 echo UVR5 UI has been updated to the latest version.
 pause

@@ -57,8 +57,8 @@ You can also try it on HuggingFace Spaces running with Zero GPU (A100)!
 ### Prerequisites:
 - Git. You can download Git [here](https://git-scm.com/downloads).
 - FFmpeg. You can download FFmpeg [here](https://www.ffmpeg.org/download.html) or you can use my [automated installation script](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/ffmpeg-installer.bat) (for Windows).
-- For linux users, run this command on an terminal: (Debian and Ubuntu users): `sudo apt install ffmpeg git` (For Arch linux users): `sudo pacman -S ffmpeg git` (For Fedora users): `sudo dnf install ffmpeg git`
-(Some distributions already come with Git and FFmpeg preinstalled so this step may be optional.)
+- For linux users, run this command on an terminal: (Debian and Ubuntu users): `sudo apt install ffmpeg git build-essential` (For Arch linux users): `sudo pacman -S ffmpeg git base-devel` (For Fedora users): `sudo dnf install ffmpeg git gcc gcc-c++`
+(Some distributions already come with Git, FFmpeg and a C compiler preinstalled so this step may be optional. The compiler is needed to build one of the dependencies during installation.)
 
 > [!IMPORTANT]  
 > FFmpeg has to be added to the PATH. (only needed on Windows)
@@ -106,6 +106,8 @@ Update UVR5 UI using (git needed):
 - **Linux:** Run `UVR5-UI-updater.sh` with `chmod +x UVR5-UI-updater.sh` and `./UVR5-UI-updater.sh`.
 
 Your preferences (language, theme, saved separation settings) live in the `user_data/` folder and your models in `models/`; updating never touches them.
+
+UVR5 UI runs on Python 3.13. If your installation is older (Python 3.10), the updater offers to rebuild the Python environment automatically. It downloads about 3 GB and needs about 6 GB of free disk space while it runs; if anything fails, your previous environment is restored.
 
 If you find an error when installing or running the program please consult [this troubleshooting file](https://github.com/Eddycrack864/UVR5-UI/blob/main/info/troubleshooting.md) first, if your error is not described there please create an [issue](https://github.com/Eddycrack864/UVR5-UI/issues)
 
@@ -167,6 +169,7 @@ A more technical level is required for this type of use. You can use this Jupyte
 - Use Jupyter `>= 7.3.1`
 - Configure port forwarding `9999 (UVR5-UI GUI)`
 - Install necessary drivers to use the GPU
+- Install a C compiler (`apt install build-essential`), needed to build one of the dependencies
 
 You can get the notebook here: [Jupyter Notebook](https://github.com/Eddycrack864/UVR5-UI/blob/main/UVR_UI_Jupyter.ipynb) by iroaK
 

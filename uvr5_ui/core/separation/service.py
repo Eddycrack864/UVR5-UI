@@ -22,6 +22,11 @@ def _noop_progress(fraction: float, desc: str) -> None:
     pass
 
 
+def _describe(e: Exception) -> str:
+    # Some audio-separator errors carry no message (e.g. audioread's NoBackendError for unreadable files)
+    return str(e) or type(e).__name__
+
+
 @dataclass(frozen=True)
 class StemResult:
     path: str
@@ -50,9 +55,9 @@ def separate_file(
         outputs = separator.separate(audio_path)
     except Exception as e:
         cache.clear()
-        raise SeparationError(f"{spec.tab_label} separation failed: {e}") from e
+        raise SeparationError(f"{spec.tab_label} separation failed: {_describe(e)}") from e
     if not outputs:
-        # audio-separator logs and swallows per-file errors, returning no outputs
+        # audio-separator raises on a failed file (older versions returned []); keep the guard just in case
         raise SeparationError(f"{spec.tab_label} separation produced no output, check the console for details")
 
     return [StemResult(os.path.join(output_dir, name), parse_stem_label(name)) for name in outputs]
@@ -93,7 +98,7 @@ def separate_batch(
         separator = cache.get(spec, model, values, output_dir, output_format)
     except Exception as e:
         cache.clear()
-        raise SeparationError(f"Could not load model {model.id}: {e}") from e
+        raise SeparationError(f"Could not load model {model.id}: {_describe(e)}") from e
 
     failed = []
     for i, file in enumerate(files):
@@ -104,9 +109,9 @@ def separate_batch(
                 raise SeparationError("no output produced, check the console for details")
             yield f"File: {file.name} separated!"
         except Exception as e:
-            logger.warning("Batch separation failed for %s: %s", file, e)
+            logger.warning("Batch separation failed for %s: %s", file, _describe(e))
             failed.append(file.name)
-            yield f"Error separating {file.name}: {e}"
+            yield f"Error separating {file.name}: {_describe(e)}"
 
     progress(1.0, "Processing complete")
     yield f"Done: {total - len(failed)} separated, {len(failed)} failed. Output: {output_dir}"

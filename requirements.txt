@@ -1,4 +1,8 @@
-audio-separator[gpu]==0.39.1
-gradio==5.49.1
+audio-separator[gpu]==0.47.0
+# onnxruntime-gpu 1.27+ targets CUDA 13; keep it on CUDA 12 to match torch cu128
+onnxruntime-gpu<1.27
+# librosa 1.0 dropped audioread, which audio-separator 0.47 still imports (it is tested with librosa 0.11)
+librosa<1.0
+gradio==6.30.0
 yt_dlp
 pypresence

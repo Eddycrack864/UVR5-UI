@@ -43,9 +43,10 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
                         all_models = gr.Button(i18n("All models"), variant="primary")
                         downloaded_models = gr.Button(i18n("Downloaded models only"), variant="primary")
                     output_format = _output_format_dropdown(section)
-                all_models.click(lambda: _model_choices(ctx, spec, downloaded_only=False), outputs=[model], show_api=False)
+                all_models.click(lambda: _model_choices(ctx, spec, downloaded_only=False), outputs=[model],
+                                 api_visibility="undocumented")
                 downloaded_models.click(lambda: _model_choices(ctx, spec, downloaded_only=True), outputs=[model],
-                                        show_api=False)
+                                        api_visibility="undocumented")
             else:
                 output_format = _output_format_dropdown(section)
 

@@ -6,8 +6,6 @@ echo -e "\e]2;UVR5 UI Updater\a"
 
 REPO_URL="https://github.com/Eddycrack864/UVR5-UI"
 INSTALL_DIR="$(pwd)"
-ENV_DIR="$INSTALL_DIR/env"
-PYTHON_EXE="$ENV_DIR/bin/python"
 
 pause_if_interactive() {
     if [ -t 0 ]; then
@@ -55,18 +53,10 @@ git reset --hard origin/main || error_exit "Failed to reset repository. Check yo
 echo "Code updated successfully."
 echo
 
-if [ ! -f "$PYTHON_EXE" ]; then
-    error_exit "Python environment not found at '$ENV_DIR'. Please run the installer first. If you are using the pre-compiled version, you cannot fully update UVR5 UI with this script. Please download the latest version from GitHub."
-fi
+# Dependencies (and, when needed, a rebuild of the Python environment) are handled by the installer
+bash "$INSTALL_DIR/UVR5-UI-installer.sh" --update || error_exit "Failed to update the Python environment."
 
-echo "Updating Conda environment..."
-echo "Checking for updated dependencies..."
-
-"$PYTHON_EXE" -m pip install --upgrade -r "$INSTALL_DIR/requirements.txt" || error_exit "Failed to update dependencies."
-
-echo "Conda environment updated successfully."
 echo
-
 echo "Update Complete!"
 echo "UVR5 UI has been updated to the latest version."
 pause_if_interactive "Press Enter to exit..."

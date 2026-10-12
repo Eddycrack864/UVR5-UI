@@ -85,7 +85,7 @@ exit /b 0
 rem Creates env\ from scratch: Python from conda-forge (no Anaconda Terms of Service prompt), torch, then requirements.
 :build_env
 echo Creating Conda environment with Python %PYTHON_VERSION%...
-call "%CONDA_BAT%" create --no-shortcuts -y -k --override-channels -c conda-forge --prefix "%ENV_DIR%" python=%PYTHON_VERSION%
+call "%CONDA_BAT%" create --no-shortcuts -y --override-channels -c conda-forge --prefix "%ENV_DIR%" python=%PYTHON_VERSION%
 if errorlevel 1 exit /b 1
 if not exist "%PYTHON_EXE%" exit /b 1
 echo Conda environment created successfully

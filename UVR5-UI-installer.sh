@@ -88,7 +88,7 @@ install_miniconda() {
 # Returns non-zero instead of exiting so a failed rebuild can be rolled back.
 build_env() {
     echo "Creating Conda environment with Python $PYTHON_VERSION..."
-    "$MINICONDA_DIR/condabin/conda" create --no-shortcuts -y -k --override-channels -c conda-forge \
+    "$MINICONDA_DIR/condabin/conda" create --no-shortcuts -y --override-channels -c conda-forge \
         --prefix "$ENV_DIR" "python=$PYTHON_VERSION" || return 1
     [ -f "$PYTHON_EXE" ] || return 1
     echo "Conda environment created successfully"

@@ -1,7 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
+title UVR5 UI Updater
 
-set REPO_URL=https://github.com/Eddycrack864/UVR5-UI
+set "REPO_URL=https://github.com/Eddycrack864/UVR5-UI"
 set "INSTALL_DIR=%cd%"
 set "ENV_DIR=%INSTALL_DIR%\env"
 set "PYTHON_EXE=%ENV_DIR%\python.exe"
@@ -16,6 +17,23 @@ if %errorlevel% neq 0 (
 if not exist .git (
     git init
     git remote add origin %REPO_URL%
+)
+
+rem Older versions kept user preferences in the tracked assets\config.json, which the reset below deletes.
+if exist "assets\config.json" if not exist "user_data\config.json" (
+    if not exist "user_data" mkdir "user_data"
+    copy /y "assets\config.json" "user_data\config.json" > nul
+    echo Your preferences were backed up to user_data\config.json
+)
+
+set "LOCAL_CHANGES="
+for /f "delims=" %%L in ('git status --porcelain --untracked-files=no 2^>nul') do set "LOCAL_CHANGES=1"
+if defined LOCAL_CHANGES (
+    echo WARNING: These local changes to UVR5 UI files will be discarded by the update:
+    git status --short --untracked-files=no
+    echo Your settings in user_data\ and your models are not affected.
+    echo Close this window to cancel, or
+    pause
 )
 
 git fetch origin
@@ -59,4 +77,3 @@ exit /b 0
 echo An error occurred during the update process. Please check the output above for details.
 pause
 exit /b 1
-

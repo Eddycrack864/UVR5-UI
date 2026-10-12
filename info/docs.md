@@ -78,6 +78,8 @@ To update, run the respective updater script:
   chmod +x UVR5-UI-updater.sh && ./UVR5-UI-updater.sh
   ```
 
+Your preferences (language, theme, saved separation settings) are stored in `user_data/` and are kept across updates.
+
 ### Precompiled Version
 1. Get the precompiled version (.zip) for your PC:
    - **[Windows](https://huggingface.co/Eddycrack864/UVR5-UI/tree/main/Windows)**
@@ -141,7 +143,7 @@ You can review more advanced and detailed documentation about models, UVR5 and o
 ## Contributions
 Contributions are welcome! Feel free to:
 - Report issues or bugs via the [issue tracker](https://github.com/Eddycrack864/UVR5-UI/issues).
-- Submit improvements through [pull requests](https://github.com/Eddycrack864/UVR5-UI/pulls).
+- Submit improvements through [pull requests](https://github.com/Eddycrack864/UVR5-UI/pulls). See the [Development section of the README](https://github.com/Eddycrack864/UVR5-UI#development) for the project layout and how to run the tests.
 
 Star the repository if you find it useful, and consider donating to support the project.
 

@@ -1,0 +1,13 @@
+{
+  "theme": {
+    "file": null,
+    "class": "NoCrypt/miku",
+    "mode": "dark"
+  },
+  "lang": {
+    "override": false,
+    "selected_lang": "en_US"
+  },
+  "discord_presence": true,
+  "load_custom_settings": false
+}

@@ -5,13 +5,13 @@ echo
 
 cd "$(dirname "$0")"
 
-if [ -f "../env/bin/python" ]; then
-    ../env/bin/python ../env/bin/audio-separator -e
+if [ -x "../env/bin/audio-separator" ]; then
+    ../env/bin/audio-separator -e
 else
-    echo "Searching for global python..."
-    if command -v python &> /dev/null; then
-        python ../env/bin/audio-separator -e
+    echo "Searching for a global audio-separator installation..."
+    if command -v audio-separator &> /dev/null; then
+        audio-separator -e
     else
-        echo "Error: Python not found."
+        echo "Error: audio-separator not found. Run 'UVR5-UI-installer.sh' first."
     fi
 fi

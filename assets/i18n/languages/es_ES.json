@@ -51,7 +51,7 @@
     "Amplification threshold": "Umbral de amplificación",
     "The threshold for audio amplification": "El umbral para la amplificación de audio",
     "Hop length": "Longitud del salto",
-    "Usually called stride in neural networks; only change if you know what you're doing" : "Generalmente llamado paso en redes neuronales; solo cambialo si sabes lo que estás haciendo",
+    "Usually called stride in neural networks; only change if you know what you're doing": "Generalmente llamado paso en redes neuronales; solo cambialo si sabes lo que estás haciendo",
     "Balance quality and speed. 1024 = fast but lower, 320 = slower but better quality": "Equilibra la calidad y la velocidad. 1024 = más rápido pero de menor calidad, 320 = más lento pero de mejor calidad",
     "Identify leftover artifacts within vocal output; may improve separation for some songs": "Identifica artefactos sobrantes en la salida vocal; puede mejorar la separación de algunas canciones",
     "Post process": "Posproceso",
@@ -93,5 +93,12 @@
     "Mode": "Modo",
     "Select the mode you want to use. (Requires restarting the App)": "Selecciona el modo que deseas utilizar. (Requiere reiniciar la aplicación)",
     "Download source": "Fuente de descarga",
-    "Select the source to download the model from (Github or Hugging Face)": "Selecciona la fuente para descargar el modelo (Github o Hugging Face)"
+    "Select the source to download the model from (Github or Hugging Face)": "Selecciona la fuente para descargar el modelo (Github o Hugging Face)",
+    "This is the first time the {model} model is being used. The separation will take a little longer because the model needs to be downloaded.": "Es la primera vez que se usa el modelo {model}. La separación tardará un poco más porque el modelo debe descargarse.",
+    "Please select a model first": "Primero selecciona un modelo",
+    "Please provide an input audio": "Proporciona un audio de entrada",
+    "An unexpected error occurred, check the console for details": "Ocurrió un error inesperado, revisa la consola para más detalles",
+    "Discord Rich Presence": "Discord Rich Presence",
+    "Show UVR5 UI activity on Discord (Requires restarting the App)": "Mostrar la actividad de UVR5 UI en Discord (Requiere reiniciar la App)",
+    "Device": "Dispositivo"
 }

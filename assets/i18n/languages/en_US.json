@@ -93,5 +93,12 @@
     "Mode": "Mode",
     "Select the mode you want to use. (Requires restarting the App)": "Select the mode you want to use. (Requires restarting the App)",
     "Download source": "Download source",
-    "Select the source to download the model from (Github or Hugging Face)": "Select the source to download the model from (Github or Hugging Face)"
+    "Select the source to download the model from (Github or Hugging Face)": "Select the source to download the model from (Github or Hugging Face)",
+    "This is the first time the {model} model is being used. The separation will take a little longer because the model needs to be downloaded.": "This is the first time the {model} model is being used. The separation will take a little longer because the model needs to be downloaded.",
+    "Please select a model first": "Please select a model first",
+    "Please provide an input audio": "Please provide an input audio",
+    "An unexpected error occurred, check the console for details": "An unexpected error occurred, check the console for details",
+    "Discord Rich Presence": "Discord Rich Presence",
+    "Show UVR5 UI activity on Discord (Requires restarting the App)": "Show UVR5 UI activity on Discord (Requires restarting the App)",
+    "Device": "Device"
 }

@@ -18,6 +18,10 @@ from tests.conftest import REPO_ROOT
 UI_ONLY_KEYS = {"model", "output_format", "link", "input_path", "output_path"}
 
 
+class NoBackendError(Exception):
+    """Like audioread's NoBackendError, which audio-separator raises with an empty message."""
+
+
 class FakeSeparator:
     instances = []
 
@@ -33,8 +37,10 @@ class FakeSeparator:
     def separate(self, path):
         if "corrupt" in str(path):
             raise RuntimeError("cannot decode")
+        if "unreadable" in str(path):
+            raise NoBackendError()
         if "swallowed" in str(path):
-            return []  # audio-separator logs per-file errors and returns nothing
+            return []  # older audio-separator versions logged per-file errors and returned nothing
         self.separated.append(path)
         return [f"song_(Vocals)_{self.loaded[-1]}.wav", f"song_(Instrumental)_{self.loaded[-1]}.wav"]
 
@@ -125,7 +131,7 @@ def test_separate_file_wraps_errors(cache, tmp_path):
 def test_batch_loads_model_once_and_continues_on_error(cache, tmp_path):
     src = tmp_path / "in"
     src.mkdir()
-    for name in ("b.wav", "a.MP3", "corrupt.flac", "swallowed.ogg", "notes.txt"):
+    for name in ("b.wav", "a.MP3", "corrupt.flac", "swallowed.ogg", "unreadable.wav", "notes.txt"):
         (src / name).touch()
     out = tmp_path / "out"
 
@@ -133,10 +139,11 @@ def test_batch_loads_model_once_and_continues_on_error(cache, tmp_path):
 
     assert len(FakeSeparator.instances) == 1
     assert FakeSeparator.instances[0].loaded == [MODEL.filename]
-    assert log[0] == "4 audio files found"
+    assert log[0] == "5 audio files found"
     assert any("Error separating corrupt.flac" in line for line in log)
     assert any("Error separating swallowed.ogg" in line for line in log)
-    assert log[-1].startswith("Done: 2 separated, 2 failed")
+    assert "Error separating unreadable.wav: NoBackendError" in log
+    assert log[-1].startswith("Done: 2 separated, 3 failed")
     assert out.is_dir()
 
 

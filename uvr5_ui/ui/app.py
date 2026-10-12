@@ -26,7 +26,8 @@ def launch_kwargs(ctx: AppContext) -> dict:
 def create_app(ctx: AppContext = None) -> gr.Blocks:
     ctx = ctx or AppContext.create()
 
-    with gr.Blocks(title=TITLE) as app:
+    # No Gradio telemetry: it reports every launch to huggingface.co
+    with gr.Blocks(title=TITLE, analytics_enabled=False) as app:
         gr.Markdown(f"<h1> {TITLE} </h1>")
         gr.Markdown(i18n("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)"))
         gr.Markdown(i18n("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)"))

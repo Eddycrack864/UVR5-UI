@@ -51,6 +51,10 @@ def test_tabs(app):
                       "Leaderboard", "Themes", "Settings", "Credits"]
 
 
+def test_telemetry_disabled(app):
+    assert app.analytics_enabled is False
+
+
 def test_single_separation_shows_only_produced_stems(app):
     fn = find_fn(app, "run_single", nth=2)  # MDX-NET tab
     data = {}

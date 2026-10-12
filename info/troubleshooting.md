@@ -27,3 +27,26 @@ This indicates that the dependencies were not installed correctly or the script 
 1. Go to the `assets` folder and open `config.json`
 2. On line 10, change the state of `discord_presence` from `true` to `false`
 3. Save changes and restart UVR5 UI
+
+## 4. Failed building wheel for diffq (Linux)
+
+### What's this?
+
+On Linux one of the dependencies (`diffq`) has no prebuilt package for Python 3.13, so it is compiled during the installation. This error means no C compiler was found.
+
+### How to solve it?
+
+Install a compiler and run the installer or updater again: (Debian and Ubuntu users): `sudo apt install build-essential` (For Arch linux users): `sudo pacman -S base-devel` (For Fedora users): `sudo dnf install gcc gcc-c++`
+
+## 5. The Python environment rebuild failed
+
+### What's this?
+
+When an installation still uses Python 3.10, the updater offers to rebuild the Python environment with Python 3.13. If the rebuild fails (no internet, not enough disk space, UVR5 UI was open...) your previous environment is restored, so UVR5 UI keeps working as before.
+
+### How to solve it?
+
+- Close UVR5 UI before running the updater.
+- Make sure you have about 6 GB of free disk space and a stable internet connection.
+- Run the updater again and accept the rebuild.
+- If an `env_old` folder is left behind and `env` is missing, rename `env_old` to `env`.

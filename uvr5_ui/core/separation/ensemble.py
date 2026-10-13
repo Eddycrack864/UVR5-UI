@@ -306,7 +306,8 @@ def _combine(file: Path, member_outputs: list[list[Path]], output_dir: Path, out
         )
 
     results = []
-    for stem, items in groups.items():
+    # Stems every model produced first, each group in the order the models wrote them
+    for stem, items in sorted(groups.items(), key=lambda group: not shared(group[1])):
         if not shared(items) and not options.include_unmatched:
             logger.info("Skipping stem %s of %s: not produced by every model", stem, file.name)
             continue

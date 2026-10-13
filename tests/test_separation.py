@@ -90,6 +90,17 @@ def test_separator_kwargs_mapping():
 
     roformer = build_separator_kwargs(ARCHITECTURES_BY_ID["roformer"], {"override_segment_size": True})
     assert roformer["mdxc_params"]["override_model_segment_size"] is True
+    assert roformer["mdxc_params"]["overlap"] == 8 and roformer["mdxc_params"]["pitch_shift"] == 0
+    assert "model_overlap" not in roformer["mdxc_params"]
+    assert not ARCHITECTURES_BY_ID["roformer"].param("batch_size").visible
+    assert ARCHITECTURES_BY_ID["mdx23c"].param("batch_size").visible
+
+    mdx23c = build_separator_kwargs(ARCHITECTURES_BY_ID["mdx23c"], {"model_overlap": True, "pitch_shift": -2})
+    assert mdx23c["mdxc_params"]["overlap"] is None  # audio-separator then reads the model's YAML
+    assert mdx23c["mdxc_params"]["pitch_shift"] == -2
+
+    assert mdx["invert_using_spec"] is False
+    assert build_separator_kwargs(MDXNET, {"invert_spec": True})["invert_using_spec"] is True
 
     demucs = build_separator_kwargs(ARCHITECTURES_BY_ID["demucs"], {})
     assert "output_single_stem" not in demucs

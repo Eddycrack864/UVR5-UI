@@ -172,5 +172,11 @@
     "0 = disabled. Use 600 for audio longer than an hour to avoid running out of memory. Chunks are joined without a crossfade.": "0 = disabled. Use 600 for audio longer than an hour to avoid running out of memory. Chunks are joined without a crossfade.",
     "Write outputs with soundfile": "Write outputs with soundfile",
     "Uses less memory when writing very long files": "Uses less memory when writing very long files",
-    "Changes apply to the next separation.": "Changes apply to the next separation."
+    "Changes apply to the next separation.": "Changes apply to the next separation.",
+    "Use the model's overlap": "Use the model's overlap",
+    "Use the overlap set in the model's configuration instead of the value above": "Use the overlap set in the model's configuration instead of the value above",
+    "Pitch shift": "Pitch shift",
+    "Semitones to shift the audio while separating. May improve very deep or very high vocals": "Semitones to shift the audio while separating. May improve very deep or very high vocals",
+    "Invert using spectrogram": "Invert using spectrogram",
+    "Get the secondary stem by inverting the spectrogram instead of the waveform. May improve quality, slightly slower": "Get the secondary stem by inverting the spectrogram instead of the waveform. May improve quality, slightly slower"
 }

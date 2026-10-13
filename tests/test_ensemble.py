@@ -29,7 +29,7 @@ MODEL_OUTPUTS = {
     "a.ckpt": (["Vocals", "Instrumental"], 0.2),
     "b.onnx": (["Vocals", "Instrumental"], 0.4),
     "two_stem.onnx": (["Vocals", "Other"], 0.4),
-    "htdemucs.yaml": (["Vocals", "Drums", "Bass", "Other"], 0.4),
+    "htdemucs.yaml": (["Drums", "Bass", "Other", "Vocals"], 0.4),
     "drums.onnx": (["Drums", "No Drums"], 0.4),
 }
 

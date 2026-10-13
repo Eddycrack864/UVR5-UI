@@ -172,5 +172,11 @@
     "0 = disabled. Use 600 for audio longer than an hour to avoid running out of memory. Chunks are joined without a crossfade.": "0 = desactivado. Usa 600 para audios de más de una hora y así evitar quedarte sin memoria. Los fragmentos se unen sin crossfade.",
     "Write outputs with soundfile": "Escribir las salidas con soundfile",
     "Uses less memory when writing very long files": "Usa menos memoria al escribir archivos muy largos",
-    "Changes apply to the next separation.": "Los cambios se aplican a la siguiente separación."
+    "Changes apply to the next separation.": "Los cambios se aplican a la siguiente separación.",
+    "Use the model's overlap": "Usar la superposición del modelo",
+    "Use the overlap set in the model's configuration instead of the value above": "Usa la superposición definida en la configuración del modelo en lugar del valor de arriba",
+    "Pitch shift": "Cambio de tono",
+    "Semitones to shift the audio while separating. May improve very deep or very high vocals": "Semitonos que se desplaza el audio durante la separación. Puede mejorar voces muy graves o muy agudas",
+    "Invert using spectrogram": "Invertir usando el espectrograma",
+    "Get the secondary stem by inverting the spectrogram instead of the waveform. May improve quality, slightly slower": "Obtiene el stem secundario invirtiendo el espectrograma en lugar de la forma de onda. Puede mejorar la calidad, es un poco más lento"
 }

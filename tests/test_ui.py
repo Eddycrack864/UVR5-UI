@@ -175,3 +175,13 @@ def test_performance_settings_reach_the_separator(app, ctx):
     test_single_separation_shows_only_produced_stems(app)
     kwargs = FakeSeparator.instances[-1].kwargs
     assert kwargs["use_native_fp16"] is True and kwargs["chunk_duration"] == 600
+
+
+def test_name_template_setting(app, ctx):
+    save = find_fn(app, "save_name_template")
+    assert save.fn("{stem} - {input}") == "{stem} - {input}"
+    assert ctx.config.get("output.name_template") == "{stem} - {input}"
+    with pytest.raises(gr.Error):
+        save.fn("{input}")
+    assert ctx.config.get("output.name_template") == "{stem} - {input}"
+    assert save.fn("  ") == "{input}_({stem})_{model}"

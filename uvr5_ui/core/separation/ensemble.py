@@ -21,7 +21,10 @@ from typing import Generator, Iterator, Sequence
 import numpy as np
 
 from uvr5_ui import paths
-from uvr5_ui.core.audio import audio_subtype, list_audio_files, load_audio, normalize_peak, parse_stem_label, write_audio
+from uvr5_ui.core.audio import (
+    DEFAULT_NAME_TEMPLATE, audio_subtype, list_audio_files, load_audio, normalize_peak, parse_stem_label, render_name,
+    write_audio,
+)
 from uvr5_ui.core.errors import SeparationError
 from uvr5_ui.core.models.catalog import Model
 from uvr5_ui.core.separation.runtime import RuntimeOptions, SeparatorCache, execution_summary, separator_cache
@@ -267,7 +270,8 @@ def _run(members, files, output_dir, output_format, options, cache, progress, wo
                 step(f"Combining stems: {file.name}")
                 yield f"Combining stems of {file.name} ({options.algorithm})"
                 try:
-                    results[file] = _combine(file, outputs[file], output_dir, output_format, options)
+                    template = (runtime_options or RuntimeOptions()).name_template
+                    results[file] = _combine(file, outputs[file], output_dir, output_format, options, template)
                     yield f"File: {file.name} ensembled!"
                 except Exception as e:
                     logger.warning("Combining the stems of %s failed", file, exc_info=True)
@@ -284,7 +288,7 @@ def _run(members, files, output_dir, output_format, options, cache, progress, wo
 
 
 def _combine(file: Path, member_outputs: list[list[Path]], output_dir: Path, output_format: str,
-             options: EnsembleOptions) -> list[StemResult]:
+             options: EnsembleOptions, name_template: str = DEFAULT_NAME_TEMPLATE) -> list[StemResult]:
     # Imported lazily: audio_separator pulls in torch/onnxruntime at import time
     from audio_separator.separator.ensembler import Ensembler
 
@@ -325,7 +329,8 @@ def _combine(file: Path, member_outputs: list[list[Path]], output_dir: Path, out
             combined = combined[:1]
         combined = normalize_peak(combined, options.normalization_threshold, options.amplification_threshold)
 
-        output = Path(output_dir) / f"{file.stem}_({stem})_ensemble_{options.label}.{output_format}"
+        name = render_name(name_template, input=file.stem, stem=stem, model=f"ensemble_{options.label}")
+        output = Path(output_dir) / f"{name}.{output_format}"
         write_audio(output, combined, options.sample_rate, subtype=audio_subtype(items[0][1]))
         results.append(StemResult(str(output), stem))
     return results

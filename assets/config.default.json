@@ -15,5 +15,8 @@
     "torch_compile": false,
     "chunk_duration": 0,
     "use_soundfile": false
+  },
+  "output": {
+    "name_template": "{input}_({stem})_{model}"
   }
 }

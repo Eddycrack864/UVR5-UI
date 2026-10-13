@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from uvr5_ui import paths
+from uvr5_ui.core.audio import DEFAULT_NAME_TEMPLATE, check_name_template
 from uvr5_ui.core.device import use_autocast
 from uvr5_ui.core.models.catalog import Model
 from uvr5_ui.core.separation.specs import ArchSpec, build_separator_kwargs
@@ -23,12 +24,13 @@ PRECISIONS = ("auto", "fp32", "autocast", "native_fp16")
 
 @dataclass(frozen=True)
 class RuntimeOptions:
-    """Separator options shared by every architecture (the "Performance" settings)."""
+    """Options shared by every separation: the "Performance" and "Output file names" settings."""
 
     precision: str = "auto"  # auto = autocast on CUDA, fp32 otherwise
     torch_compile: bool = False  # regional torch.compile of BS/Mel Roformer models
     chunk_duration: float = 0  # split inputs longer than this many seconds; 0 = never
     use_soundfile: bool = False  # write outputs with soundfile instead of pydub (less memory)
+    name_template: str = DEFAULT_NAME_TEMPLATE  # applied after separating, not passed to Separator
 
     @classmethod
     def from_config(cls, config) -> "RuntimeOptions":
@@ -37,11 +39,18 @@ class RuntimeOptions:
             chunk_duration = max(float(config.get("performance.chunk_duration", 0) or 0), 0.0)
         except (TypeError, ValueError):
             chunk_duration = 0.0
+        name_template = config.get("output.name_template") or DEFAULT_NAME_TEMPLATE
+        try:
+            check_name_template(name_template)
+        except ValueError as e:
+            logger.warning("Ignoring the output name template %r: %s", name_template, e)
+            name_template = DEFAULT_NAME_TEMPLATE
         return cls(
             precision=precision if precision in PRECISIONS else "auto",
             torch_compile=bool(config.get("performance.torch_compile", False)),
             chunk_duration=chunk_duration,
             use_soundfile=bool(config.get("performance.use_soundfile", False)),
+            name_template=name_template,
         )
 
     def separator_kwargs(self) -> dict:

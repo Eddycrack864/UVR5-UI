@@ -5,7 +5,9 @@ import sys
 
 import pytest
 
-from uvr5_ui.core.audio import list_audio_files, parse_stem_label
+from uvr5_ui.core.audio import (
+    DEFAULT_NAME_TEMPLATE, check_name_template, list_audio_files, parse_stem_label, render_name, rename_output,
+)
 from uvr5_ui.core.errors import SeparationError
 from uvr5_ui.core.models.catalog import Model
 from uvr5_ui.core.separation import runtime
@@ -238,3 +240,27 @@ def test_execution_summary():
 
     assert execution_summary(Loaded()) == "native_fp16 + torch.compile"
     assert execution_summary(FakeSeparator()) is None
+
+
+def test_name_templates(tmp_path):
+    check_name_template(DEFAULT_NAME_TEMPLATE)
+    check_name_template("{stem}/{input}")
+    for bad in ("{input}_{model}", "{input}_{stem}_{date}", "{stem", "{0}_{stem}"):
+        with pytest.raises(ValueError):
+            check_name_template(bad)
+    assert render_name("{stem}/{input}: {model}", "song", "Vocals", "m") == "Vocals_song_ m"
+
+    out = tmp_path / "live_(2020)_(Instrumental)_UVR-MDX-NET-Inst_HQ_3.flac"
+    out.touch()
+    assert rename_output(out, DEFAULT_NAME_TEMPLATE) == out
+    renamed = rename_output(out, "{stem} - {input} ({model})")
+    assert renamed.name == "Instrumental - live_(2020) (UVR-MDX-NET-Inst_HQ_3).flac"
+    assert renamed.exists() and not out.exists()
+    assert rename_output(tmp_path / "missing_(Vocals)_m.wav", "{stem}").name == "missing_(Vocals)_m.wav"
+
+
+def test_runtime_options_name_template():
+    assert RuntimeOptions.from_config(FakeConfig({"output.name_template": "{stem}"})).name_template == "{stem}"
+    invalid = RuntimeOptions.from_config(FakeConfig({"output.name_template": "{input}"}))
+    assert invalid.name_template == DEFAULT_NAME_TEMPLATE
+    assert "name_template" not in RuntimeOptions().separator_kwargs()

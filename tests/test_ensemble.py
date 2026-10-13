@@ -1,5 +1,6 @@
 import json
 import shutil
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -15,7 +16,7 @@ from uvr5_ui.core.separation.ensemble import (  # noqa: E402
     check_ensemble, ensemble_batch, ensemble_file,
 )
 from uvr5_ui.core.separation.ensemble_presets import PresetStore, bundled_presets_file, parse_presets  # noqa: E402
-from uvr5_ui.core.separation.runtime import SeparatorCache  # noqa: E402
+from uvr5_ui.core.separation.runtime import RuntimeOptions, SeparatorCache  # noqa: E402
 from uvr5_ui.core.separation.specs import ARCHITECTURES_BY_ID  # noqa: E402
 from tests.conftest import REPO_ROOT  # noqa: E402
 
@@ -77,11 +78,11 @@ def member(spec, filename, **values):
     return EnsembleMember(spec, Model(filename, spec.id, filename), values)
 
 
-def run(members, tmp_path, cache, audio_name="song.wav", **options):
+def run(members, tmp_path, cache, audio_name="song.wav", runtime_options=None, **options):
     audio = tmp_path / audio_name
     audio.touch()
     return ensemble_file(members, str(audio), "wav", EnsembleOptions(**options), output_dir=tmp_path / "out",
-                         cache=cache, work_dir=tmp_path / "work")
+                         cache=cache, work_dir=tmp_path / "work", runtime_options=runtime_options)
 
 
 def peak(path):
@@ -280,3 +281,11 @@ def test_user_presets(tmp_path):
 def test_every_algorithm_keeps_the_length(tmp_path, cache, algorithm):
     results = run([member(ROFORMER, "a.ckpt"), member(MDXNET, "b.onnx")], tmp_path, cache, algorithm=algorithm)
     assert sf.info(results[0].path).frames == SR // 10
+
+
+def test_name_template(tmp_path, cache):
+    results = run([member(ROFORMER, "a.ckpt"), member(MDXNET, "b.onnx")], tmp_path, cache,
+                  runtime_options=RuntimeOptions(name_template="{stem} - {input} [{model}]"))
+    assert [Path(r.path).name for r in results] == ["Vocals - song [ensemble_avg_wave].wav",
+                                                     "Instrumental - song [ensemble_avg_wave].wav"]
+    assert [r.label for r in results] == ["Vocals", "Instrumental"]

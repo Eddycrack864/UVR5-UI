@@ -178,5 +178,10 @@
     "Pitch shift": "Cambio de tono",
     "Semitones to shift the audio while separating. May improve very deep or very high vocals": "Semitonos que se desplaza el audio durante la separación. Puede mejorar voces muy graves o muy agudas",
     "Invert using spectrogram": "Invertir usando el espectrograma",
-    "Get the secondary stem by inverting the spectrogram instead of the waveform. May improve quality, slightly slower": "Obtiene el stem secundario invirtiendo el espectrograma en lugar de la forma de onda. Puede mejorar la calidad, es un poco más lento"
+    "Get the secondary stem by inverting the spectrogram instead of the waveform. May improve quality, slightly slower": "Obtiene el stem secundario invirtiendo el espectrograma en lugar de la forma de onda. Puede mejorar la calidad, es un poco más lento",
+    "Output file names": "Nombres de los archivos de salida",
+    "Name template": "Plantilla de nombre",
+    "Placeholders: {input} = input file name, {stem} = stem (required), {model} = model. Press Enter to save.": "Marcadores: {input} = nombre del archivo de entrada, {stem} = stem (obligatorio), {model} = modelo. Pulsa Enter para guardar.",
+    "Invalid name template": "Plantilla de nombre inválida",
+    "Name template saved": "Plantilla de nombre guardada"
 }

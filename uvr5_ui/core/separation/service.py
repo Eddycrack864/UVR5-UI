@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Callable, Iterator
 
 from uvr5_ui import paths
-from uvr5_ui.core.audio import list_audio_files, parse_stem_label
+from uvr5_ui.core.audio import list_audio_files, parse_stem_label, rename_output
 from uvr5_ui.core.errors import SeparationError
 from uvr5_ui.core.models.catalog import Model
 from uvr5_ui.core.separation.runtime import RuntimeOptions, SeparatorCache, execution_summary, separator_cache
@@ -78,7 +78,11 @@ def separate_file(
         # audio-separator raises on a failed file (older versions returned []); keep the guard just in case
         raise SeparationError(f"{spec.tab_label} separation produced no output, check the console for details")
 
-    return [StemResult(os.path.join(output_dir, name), parse_stem_label(name)) for name in outputs]
+    template = (options or RuntimeOptions()).name_template
+    return [
+        StemResult(str(rename_output(Path(output_dir, name), template)), parse_stem_label(name))
+        for name in outputs
+    ]
 
 
 def separate_batch(
@@ -121,8 +125,11 @@ def separate_batch(
         progress(i / total, f"Processing file {i + 1}/{total}")
         yield f"Separating file: {file.name}"
         try:
-            if not separator.separate(str(file)):
+            outputs = separator.separate(str(file))
+            if not outputs:
                 raise SeparationError("no output produced, check the console for details")
+            for name in outputs:
+                rename_output(Path(output_dir, name), (options or RuntimeOptions()).name_template)
             yield f"File: {file.name} separated!"
         except Exception as e:
             logger.warning("Batch separation failed for %s: %s", file, describe_error(e))

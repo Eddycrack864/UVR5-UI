@@ -99,3 +99,43 @@ def write_audio(path: Path, wave: np.ndarray, sample_rate: int, subtype: str | N
     finally:
         tmp.unlink(missing_ok=True)
     return path
+
+
+# Output file names. audio-separator's own naming is the default template.
+DEFAULT_NAME_TEMPLATE = "{input}_({stem})_{model}"
+NAME_FIELDS = ("input", "stem", "model")
+_OUTPUT_NAME_RE = re.compile(r"^(?P<input>.*)_\((?P<stem>[^()]+)\)_(?P<model>.*)$")
+_UNSAFE_CHARS_RE = re.compile(r'[<>:"/\|?*\x00-\x1f]')
+
+
+def check_name_template(template: str) -> None:
+    """Raise ValueError unless ``template`` uses only {input}, {stem} and {model}, including {stem}."""
+    import string
+
+    try:
+        fields = [field for _, field, _, _ in string.Formatter().parse(template) if field is not None]
+    except ValueError as e:
+        raise ValueError(f"Invalid name template: {e}") from None
+    unknown = sorted({f for f in fields if f not in NAME_FIELDS})
+    if unknown:
+        raise ValueError(f"Unknown placeholder in name template: {{{unknown[0]}}}")
+    if "stem" not in fields:
+        raise ValueError("The name template must include {stem}, or every stem would get the same name")
+
+
+def render_name(template: str, input: str, stem: str, model: str) -> str:
+    """File name (without extension) for a stem, with characters that are invalid in file names replaced."""
+    name = template.format(input=input, stem=stem, model=model)
+    return _UNSAFE_CHARS_RE.sub("_", name).strip(" .") or f"{input}_{stem}"
+
+
+def rename_output(path: Path, template: str) -> Path:
+    """Rename an audio-separator output ``<input>_(<Stem>)_<model>.<ext>`` following ``template``."""
+    path = Path(path)
+    match = _OUTPUT_NAME_RE.match(path.stem)
+    if template == DEFAULT_NAME_TEMPLATE or not match or not path.exists():
+        return path
+    target = path.with_name(render_name(template, **match.groupdict()) + path.suffix)
+    if target != path:
+        os.replace(path, target)
+    return target

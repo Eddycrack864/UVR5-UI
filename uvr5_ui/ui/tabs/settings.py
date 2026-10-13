@@ -2,6 +2,7 @@ import logging
 
 import gradio as gr
 
+from uvr5_ui.core.audio import DEFAULT_NAME_TEMPLATE, check_name_template
 from uvr5_ui.core.device import get_device
 from uvr5_ui.core.downloads.model_downloader import METHOD_PYTHON, METHODS, SOURCES, download_model
 from uvr5_ui.core.separation.runtime import RuntimeOptions
@@ -85,6 +86,18 @@ def render_settings_tab(ctx: AppContext, separation_tabs: list[SeparationTab]) -
                 interactive=True,
             )
             gr.Markdown(i18n("Changes apply to the next separation."))
+
+        with gr.Accordion(i18n("Output file names"), open=False):
+            name_template = gr.Textbox(
+                label=i18n("Name template"),
+                info=i18n("Placeholders: {input} = input file name, {stem} = stem (required), {model} = model. "
+                          "Press Enter to save."),
+                value=runtime.name_template,
+                placeholder=DEFAULT_NAME_TEMPLATE,
+                lines=1,
+                max_lines=1,
+                interactive=True,
+            )
 
         with gr.Accordion(i18n("Separation settings management"), open=False):
             gr.Markdown(i18n("Save your current separation parameter settings or reset them to the application defaults"))
@@ -175,6 +188,19 @@ def render_settings_tab(ctx: AppContext, separation_tabs: list[SeparationTab]) -
     ):
         component.change(lambda value, key=key, convert=convert: ctx.config.set(key, convert(value)),
                          inputs=[component], api_visibility="undocumented")
+
+    def save_name_template(template):
+        template = (template or "").strip() or DEFAULT_NAME_TEMPLATE
+        try:
+            check_name_template(template)
+        except ValueError as e:
+            raise gr.Error(f"{i18n('Invalid name template')}: {e}")
+        ctx.config.set("output.name_template", template)
+        gr.Info(i18n("Name template saved"))
+        return template
+
+    name_template.submit(save_name_template, inputs=[name_template], outputs=[name_template],
+                         api_visibility="undocumented")
 
     # Discord
     def save_discord(enabled):

@@ -140,8 +140,8 @@ Common tasks:
 env/python.exe -m pip install -r requirements-dev.txt   # Linux: env/bin/python
 env/python.exe -m pytest
 
-# Check that every translatable string exists in assets/i18n/languages/en_US.json
-env/python.exe tools/i18n_scan.py --check
+# Check that every translatable string exists in en_US.json and in every other language
+env/python.exe tools/i18n_scan.py --check --langs
 
 # Model catalog (needs internet)
 env/python.exe tools/check_model_links.py          # are all download links working? which models are not on the Hugging Face mirror yet?
@@ -153,7 +153,7 @@ After updating audio-separator, run `tools/sync_models.py --write`: the catalog 
 
 - **Add a model:** add an entry to `assets/models.json` (`id`, `arch`, `filename`, download `sources`). It appears in its tab automatically.
 - **Add a parameter:** add a `ParamSpec` to its architecture in `uvr5_ui/core/separation/specs.py` and its default to `assets/default_settings.json`.
-- **Translations:** the English text passed to `i18n("...")` is the key in every language file, so changing it breaks existing translations.
+- **Translations:** the English text passed to `i18n("...")` is the key in every language file, so changing it breaks existing translations. A new string must be added to all the files in `assets/i18n/languages/` (named like `xx_XX.json`); `tests/test_i18n_scan.py` fails if a language is missing one.
 
 ## Precompiled Version
 1. Get the precompiled version (.zip) for your PC:

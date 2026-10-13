@@ -204,6 +204,10 @@
         "github": [
           "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/bs_roformer_karaoke_frazer_becruily.ckpt",
           "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_bs_roformer_karaoke_frazer_becruily.yaml"
+        ],
+        "huggingface": [
+          "https://huggingface.co/Eddycrack864/audio-separator-models/resolve/main/roformers/bs_roformer_karaoke_frazer_becruily.ckpt",
+          "https://huggingface.co/Eddycrack864/audio-separator-models/resolve/main/roformers/config_bs_roformer_karaoke_frazer_becruily.yaml"
         ]
       }
     },
@@ -215,6 +219,10 @@
         "github": [
           "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/bs_roformer_karaoke_anvuew.ckpt",
           "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_bs_roformer_karaoke_anvuew.yaml"
+        ],
+        "huggingface": [
+          "https://huggingface.co/Eddycrack864/audio-separator-models/resolve/main/roformers/bs_roformer_karaoke_anvuew.ckpt",
+          "https://huggingface.co/Eddycrack864/audio-separator-models/resolve/main/roformers/config_bs_roformer_karaoke_anvuew.yaml"
         ]
       }
     },
@@ -586,6 +594,10 @@
         "github": [
           "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_vocals_fv7b_gabox.ckpt",
           "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_vocals_gabox.yaml"
+        ],
+        "huggingface": [
+          "https://huggingface.co/Eddycrack864/audio-separator-models/resolve/main/roformers/mel_band_roformer_vocals_fv7b_gabox.ckpt",
+          "https://huggingface.co/Eddycrack864/audio-separator-models/resolve/main/roformers/config_mel_band_roformer_vocals_gabox.yaml"
         ]
       }
     },
@@ -732,6 +744,10 @@
         "github": [
           "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_fullness_v4_gabox.ckpt",
           "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+        ],
+        "huggingface": [
+          "https://huggingface.co/Eddycrack864/audio-separator-models/resolve/main/roformers/mel_band_roformer_instrumental_fullness_v4_gabox.ckpt",
+          "https://huggingface.co/Eddycrack864/audio-separator-models/resolve/main/roformers/config_mel_band_roformer_instrumental_gabox.yaml"
         ]
       }
     },
@@ -908,6 +924,10 @@
         "github": [
           "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/mel_band_roformer_instrumental_fv8b_gabox.ckpt",
           "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_mel_band_roformer_instrumental_gabox.yaml"
+        ],
+        "huggingface": [
+          "https://huggingface.co/Eddycrack864/audio-separator-models/resolve/main/roformers/mel_band_roformer_instrumental_fv8b_gabox.ckpt",
+          "https://huggingface.co/Eddycrack864/audio-separator-models/resolve/main/roformers/config_mel_band_roformer_instrumental_gabox.yaml"
         ]
       }
     },
@@ -1339,6 +1359,10 @@
         "github": [
           "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/bs_roformer_instrumental_resurrection_gabox.ckpt",
           "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_bs_roformer_instrumental_resurrection_unwa.yaml"
+        ],
+        "huggingface": [
+          "https://huggingface.co/Eddycrack864/audio-separator-models/resolve/main/roformers/bs_roformer_instrumental_resurrection_gabox.ckpt",
+          "https://huggingface.co/Eddycrack864/audio-separator-models/resolve/main/roformers/config_bs_roformer_instrumental_resurrection_unwa.yaml"
         ]
       }
     },
@@ -1350,6 +1374,10 @@
         "github": [
           "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/BS-Roformer-SW.ckpt",
           "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/BS-Roformer-SW.yaml"
+        ],
+        "huggingface": [
+          "https://huggingface.co/Eddycrack864/audio-separator-models/resolve/main/roformers/BS-Roformer-SW.ckpt",
+          "https://huggingface.co/Eddycrack864/audio-separator-models/resolve/main/roformers/BS-Roformer-SW.yaml"
         ]
       }
     },

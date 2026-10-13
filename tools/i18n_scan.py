@@ -6,6 +6,7 @@ Strings are collected from literal calls to ``i18n("...")`` and ``N_("...")``.
     python tools/i18n_scan.py --check    # exit 1 if en_US.json is missing keys used in code
     python tools/i18n_scan.py --write    # rewrite en_US.json with exactly the keys used in code
     python tools/i18n_scan.py --langs    # also list missing keys for every other language
+    python tools/i18n_scan.py --check --langs  # exit 1 if any language is missing keys
 """
 
 import argparse
@@ -69,12 +70,17 @@ def main(argv=None) -> int:
     for key in unused:
         print(f"\t{key}")
 
+    incomplete = []
     if args.langs:
         for path in sorted(LANG_DIR.glob("*.json")):
             if path == REFERENCE:
                 continue
             lang_missing = sorted(code_keys - set(load_language(path)))
             print(f"{path.stem}: {len(lang_missing)} missing (falls back to English)")
+            for key in lang_missing:
+                print(f"\t{key}")
+            if lang_missing:
+                incomplete.append(path.stem)
 
     if args.write:
         with open(REFERENCE, "w", encoding="utf-8", newline="\n") as f:
@@ -83,7 +89,7 @@ def main(argv=None) -> int:
         print(f"Wrote {len(code_keys)} keys to {REFERENCE}")
         return 0
 
-    return 1 if args.check and missing else 0
+    return 1 if args.check and (missing or incomplete) else 0
 
 
 if __name__ == "__main__":

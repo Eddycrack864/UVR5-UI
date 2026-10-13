@@ -1,7 +1,7 @@
 import json
 
 from uvr5_ui.config.store import ConfigStore, deep_merge, migrate_legacy_user_data
-from uvr5_ui.i18n import AUTO_LANGUAGE, I18nAuto, N_
+from uvr5_ui.i18n import AUTO_LANGUAGE, I18nAuto, N_, normalize_language
 from uvr5_ui.ui import theme
 
 
@@ -83,6 +83,29 @@ def test_i18n_override_and_fallback(tmp_root):
     assert "en_US" in es.available_languages()
     assert AUTO_LANGUAGE not in es.available_languages()
     assert N_("Segment size") == "Segment size"
+
+
+def test_i18n_renamed_language_files(tmp_root):
+    store = make_store(tmp_root)
+    lang_dir = tmp_root / "assets" / "i18n" / "languages"
+
+    store.set("lang.override", True)
+    store.set("lang.selected_lang", "fr-FR")  # saved before fr-FR.json became fr_FR.json
+    assert I18nAuto(config=store, lang_dir=lang_dir).language == "fr_FR"
+    assert normalize_language("ro-RO") == "ro_RO"
+    assert normalize_language("es_ES") == "es_ES"
+
+
+def test_i18n_broken_language_file_falls_back_to_english(tmp_root):
+    store = make_store(tmp_root)
+    lang_dir = tmp_root / "assets" / "i18n" / "languages"
+    (lang_dir / "xx_XX.json").write_text("{ not json", encoding="utf-8")
+    (lang_dir / "yy_YY.json").write_text('["not", "a", "dict"]', encoding="utf-8")
+
+    for language in ("xx_XX", "yy_YY"):
+        broken = I18nAuto(language=language, config=store, lang_dir=lang_dir)
+        assert broken.language == language
+        assert broken("Select the model") == "Select the model"
 
 
 def test_theme_selection(tmp_root):

@@ -8,12 +8,14 @@
 5. [Running UVR5-UI](#running-uvr5-ui)
 6. [Updating UVR5-UI](#updating-uvr5-ui)
 7. [Docker Instance Setup](#docker-instance-setup)
-8. [Best Models](#best-models)
-9. [Advanced Documentation](#advanced-documentation)
-10. [Contributions](#contributions)
-11. [TO-DO](#to-do)
-12. [Credits](#credits)
-13. [Feedback and Support](#feedback-and-support)
+8. [Ensembles](#ensembles)
+9. [Settings](#settings)
+10. [Best Models](#best-models)
+11. [Advanced Documentation](#advanced-documentation)
+12. [Contributions](#contributions)
+13. [TO-DO](#to-do)
+14. [Credits](#credits)
+15. [Feedback and Support](#feedback-and-support)
 
 ## Introduction
 UVR5-UI is a user-friendly interface for the Ultimate Vocal Remover 5, designed to separate audio files into various stems using multiple models. Built on top of the `python-audio-separator`, it provides a Gradio UI for easier interaction, making it accessible to both novice and advanced users.
@@ -23,6 +25,8 @@ UVR5-UI is a user-friendly interface for the Ultimate Vocal Remover 5, designed 
 - **Multiple Models Supported**: Includes VR Arch, MDX-NET, Demucs v4, MDX23C, Mel-Band Roformer, BS Roformer, Music Source Separation, and VIP models.
 - **Video/Audio Separation**: Supports separation from URLs using `yt_dlp`, covering platforms like YouTube, SoundCloud, etc.
 - **Batch Processing**: Enables processing multiple files at once for efficiency.
+- **Ensembles**: Combines the results of several models, with curated presets and your own (see [Ensembles](#ensembles)).
+- **Performance Settings**: Native FP16, torch.compile and chunked processing for long audio (see [Settings](#settings)).
 - **Multi-Language Support**: Available in several languages to cater to a global user base.
 - **Cross-Platform Compatibility**: Runs on Windows, Linux, and through cloud services like Colab, Kaggle, and Hugging Face Spaces.
 - **Integration with Cloud Services**: Direct links to run in Google Colab, Kaggle, and Lightning.ai.
@@ -101,6 +105,33 @@ For advanced users, a Docker setup is available:
 
 2. **Jupyter Notebook**:
    - Access the notebook [here](https://github.com/Eddycrack864/UVR5-UI/blob/main/UVR_UI_Jupyter.ipynb) for setup instructions.
+
+## Ensembles
+The **Ensemble** tab runs two to six models (of any architecture) on the same audio and combines the stems they have in common into one result, which is usually cleaner than any single model.
+
+- **Presets**: curated combinations from the [audio-separator](https://github.com/nomadkaraoke/python-audio-separator) community guide (Vocal Balanced/Clean/Full/RVC, Instrumental Clean/Full/Balanced/Low Resource, Karaoke). Choose one and its models, algorithm and weights are filled in. You can save your own combinations as presets (*Manage presets*); they are stored in `user_data/ensemble_presets.json`.
+- **Model settings**: each model runs with the *Advanced settings* of its own architecture tab, so tune a Roformer model in the Roformer tab and it will be used like that in the ensemble.
+- **Algorithms**:
+
+| Algorithm | What it does | Weights |
+|---|---|---|
+| `avg_wave` / `avg_fft` | Weighted average of the waveforms / spectrograms. A safe default | Yes |
+| `median_wave` / `median_fft` | Median: ignores the model that differs the most. Use 3+ models | No |
+| `min_wave` / `min_fft` | Keeps the quietest result: less bleed, thinner sound (e.g. clean vocals) | No |
+| `max_wave` / `max_fft` | Keeps the loudest result: fuller sound, more bleed (e.g. full vocals) | No |
+| `uvr_max_spec` / `uvr_min_spec` | Max Spec / Min Spec from Ultimate Vocal Remover (popular for instrumentals) | No |
+| `ensemble_wav` | UVR's chunk ensemble: keeps the least noisy chunk of every model. Experimental | No |
+
+- Only the stems produced by **every** model are combined (e.g. Vocals and Instrumental). Enable *Include unmatched stems* to also get the rest, and *Keep each model's stems* to save each model's own output next to the result.
+- Batches process the files model by model, so each model is loaded once per group of files.
+
+## Settings
+- **Performance** (applies to every tab):
+  - *Precision*: Automatic (autocast on NVIDIA GPUs), FP32, Autocast or Native FP16. Native FP16 makes BS/Mel Roformer models faster and lighter on NVIDIA and Apple GPUs; other combinations fall back to FP32.
+  - *torch.compile*: speeds up long or repeated Roformer separations; the first one is slower. It needs Triton (Linux, Colab, Kaggle) and is skipped otherwise.
+  - *Process long audio in chunks*: splits audio longer than the given seconds (e.g. 600 for files over an hour) to avoid running out of memory. Chunks are joined without a crossfade.
+  - *Write outputs with soundfile*: uses less memory when writing very long files.
+- **Output file names**: a template with `{input}`, `{stem}` and `{model}`, e.g. `{stem} - {input}`. The default is `{input}_({stem})_{model}`.
 
 ## Best Models
 ### Instrumental

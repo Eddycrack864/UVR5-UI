@@ -41,6 +41,9 @@ You can also try it on HuggingFace Spaces running with Zero GPU (A100)!
 * VIP Models
 * Separation of an audio/video from all sites supported by [yt_dlp](https://github.com/yt-dlp/yt-dlp). Check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md).
 * Batch Separation
+* Ensembles: combine 2 to 6 models of any architecture with 11 algorithms, curated presets or your own
+* Native FP16, torch.compile and chunked processing for long audio (Settings > Performance)
+* Custom output file names and a one-click download of all the stems
 * Available in multiple languages
 * Colab/Kaggle/Lightning.ai support
 * Windows/Linux support
@@ -95,6 +98,7 @@ Extra options can be added to the run scripts (or to `python app.py`):
 | `--listen-port 8080` | Use another port (default: 9999) |
 | `--server-name 0.0.0.0` | Make the UI reachable from other devices on your network |
 | `--open` | Open the UI in your browser (the run scripts already do this) |
+| `--run-history` | Keep a history of your separations in the browser (off by default) |
 
 Example: `run-UVR5-UI.bat --share --listen-port 8080`
 

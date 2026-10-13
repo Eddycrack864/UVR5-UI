@@ -100,5 +100,10 @@
     "An unexpected error occurred, check the console for details": "Ocurrió un error inesperado, revisa la consola para más detalles",
     "Discord Rich Presence": "Discord Rich Presence",
     "Show UVR5 UI activity on Discord (Requires restarting the App)": "Mostrar la actividad de UVR5 UI en Discord (Requiere reiniciar la App)",
-    "Device": "Dispositivo"
+    "Device": "Dispositivo",
+    "Select at least two models for the ensemble": "Selecciona al menos dos modelos para el ensemble",
+    "An ensemble can combine at most six models": "Un ensemble puede combinar como máximo seis modelos",
+    "Unknown ensemble algorithm": "Algoritmo de ensemble desconocido",
+    "There must be one weight per model": "Debe haber un peso por cada modelo",
+    "Weights must be non-negative numbers that add up to more than zero": "Los pesos deben ser números no negativos que sumen más de cero"
 }

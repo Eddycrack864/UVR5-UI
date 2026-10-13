@@ -100,5 +100,10 @@
     "An unexpected error occurred, check the console for details": "An unexpected error occurred, check the console for details",
     "Discord Rich Presence": "Discord Rich Presence",
     "Show UVR5 UI activity on Discord (Requires restarting the App)": "Show UVR5 UI activity on Discord (Requires restarting the App)",
-    "Device": "Device"
+    "Device": "Device",
+    "Select at least two models for the ensemble": "Select at least two models for the ensemble",
+    "An ensemble can combine at most six models": "An ensemble can combine at most six models",
+    "Unknown ensemble algorithm": "Unknown ensemble algorithm",
+    "There must be one weight per model": "There must be one weight per model",
+    "Weights must be non-negative numbers that add up to more than zero": "Weights must be non-negative numbers that add up to more than zero"
 }

@@ -18,13 +18,23 @@ logger = logging.getLogger(__name__)
 ProgressFn = Callable[[float, str], None]
 
 
-def _noop_progress(fraction: float, desc: str) -> None:
+def noop_progress(fraction: float, desc: str) -> None:
     pass
 
 
-def _describe(e: Exception) -> str:
+def describe_error(e: Exception) -> str:
     # Some audio-separator errors carry no message (e.g. audioread's NoBackendError for unreadable files)
     return str(e) or type(e).__name__
+
+
+def resolve_batch_dirs(input_dir: str, output_dir: str) -> tuple[Path, Path]:
+    """Validate a batch input folder and create the output folder (``outputs/`` when empty)."""
+    input_dir = Path(input_dir.strip()) if input_dir and input_dir.strip() else None
+    if input_dir is None or not input_dir.is_dir():
+        raise SeparationError(f"Input path is not a folder: {input_dir}")
+    output_dir = Path(output_dir.strip()) if output_dir and output_dir.strip() else paths.OUTPUTS_DIR
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return input_dir, output_dir
 
 
 @dataclass(frozen=True)
@@ -41,7 +51,7 @@ def separate_file(
     values: dict,
     *,
     output_dir: Path = None,
-    progress: ProgressFn = _noop_progress,
+    progress: ProgressFn = noop_progress,
     cache: SeparatorCache = separator_cache,
 ) -> list[StemResult]:
     if not audio_path:
@@ -55,7 +65,7 @@ def separate_file(
         outputs = separator.separate(audio_path)
     except Exception as e:
         cache.clear()
-        raise SeparationError(f"{spec.tab_label} separation failed: {_describe(e)}") from e
+        raise SeparationError(f"{spec.tab_label} separation failed: {describe_error(e)}") from e
     if not outputs:
         # audio-separator raises on a failed file (older versions returned []); keep the guard just in case
         raise SeparationError(f"{spec.tab_label} separation produced no output, check the console for details")
@@ -71,19 +81,14 @@ def separate_batch(
     output_format: str,
     values: dict,
     *,
-    progress: ProgressFn = _noop_progress,
+    progress: ProgressFn = noop_progress,
     cache: SeparatorCache = separator_cache,
 ) -> Iterator[str]:
     """Separate every audio file in ``input_dir``. Yields one log line at a time.
 
     A failing file is reported and skipped; the rest of the batch keeps going.
     """
-    input_dir = Path(input_dir.strip()) if input_dir and input_dir.strip() else None
-    if input_dir is None or not input_dir.is_dir():
-        raise SeparationError(f"Input path is not a folder: {input_dir}")
-    output_dir = Path(output_dir.strip()) if output_dir and output_dir.strip() else paths.OUTPUTS_DIR
-    output_dir.mkdir(parents=True, exist_ok=True)
-
+    input_dir, output_dir = resolve_batch_dirs(input_dir, output_dir)
     files = list_audio_files(input_dir)
     if not files:
         yield "No valid audio files."
@@ -98,7 +103,7 @@ def separate_batch(
         separator = cache.get(spec, model, values, output_dir, output_format)
     except Exception as e:
         cache.clear()
-        raise SeparationError(f"Could not load model {model.id}: {_describe(e)}") from e
+        raise SeparationError(f"Could not load model {model.id}: {describe_error(e)}") from e
 
     failed = []
     for i, file in enumerate(files):
@@ -109,9 +114,9 @@ def separate_batch(
                 raise SeparationError("no output produced, check the console for details")
             yield f"File: {file.name} separated!"
         except Exception as e:
-            logger.warning("Batch separation failed for %s: %s", file, _describe(e))
+            logger.warning("Batch separation failed for %s: %s", file, describe_error(e))
             failed.append(file.name)
-            yield f"Error separating {file.name}: {_describe(e)}"
+            yield f"Error separating {file.name}: {describe_error(e)}"
 
     progress(1.0, "Processing complete")
     yield f"Done: {total - len(failed)} separated, {len(failed)} failed. Output: {output_dir}"

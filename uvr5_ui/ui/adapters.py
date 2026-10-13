@@ -32,7 +32,7 @@ def user_errors(func):
             return e
         if isinstance(e, UVRError):
             logger.warning("%s", e, exc_info=e.__cause__ is not None)
-            return gr.Error(str(e))
+            return gr.Error(i18n(str(e)))  # some messages are i18n keys; the rest pass through
         logger.exception("Unexpected error in %s", func.__name__)
         return gr.Error(f"{i18n('An unexpected error occurred, check the console for details')}: {e}")
 

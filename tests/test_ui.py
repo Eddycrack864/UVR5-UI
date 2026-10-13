@@ -6,14 +6,19 @@ import pytest
 
 gr = pytest.importorskip("gradio")
 
+from uvr5_ui import paths  # noqa: E402
 from uvr5_ui.config.settings import SeparationSettings  # noqa: E402
 from uvr5_ui.config.store import ConfigStore  # noqa: E402
 from uvr5_ui.core.models.catalog import ModelCatalog  # noqa: E402
-from uvr5_ui.core.separation import runtime  # noqa: E402
+from uvr5_ui.core.separation import ensemble, runtime  # noqa: E402
+from uvr5_ui.core.separation.ensemble_presets import PresetStore  # noqa: E402
 from uvr5_ui.core.separation.runtime import separator_cache  # noqa: E402
 from uvr5_ui.ui.app import create_app  # noqa: E402
 from uvr5_ui.ui.context import AppContext  # noqa: E402
+from tests.test_ensemble import WavSeparator  # noqa: E402
 from tests.test_separation import FakeSeparator  # noqa: E402
+
+ENSEMBLE_MODELS = ["UVR-MDX-NET-Inst_HQ_3.onnx", "model_bs_roformer_ep_317_sdr_12.9755.ckpt"]
 
 
 class NoProgress:
@@ -32,7 +37,7 @@ def ctx(tmp_root, monkeypatch):
     settings = SeparationSettings(config, tmp_root / "assets" / "default_settings.json",
                                   tmp_root / "user_data" / "custom_settings.json")
     return AppContext(config, settings, ModelCatalog.from_file(tmp_root / "assets" / "models.json"),
-                      settings.initial())
+                      settings.initial(), PresetStore(tmp_root / "user_data" / "ensemble_presets.json"))
 
 
 @pytest.fixture
@@ -47,7 +52,7 @@ def find_fn(app, name, nth=0):
 
 def test_tabs(app):
     labels = [b.label for b in app.blocks.values() if type(b).__name__ == "Tab"]
-    assert labels == ["BS/Mel Roformer", "MDX23C", "MDX-NET", "VR ARCH", "Demucs",
+    assert labels == ["BS/Mel Roformer", "MDX23C", "MDX-NET", "VR ARCH", "Demucs", "Ensemble",
                       "Leaderboard", "Themes", "Settings", "Credits"]
 
 
@@ -90,7 +95,7 @@ def test_save_and_reset_settings(app, ctx, tmp_root):
     save.fn(*values)
 
     custom = json.loads((tmp_root / "user_data" / "custom_settings.json").read_text(encoding="utf-8"))
-    assert set(custom) == {"Roformer", "MDX23C", "MDX-NET", "VR Arch", "Demucs"}
+    assert set(custom) == {"Roformer", "MDX23C", "MDX-NET", "VR Arch", "Demucs", "Ensemble"}
     assert custom["Roformer"]["segment_size"] == 512
     assert ctx.config.get("load_custom_settings") is True
     assert ctx.settings.initial()["Roformer"]["segment_size"] == 512
@@ -100,3 +105,65 @@ def test_save_and_reset_settings(app, ctx, tmp_root):
     assert len(updates) == len(save.inputs)
     assert updates[first_segment_index]["value"] == 256
     assert ctx.config.get("load_custom_settings") is False
+
+
+def by_label(fn, label, cls=None):
+    return next(c for c in fn.inputs if getattr(c, "label", None) == label and (cls is None or isinstance(c, cls)))
+
+
+@pytest.fixture
+def wav_separator(tmp_root, monkeypatch):
+    monkeypatch.setattr(runtime, "_separator_class", lambda: WavSeparator)
+    monkeypatch.setattr(paths, "OUTPUTS_DIR", tmp_root / "outputs")
+    monkeypatch.setattr(ensemble, "default_work_dir", lambda: tmp_root / "work")
+    WavSeparator.instances.clear()
+
+
+def test_ensemble_runs_each_model_with_its_tab_settings(app, tmp_root, wav_separator):
+    fn = find_fn(app, "separate_ensemble")
+    audio = tmp_root / "song.wav"
+    audio.touch()
+    data = {comp: comp.value for comp in fn.inputs}
+    data[by_label(fn, "Models")] = ENSEMBLE_MODELS
+    data[by_label(fn, "Weights")] = [["UVR-MDX-NET-Inst_HQ_3.onnx", 3], ["BS-Roformer-Viperx-1297", 1]]
+    data[by_label(fn, "Input audio")] = str(audio)
+
+    updates = fn.fn(data, NoProgress())
+
+    assert updates[0]["label"] == "Stem 1 (Vocals)"
+    assert updates[0]["value"].endswith("song_(Vocals)_ensemble_avg_wave.wav")
+    assert [u["visible"] for u in updates[2:]] == [False] * 4
+    mdxnet, roformer = WavSeparator.instances
+    assert mdxnet.kwargs["mdx_params"]["hop_length"] == 1024
+    assert roformer.kwargs["mdxc_params"]["overlap"] == 8
+    assert roformer.kwargs["output_single_stem"] is None
+
+
+def test_ensemble_requires_two_models(app, tmp_root, wav_separator):
+    fn = find_fn(app, "separate_ensemble")
+    data = {comp: comp.value for comp in fn.inputs}
+    data[by_label(fn, "Models")] = ENSEMBLE_MODELS[:1]
+    data[by_label(fn, "Input audio")] = "song.wav"
+    with pytest.raises(gr.Error, match="at least two models"):
+        fn.fn(data, NoProgress())
+
+
+def test_ensemble_presets(app, ctx):
+    apply = find_fn(app, "apply_preset")
+    models, algorithm, weights, info = apply.fn("vocal_clean")
+    assert models["value"] == ["bs_roformer_vocals_revive_v2_unwa.ckpt", "mel_band_roformer_kim_ft2_bleedless_unwa.ckpt"]
+    assert algorithm["value"] == "min_fft"
+    assert [row[1] for row in weights["value"]] == [1.0, 1.0]
+    assert "Vocal Clean" in info
+
+    save = find_fn(app, "run_save_preset")
+    choices, _ = save.fn("Mine", "", ENSEMBLE_MODELS, "avg_wave", [["BS-Roformer-Viperx-1297", 2]])
+    assert choices["value"] == "user_mine"
+    assert ctx.presets.get("user_mine").weights == (1.0, 2.0)
+
+    delete = find_fn(app, "run_delete_preset")
+    with pytest.raises(gr.Error):
+        delete.fn("vocal_clean")
+    choices, _ = delete.fn("user_mine")
+    assert choices["value"] == "custom"
+    assert ctx.presets.get("user_mine") is None

@@ -229,6 +229,21 @@ DEMUCS = ArchSpec(
 ARCHITECTURES: tuple[ArchSpec, ...] = (ROFORMER, MDX23C, MDXNET, VRARCH, DEMUCS)
 ARCHITECTURES_BY_ID = {spec.id: spec for spec in ARCHITECTURES}
 
+# "Advanced settings" of the Ensemble tab (settings section "Ensemble"). Each member model
+# runs with the params of its own architecture tab; these apply to the combined result.
+ENSEMBLE_SECTION = "Ensemble"
+ENSEMBLE_PARAMS: tuple[ParamSpec, ...] = (
+    *_thresholds(row=0),
+    ParamSpec(
+        "include_unmatched", "checkbox", N_("Include unmatched stems"), False,
+        info=N_("Also output the stems that only some of the models produce"), row=1,
+    ),
+    ParamSpec(
+        "keep_intermediates", "checkbox", N_("Keep each model's stems"), False,
+        info=N_("Save the stems of every model in a folder next to the result"), row=1,
+    ),
+)
+
 
 def build_separator_kwargs(spec: ArchSpec, values: dict) -> dict:
     """Map UI/settings values (keyed by ``ParamSpec.key``) to ``Separator(...)`` kwargs."""

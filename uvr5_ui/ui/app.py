@@ -7,6 +7,7 @@ from uvr5_ui.i18n import i18n
 from uvr5_ui.ui import theme
 from uvr5_ui.ui.context import AppContext
 from uvr5_ui.ui.tabs.credits import render_credits_tab
+from uvr5_ui.ui.tabs.ensemble import render_ensemble_tab
 from uvr5_ui.ui.tabs.leaderboard import render_leaderboard_tab
 from uvr5_ui.ui.tabs.separation import render_separation_tab
 from uvr5_ui.ui.tabs.settings import render_settings_tab
@@ -34,6 +35,7 @@ def create_app(ctx: AppContext = None) -> gr.Blocks:
 
         with gr.Tabs():
             separation_tabs = [render_separation_tab(spec, ctx) for spec in ARCHITECTURES]
+            separation_tabs.append(render_ensemble_tab(ctx, separation_tabs))
             render_leaderboard_tab()
             render_themes_tab(ctx)
             render_settings_tab(ctx, separation_tabs)

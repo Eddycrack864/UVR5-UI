@@ -51,7 +51,7 @@ class WavSeparator:
         if "corrupt" in str(path):
             raise RuntimeError("cannot decode")
         model = self.loaded[-1]
-        stems, amplitude = MODEL_OUTPUTS[model]
+        stems, amplitude = MODEL_OUTPUTS.get(model, (["Vocals", "Instrumental"], 0.3))
         base = path.replace("\\", "/").rsplit("/", 1)[-1].rsplit(".", 1)[0]
         names = []
         for stem in stems:

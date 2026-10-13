@@ -72,5 +72,19 @@
         "link": "",
         "input_path": "",
         "output_path": ""
+    },
+    "Ensemble": {
+        "preset": "custom",
+        "models": [],
+        "algorithm": "avg_wave",
+        "weights": [],
+        "output_format": null,
+        "normalization_threshold": 0.9,
+        "amplification_threshold": 0.7,
+        "include_unmatched": false,
+        "keep_intermediates": false,
+        "link": "",
+        "input_path": "",
+        "output_path": ""
     }
 }

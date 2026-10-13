@@ -11,7 +11,9 @@ from uvr5_ui.core.models.catalog import Model
 from uvr5_ui.core.separation import runtime
 from uvr5_ui.core.separation.runtime import SeparatorCache
 from uvr5_ui.core.separation.service import separate_batch, separate_file
-from uvr5_ui.core.separation.specs import ARCHITECTURES, ARCHITECTURES_BY_ID, build_separator_kwargs
+from uvr5_ui.core.separation.specs import (
+    ARCHITECTURES, ARCHITECTURES_BY_ID, ENSEMBLE_PARAMS, ENSEMBLE_SECTION, build_separator_kwargs,
+)
 from tests.conftest import REPO_ROOT
 
 # Keys that live in a settings section but are not separation parameters
@@ -62,12 +64,17 @@ MDXNET = ARCHITECTURES_BY_ID["mdxnet"]
 
 def test_spec_keys_match_default_settings():
     defaults = json.loads((REPO_ROOT / "assets" / "default_settings.json").read_text(encoding="utf-8"))
-    assert [s.settings_section for s in ARCHITECTURES] == list(defaults)
+    assert list(defaults) == [s.settings_section for s in ARCHITECTURES] + [ENSEMBLE_SECTION]
     for spec in ARCHITECTURES:
         section = defaults[spec.settings_section]
         assert {p.key for p in spec.params} == set(section) - UI_ONLY_KEYS, spec.id
         for p in spec.params:
             assert section[p.key] == p.default, (spec.id, p.key)
+
+    ensemble = defaults[ENSEMBLE_SECTION]
+    assert {p.key for p in ENSEMBLE_PARAMS} == set(ensemble) - UI_ONLY_KEYS - {"preset", "models", "algorithm", "weights"}
+    for p in ENSEMBLE_PARAMS:
+        assert ensemble[p.key] == p.default, p.key
 
 
 def test_separator_kwargs_mapping():

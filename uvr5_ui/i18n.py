@@ -12,6 +12,8 @@ logger = logging.getLogger(__name__)
 
 FALLBACK_LANGUAGE = "en_US"
 AUTO_LANGUAGE = "Language automatically detected by system"
+# Language files that were renamed; configs saved before the rename still use the old name.
+LEGACY_LANGUAGE_NAMES = {"fr-FR": "fr_FR", "ro-RO": "ro_RO"}
 
 
 def N_(text: str) -> str:
@@ -21,6 +23,11 @@ def N_(text: str) -> str:
     so ``tools/i18n_scan.py`` can still find them.
     """
     return text
+
+
+def normalize_language(language: str | None) -> str | None:
+    """Map a language name saved by an older version to its current file name."""
+    return LEGACY_LANGUAGE_NAMES.get(language, language)
 
 
 def _system_locale() -> str | None:
@@ -42,7 +49,7 @@ class I18nAuto:
         config = config or get_config()
 
         if language is None and config.get("lang.override", False):
-            language = config.get("lang.selected_lang", FALLBACK_LANGUAGE)
+            language = normalize_language(config.get("lang.selected_lang", FALLBACK_LANGUAGE))
         if language is None or not self.language_exists(language):
             language = self._match_system_language(language)
 
@@ -59,10 +66,14 @@ class I18nAuto:
         file_path = self.lang_dir / f"{language}.json"
         try:
             with open(file_path, "r", encoding="utf-8") as file:
-                return json.load(file)
-        except FileNotFoundError:
-            logger.warning("Language file '%s' not found, using source strings", file_path)
+                data = json.load(file)
+        except (OSError, ValueError) as e:
+            logger.warning("Could not read language file '%s' (%s), using source strings", file_path, e)
             return {}
+        if not isinstance(data, dict):
+            logger.warning("Language file '%s' is not a JSON object, using source strings", file_path)
+            return {}
+        return data
 
     def available_languages(self) -> list[str]:
         return sorted(path.stem for path in self.lang_dir.glob("*.json"))

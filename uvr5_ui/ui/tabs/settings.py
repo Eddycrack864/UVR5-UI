@@ -6,7 +6,7 @@ from uvr5_ui.core.audio import DEFAULT_NAME_TEMPLATE, check_name_template
 from uvr5_ui.core.device import get_device
 from uvr5_ui.core.downloads.model_downloader import METHOD_PYTHON, METHODS, SOURCES, download_model
 from uvr5_ui.core.separation.runtime import RuntimeOptions
-from uvr5_ui.i18n import AUTO_LANGUAGE, N_, i18n
+from uvr5_ui.i18n import AUTO_LANGUAGE, N_, i18n, normalize_language
 from uvr5_ui.ui.adapters import progress_callback, require, user_errors
 from uvr5_ui.ui.components import output_log
 from uvr5_ui.ui.context import AppContext
@@ -210,7 +210,7 @@ def render_settings_tab(ctx: AppContext, separation_tabs: list[SeparationTab]) -
 
 
 def _current_language(ctx: AppContext) -> str:
-    language = ctx.config.get("lang.selected_lang")
+    language = normalize_language(ctx.config.get("lang.selected_lang"))
     if not ctx.config.get("lang.override", False) or language not in i18n.available_languages():
         return AUTO_LANGUAGE
     return language

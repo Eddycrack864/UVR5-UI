@@ -39,6 +39,13 @@ def test_roformer_display_name_maps_to_file(catalog):
         catalog.get("mdxnet", "BS Roformer SW by jarredou")
 
 
+def test_filenames_unique_and_lookup(catalog):
+    filenames = [m.filename for m in catalog]
+    assert len(filenames) == len(set(filenames))
+    assert catalog.by_filename("BS-Roformer-SW.ckpt").id == "BS Roformer SW by jarredou"
+    assert catalog.by_filename("missing.ckpt") is None
+
+
 def test_downloadable_excludes_models_without_urls(catalog):
     downloadable = {m.id for m in catalog.downloadable()}
     assert "BS Roformer SW by jarredou" not in downloadable

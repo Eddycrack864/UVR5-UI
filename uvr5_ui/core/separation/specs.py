@@ -26,6 +26,7 @@ class ParamSpec:
     maximum: float | None = None
     step: float | None = None
     row: int = 0  # row inside the "Advanced settings" accordion
+    visible: bool = True  # hidden params are still saved and passed to Separator
     separator_key: str | None = None  # key inside the arch's params dict (e.g. vr_params)
     common_kwarg: str | None = None  # top-level Separator kwarg (e.g. normalization_threshold)
 

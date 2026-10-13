@@ -89,7 +89,7 @@ def render_settings_tab(ctx: AppContext, separation_tabs: list[SeparationTab]) -
                           outputs=[download_output], api_name="download_model")
 
     # Save / reset separation settings across all tabs
-    index = [(tab.spec.settings_section, key, comp) for tab in separation_tabs for key, comp in tab.settings.items()]
+    index = [(tab.section, key, comp) for tab in separation_tabs for key, comp in tab.settings.items()]
     all_inputs = [comp for _, _, comp in index]
 
     def save_settings(*values):
@@ -116,8 +116,12 @@ def render_settings_tab(ctx: AppContext, separation_tabs: list[SeparationTab]) -
             value = defaults.get(section, {}).get(key)
             if key == "output_format" and value is None:
                 value = DEFAULT_OUTPUT_FORMAT
-            if isinstance(comp, gr.Dropdown) and value is not None and value not in _choice_values(comp):
-                value = None
+            if isinstance(comp, gr.Dropdown) and value is not None:
+                choices = _choice_values(comp)
+                if isinstance(value, list):  # multiselect
+                    value = [v for v in value if v in choices]
+                elif value not in choices:
+                    value = None
             updates.append(gr.update(value=value))
         gr.Info(i18n("Settings reset to default. Default settings will be loaded next time"))
         return updates

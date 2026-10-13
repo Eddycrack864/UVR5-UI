@@ -2,8 +2,10 @@ import logging
 
 import gradio as gr
 
+from uvr5_ui.core.audio import DEFAULT_NAME_TEMPLATE, check_name_template
 from uvr5_ui.core.device import get_device
 from uvr5_ui.core.downloads.model_downloader import METHOD_PYTHON, METHODS, SOURCES, download_model
+from uvr5_ui.core.separation.runtime import RuntimeOptions
 from uvr5_ui.i18n import AUTO_LANGUAGE, N_, i18n
 from uvr5_ui.ui.adapters import progress_callback, require, user_errors
 from uvr5_ui.ui.components import output_log
@@ -49,6 +51,54 @@ def render_settings_tab(ctx: AppContext, separation_tabs: list[SeparationTab]) -
             download_button = gr.Button(i18n("Download!"), variant="primary")
             download_output = output_log()
 
+        with gr.Accordion(i18n("Performance"), open=False):
+            runtime = RuntimeOptions.from_config(ctx.config)
+            precision = gr.Dropdown(
+                label=i18n("Precision"),
+                info=i18n("Native FP16 makes BS/Mel Roformer models faster and lighter on NVIDIA and Apple GPUs. "
+                          "Unsupported combinations fall back to FP32."),
+                choices=[(i18n("Automatic (autocast on CUDA)"), "auto"), ("FP32", "fp32"), ("Autocast", "autocast"),
+                         (i18n("Native FP16"), "native_fp16")],
+                value=runtime.precision,
+                interactive=True,
+            )
+            torch_compile = gr.Checkbox(
+                label=i18n("Compile BS/Mel Roformer models (torch.compile)"),
+                info=i18n("Experimental: speeds up long or repeated separations, but the first one is slower. "
+                          "Needs Triton (Linux, Colab); without it, it is skipped."),
+                value=runtime.torch_compile,
+                interactive=True,
+            )
+            chunk_duration = gr.Number(
+                label=i18n("Process long audio in chunks (seconds)"),
+                info=i18n("0 = disabled. Use 600 for audio longer than an hour to avoid running out of memory. "
+                          "Chunks are joined without a crossfade."),
+                value=runtime.chunk_duration,
+                minimum=0,
+                step=60,
+                precision=0,
+                interactive=True,
+            )
+            use_soundfile = gr.Checkbox(
+                label=i18n("Write outputs with soundfile"),
+                info=i18n("Uses less memory when writing very long files"),
+                value=runtime.use_soundfile,
+                interactive=True,
+            )
+            gr.Markdown(i18n("Changes apply to the next separation."))
+
+        with gr.Accordion(i18n("Output file names"), open=False):
+            name_template = gr.Textbox(
+                label=i18n("Name template"),
+                info=i18n("Placeholders: {input} = input file name, {stem} = stem (required), {model} = model. "
+                          "Press Enter to save."),
+                value=runtime.name_template,
+                placeholder=DEFAULT_NAME_TEMPLATE,
+                lines=1,
+                max_lines=1,
+                interactive=True,
+            )
+
         with gr.Accordion(i18n("Separation settings management"), open=False):
             gr.Markdown(i18n("Save your current separation parameter settings or reset them to the application defaults"))
             with gr.Row():
@@ -89,7 +139,7 @@ def render_settings_tab(ctx: AppContext, separation_tabs: list[SeparationTab]) -
                           outputs=[download_output], api_name="download_model")
 
     # Save / reset separation settings across all tabs
-    index = [(tab.spec.settings_section, key, comp) for tab in separation_tabs for key, comp in tab.settings.items()]
+    index = [(tab.section, key, comp) for tab in separation_tabs for key, comp in tab.settings.items()]
     all_inputs = [comp for _, _, comp in index]
 
     def save_settings(*values):
@@ -116,14 +166,41 @@ def render_settings_tab(ctx: AppContext, separation_tabs: list[SeparationTab]) -
             value = defaults.get(section, {}).get(key)
             if key == "output_format" and value is None:
                 value = DEFAULT_OUTPUT_FORMAT
-            if isinstance(comp, gr.Dropdown) and value is not None and value not in _choice_values(comp):
-                value = None
+            if isinstance(comp, gr.Dropdown) and value is not None:
+                choices = _choice_values(comp)
+                if isinstance(value, list):  # multiselect
+                    value = [v for v in value if v in choices]
+                elif value not in choices:
+                    value = None
             updates.append(gr.update(value=value))
         gr.Info(i18n("Settings reset to default. Default settings will be loaded next time"))
         return updates
 
     save_button.click(save_settings, inputs=all_inputs, api_visibility="undocumented")
     reset_button.click(reset_settings, outputs=all_inputs, api_visibility="undocumented")
+
+    # Performance
+    for component, key, convert in (
+        (precision, "performance.precision", str),
+        (torch_compile, "performance.torch_compile", bool),
+        (chunk_duration, "performance.chunk_duration", lambda v: max(int(v or 0), 0)),
+        (use_soundfile, "performance.use_soundfile", bool),
+    ):
+        component.change(lambda value, key=key, convert=convert: ctx.config.set(key, convert(value)),
+                         inputs=[component], api_visibility="undocumented")
+
+    def save_name_template(template):
+        template = (template or "").strip() or DEFAULT_NAME_TEMPLATE
+        try:
+            check_name_template(template)
+        except ValueError as e:
+            raise gr.Error(f"{i18n('Invalid name template')}: {e}")
+        ctx.config.set("output.name_template", template)
+        gr.Info(i18n("Name template saved"))
+        return template
+
+    name_template.submit(save_name_template, inputs=[name_template], outputs=[name_template],
+                         api_visibility="undocumented")
 
     # Discord
     def save_discord(enabled):

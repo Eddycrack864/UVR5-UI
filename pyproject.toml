@@ -3,3 +3,4 @@
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-ra"
+markers = ["network: needs internet access; skipped unless pytest runs with --network"]

@@ -36,6 +36,7 @@ class ModelCatalog:
     def __init__(self, models: list[Model]):
         self._models = list(models)
         self._index = {(m.arch, m.id): m for m in self._models}
+        self._by_filename = {m.filename: m for m in self._models}
 
     @classmethod
     def from_file(cls, path: Path = None) -> "ModelCatalog":
@@ -67,6 +68,10 @@ class ModelCatalog:
     def find(self, model_id: str) -> Model | None:
         """Look a model up by id across all architectures."""
         return next((m for m in self._models if m.id == model_id), None)
+
+    def by_filename(self, filename: str) -> Model | None:
+        """Look a model up by the file audio-separator loads (unique across the catalog)."""
+        return self._by_filename.get(filename)
 
     def downloaded(self, arch: str, models_dir: Path = None) -> list[Model]:
         models_dir = Path(models_dir or paths.MODELS_DIR)

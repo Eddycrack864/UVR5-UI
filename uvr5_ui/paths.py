@@ -16,6 +16,7 @@ MODELS_CATALOG_FILE = ASSETS_DIR / "models.json"
 USER_DATA_DIR = ROOT / "user_data"
 USER_CONFIG_FILE = USER_DATA_DIR / "config.json"
 CUSTOM_SETTINGS_FILE = USER_DATA_DIR / "custom_settings.json"
+USER_ENSEMBLE_PRESETS_FILE = USER_DATA_DIR / "ensemble_presets.json"
 
 # Pre-2.0 locations, migrated into USER_DATA_DIR on startup
 LEGACY_CONFIG_FILE = ASSETS_DIR / "config.json"

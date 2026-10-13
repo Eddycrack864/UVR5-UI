@@ -26,8 +26,12 @@ class ParamSpec:
     maximum: float | None = None
     step: float | None = None
     row: int = 0  # row inside the "Advanced settings" accordion
+    visible: bool = True  # hidden params are still saved and passed to Separator
     separator_key: str | None = None  # key inside the arch's params dict (e.g. vr_params)
     common_kwarg: str | None = None  # top-level Separator kwarg (e.g. normalization_threshold)
+    # Checkbox that, when checked, sends None for this separator_key so audio-separator
+    # uses the value from the model's own configuration
+    model_default_for: str | None = None
 
 
 @dataclass(frozen=True)
@@ -55,11 +59,11 @@ def _segment_size(row: int, default: int = 256) -> ParamSpec:
     )
 
 
-def _batch_size(row: int) -> ParamSpec:
+def _batch_size(row: int, visible: bool = True) -> ParamSpec:
     return ParamSpec(
         "batch_size", "slider", N_("Batch size"), 1,
         info=N_("Larger consumes more RAM but may process slightly faster"),
-        minimum=1, maximum=16, step=1, row=row, separator_key="batch_size",
+        minimum=1, maximum=16, step=1, row=row, visible=visible, separator_key="batch_size",
     )
 
 
@@ -86,7 +90,7 @@ def _single_stem(row: int) -> ParamSpec:
     )
 
 
-def _mdxc_params(overlap_max: int) -> tuple[ParamSpec, ...]:
+def _mdxc_params(overlap_max: int, batch_size_visible: bool = True) -> tuple[ParamSpec, ...]:
     return (
         _segment_size(row=0),
         ParamSpec(
@@ -99,9 +103,19 @@ def _mdxc_params(overlap_max: int) -> tuple[ParamSpec, ...]:
             info=N_("Amount of overlap between prediction windows"),
             minimum=2, maximum=overlap_max, step=1, row=1, separator_key="overlap",
         ),
-        _batch_size(row=1),
-        *_thresholds(row=2),
-        _single_stem(row=3),
+        ParamSpec(
+            "model_overlap", "checkbox", N_("Use the model's overlap"), False,
+            info=N_("Use the overlap set in the model's configuration instead of the value above"),
+            row=1, model_default_for="overlap",
+        ),
+        _batch_size(row=1, visible=batch_size_visible),
+        ParamSpec(
+            "pitch_shift", "slider", N_("Pitch shift"), 0,
+            info=N_("Semitones to shift the audio while separating. May improve very deep or very high vocals"),
+            minimum=-12, maximum=12, step=1, row=2, separator_key="pitch_shift",
+        ),
+        *_thresholds(row=3),
+        _single_stem(row=4),
     )
 
 
@@ -110,7 +124,8 @@ ROFORMER = ArchSpec(
     tab_label="BS/Mel Roformer",
     settings_section="Roformer",
     params_group="mdxc_params",
-    params=_mdxc_params(overlap_max=10),
+    # audio-separator ignores batch_size for Roformer models; it's kept (hidden) for saved settings
+    params=_mdxc_params(overlap_max=10, batch_size_visible=False),
 )
 
 MDX23C = ArchSpec(
@@ -144,6 +159,11 @@ MDXNET = ArchSpec(
             minimum=0.001, maximum=0.999, step=0.001, row=1, separator_key="overlap",
         ),
         _batch_size(row=1),
+        ParamSpec(
+            "invert_spec", "checkbox", N_("Invert using spectrogram"), False,
+            info=N_("Get the secondary stem by inverting the spectrogram instead of the waveform. May improve quality, slightly slower"),
+            row=1, common_kwarg="invert_using_spec",
+        ),
         *_thresholds(row=2),
         _single_stem(row=3),
     ),
@@ -228,6 +248,21 @@ DEMUCS = ArchSpec(
 ARCHITECTURES: tuple[ArchSpec, ...] = (ROFORMER, MDX23C, MDXNET, VRARCH, DEMUCS)
 ARCHITECTURES_BY_ID = {spec.id: spec for spec in ARCHITECTURES}
 
+# "Advanced settings" of the Ensemble tab (settings section "Ensemble"). Each member model
+# runs with the params of its own architecture tab; these apply to the combined result.
+ENSEMBLE_SECTION = "Ensemble"
+ENSEMBLE_PARAMS: tuple[ParamSpec, ...] = (
+    *_thresholds(row=0),
+    ParamSpec(
+        "include_unmatched", "checkbox", N_("Include unmatched stems"), False,
+        info=N_("Also output the stems that only some of the models produce"), row=1,
+    ),
+    ParamSpec(
+        "keep_intermediates", "checkbox", N_("Keep each model's stems"), False,
+        info=N_("Save the stems of every model in a folder next to the result"), row=1,
+    ),
+)
+
 
 def build_separator_kwargs(spec: ArchSpec, values: dict) -> dict:
     """Map UI/settings values (keyed by ``ParamSpec.key``) to ``Separator(...)`` kwargs."""
@@ -241,5 +276,8 @@ def build_separator_kwargs(spec: ArchSpec, values: dict) -> dict:
             group[param.separator_key] = value
         if param.common_kwarg:
             kwargs[param.common_kwarg] = value
+    for param in spec.params:
+        if param.model_default_for and values.get(param.key, param.default):
+            group[param.model_default_for] = None
     kwargs[spec.params_group] = group
     return kwargs

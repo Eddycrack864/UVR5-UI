@@ -21,6 +21,9 @@ def render_leaderboard_tab() -> None:
             label=i18n("Leaderboard"),
             interactive=False,
             wrap=True,
+            show_search="search",
+            pinned_columns=1,
+            column_widths=["30%", "10%", "30%", "30%"],
         )
 
     list_button.click(user_errors(get_leaderboard), inputs=[list_filter], outputs=[table], api_name="leaderboard")

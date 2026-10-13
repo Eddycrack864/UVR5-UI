@@ -5,13 +5,17 @@ import sys
 
 import pytest
 
-from uvr5_ui.core.audio import list_audio_files, parse_stem_label
+from uvr5_ui.core.audio import (
+    DEFAULT_NAME_TEMPLATE, check_name_template, list_audio_files, parse_stem_label, render_name, rename_output,
+)
 from uvr5_ui.core.errors import SeparationError
 from uvr5_ui.core.models.catalog import Model
 from uvr5_ui.core.separation import runtime
-from uvr5_ui.core.separation.runtime import SeparatorCache
+from uvr5_ui.core.separation.runtime import RuntimeOptions, SeparatorCache, execution_summary
 from uvr5_ui.core.separation.service import separate_batch, separate_file
-from uvr5_ui.core.separation.specs import ARCHITECTURES, ARCHITECTURES_BY_ID, build_separator_kwargs
+from uvr5_ui.core.separation.specs import (
+    ARCHITECTURES, ARCHITECTURES_BY_ID, ENSEMBLE_PARAMS, ENSEMBLE_SECTION, build_separator_kwargs,
+)
 from tests.conftest import REPO_ROOT
 
 # Keys that live in a settings section but are not separation parameters
@@ -62,12 +66,17 @@ MDXNET = ARCHITECTURES_BY_ID["mdxnet"]
 
 def test_spec_keys_match_default_settings():
     defaults = json.loads((REPO_ROOT / "assets" / "default_settings.json").read_text(encoding="utf-8"))
-    assert [s.settings_section for s in ARCHITECTURES] == list(defaults)
+    assert list(defaults) == [s.settings_section for s in ARCHITECTURES] + [ENSEMBLE_SECTION]
     for spec in ARCHITECTURES:
         section = defaults[spec.settings_section]
         assert {p.key for p in spec.params} == set(section) - UI_ONLY_KEYS, spec.id
         for p in spec.params:
             assert section[p.key] == p.default, (spec.id, p.key)
+
+    ensemble = defaults[ENSEMBLE_SECTION]
+    assert {p.key for p in ENSEMBLE_PARAMS} == set(ensemble) - UI_ONLY_KEYS - {"preset", "models", "algorithm", "weights"}
+    for p in ENSEMBLE_PARAMS:
+        assert ensemble[p.key] == p.default, p.key
 
 
 def test_separator_kwargs_mapping():
@@ -83,6 +92,17 @@ def test_separator_kwargs_mapping():
 
     roformer = build_separator_kwargs(ARCHITECTURES_BY_ID["roformer"], {"override_segment_size": True})
     assert roformer["mdxc_params"]["override_model_segment_size"] is True
+    assert roformer["mdxc_params"]["overlap"] == 8 and roformer["mdxc_params"]["pitch_shift"] == 0
+    assert "model_overlap" not in roformer["mdxc_params"]
+    assert not ARCHITECTURES_BY_ID["roformer"].param("batch_size").visible
+    assert ARCHITECTURES_BY_ID["mdx23c"].param("batch_size").visible
+
+    mdx23c = build_separator_kwargs(ARCHITECTURES_BY_ID["mdx23c"], {"model_overlap": True, "pitch_shift": -2})
+    assert mdx23c["mdxc_params"]["overlap"] is None  # audio-separator then reads the model's YAML
+    assert mdx23c["mdxc_params"]["pitch_shift"] == -2
+
+    assert mdx["invert_using_spec"] is False
+    assert build_separator_kwargs(MDXNET, {"invert_spec": True})["invert_using_spec"] is True
 
     demucs = build_separator_kwargs(ARCHITECTURES_BY_ID["demucs"], {})
     assert "output_single_stem" not in demucs
@@ -175,3 +195,72 @@ def test_core_does_not_import_gradio():
     )
     out = subprocess.run([sys.executable, "-c", code], cwd=REPO_ROOT, capture_output=True, text=True, check=True)
     assert out.stdout.strip() == "False"
+
+
+class FakeConfig(dict):
+    def get(self, key, default=None):
+        return super().get(key, default)
+
+
+def test_runtime_options(monkeypatch):
+    assert RuntimeOptions.from_config(FakeConfig()) == RuntimeOptions()
+    options = RuntimeOptions.from_config(FakeConfig({
+        "performance.precision": "native_fp16", "performance.torch_compile": True,
+        "performance.chunk_duration": "600", "performance.use_soundfile": True,
+    }))
+    assert options.separator_kwargs() == {"use_autocast": False, "use_native_fp16": True, "use_torch_compile": True,
+                                          "chunk_duration": 600.0, "use_soundfile": True}
+    bad = RuntimeOptions.from_config(FakeConfig({"performance.precision": "fp8", "performance.chunk_duration": "x"}))
+    assert bad.precision == "auto" and bad.chunk_duration == 0
+
+    monkeypatch.setattr(runtime, "use_autocast", lambda: True)
+    assert RuntimeOptions().separator_kwargs()["use_autocast"] is True
+    assert RuntimeOptions().separator_kwargs()["chunk_duration"] is None
+    assert RuntimeOptions(precision="fp32").separator_kwargs()["use_autocast"] is False
+
+
+def test_runtime_kwargs_are_accepted_by_audio_separator():
+    pytest.importorskip("audio_separator")
+    from audio_separator.separator import Separator
+
+    assert set(RuntimeOptions().separator_kwargs()) <= set(inspect.signature(Separator.__init__).parameters)
+
+
+def test_runtime_options_reach_the_separator(cache, tmp_path):
+    separate_file(MDXNET, MODEL, "a.wav", "wav", {}, output_dir=tmp_path, cache=cache,
+                  options=RuntimeOptions(precision="native_fp16", chunk_duration=300))
+    kwargs = FakeSeparator.instances[0].kwargs
+    assert kwargs["use_native_fp16"] is True and kwargs["chunk_duration"] == 300
+
+
+def test_execution_summary():
+    class Loaded:
+        effective_precision = "native_fp16"
+        effective_torch_compile = True
+
+    assert execution_summary(Loaded()) == "native_fp16 + torch.compile"
+    assert execution_summary(FakeSeparator()) is None
+
+
+def test_name_templates(tmp_path):
+    check_name_template(DEFAULT_NAME_TEMPLATE)
+    check_name_template("{stem}/{input}")
+    for bad in ("{input}_{model}", "{input}_{stem}_{date}", "{stem", "{0}_{stem}"):
+        with pytest.raises(ValueError):
+            check_name_template(bad)
+    assert render_name("{stem}/{input}: {model}", "song", "Vocals", "m") == "Vocals_song_ m"
+
+    out = tmp_path / "live_(2020)_(Instrumental)_UVR-MDX-NET-Inst_HQ_3.flac"
+    out.touch()
+    assert rename_output(out, DEFAULT_NAME_TEMPLATE) == out
+    renamed = rename_output(out, "{stem} - {input} ({model})")
+    assert renamed.name == "Instrumental - live_(2020) (UVR-MDX-NET-Inst_HQ_3).flac"
+    assert renamed.exists() and not out.exists()
+    assert rename_output(tmp_path / "missing_(Vocals)_m.wav", "{stem}").name == "missing_(Vocals)_m.wav"
+
+
+def test_runtime_options_name_template():
+    assert RuntimeOptions.from_config(FakeConfig({"output.name_template": "{stem}"})).name_template == "{stem}"
+    invalid = RuntimeOptions.from_config(FakeConfig({"output.name_template": "{input}"}))
+    assert invalid.name_template == DEFAULT_NAME_TEMPLATE
+    assert "name_template" not in RuntimeOptions().separator_kwargs()

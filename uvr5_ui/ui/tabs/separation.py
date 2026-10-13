@@ -2,17 +2,18 @@
 
 from dataclasses import dataclass, field
 from itertools import groupby
+from pathlib import Path
 
 import gradio as gr
 
 from uvr5_ui.core.audio import OUTPUT_FORMATS
-from uvr5_ui.core.downloads.ytdl import download_audio
+from uvr5_ui.core.separation.runtime import RuntimeOptions
 from uvr5_ui.core.separation.service import separate_batch, separate_file
 from uvr5_ui.core.separation.specs import ArchSpec
 from uvr5_ui.i18n import N_, i18n
 from uvr5_ui.integrations.discord_presence import presence
 from uvr5_ui.ui import components
-from uvr5_ui.ui.adapters import GPU_CONCURRENCY_ID, progress_callback, require, user_errors
+from uvr5_ui.ui.adapters import GPU_CONCURRENCY_ID, filled, progress_callback, require, user_errors, validations
 from uvr5_ui.ui.context import AppContext
 
 DEFAULT_OUTPUT_FORMAT = "wav"
@@ -24,9 +25,11 @@ FIRST_USE_MESSAGE = N_(
 
 @dataclass
 class SeparationTab:
-    spec: ArchSpec
+    section: str  # section in default_settings.json / custom_settings.json
     # Persistable inputs keyed like default_settings.json (model, output_format, params..., link, paths)
     settings: dict[str, gr.components.Component] = field(default_factory=dict)
+    spec: ArchSpec | None = None  # None for tabs that are not a single architecture (Ensemble)
+    params: dict[str, gr.components.Component] = field(default_factory=dict)  # keyed by ParamSpec.key
 
 
 def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
@@ -42,13 +45,13 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
                     with gr.Column():
                         all_models = gr.Button(i18n("All models"), variant="primary")
                         downloaded_models = gr.Button(i18n("Downloaded models only"), variant="primary")
-                    output_format = _output_format_dropdown(section)
+                    output_format = output_format_dropdown(section)
                 all_models.click(lambda: _model_choices(ctx, spec, downloaded_only=False), outputs=[model],
                                  api_visibility="undocumented")
                 downloaded_models.click(lambda: _model_choices(ctx, spec, downloaded_only=True), outputs=[model],
                                         api_visibility="undocumented")
             else:
-                output_format = _output_format_dropdown(section)
+                output_format = output_format_dropdown(section)
 
         params = {}
         with gr.Accordion(i18n("Advanced settings"), open=False):
@@ -58,88 +61,83 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
                         for param in row_params:
                             params[param.key] = components.param_widget(param, section.get(param.key, param.default))
 
-        with gr.Row():
-            audio = gr.Audio(label=i18n("Input audio"), type="filepath", interactive=True)
-
-        with gr.Accordion(i18n("Separation by link"), open=False):
-            with gr.Row():
-                link = components.single_line_textbox(
-                    i18n("Link"), i18n("Paste the link here"), section.get("link", "")
-                )
-            with gr.Row():
-                gr.Markdown(i18n("You can paste the link to the video/audio from many sites, check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)"))
-            with gr.Row():
-                download_button = gr.Button(i18n("Download!"), variant="primary")
-
-        with gr.Accordion(i18n("Batch separation"), open=False):
-            with gr.Row():
-                input_path = components.single_line_textbox(
-                    i18n("Input path"), i18n("Place the input path here"), section.get("input_path", "")
-                )
-                output_path = components.single_line_textbox(
-                    i18n("Output path"), i18n("Place the output path here"), section.get("output_path", "")
-                )
-            with gr.Row():
-                batch_button = gr.Button(i18n("Separate!"), variant="primary")
-            with gr.Row():
-                batch_info = components.output_log()
+        inputs = components.input_sections(section, spec.id)
 
         with gr.Row():
             separate_button = gr.Button(i18n("Separate!"), variant="primary")
         stems = components.stem_outputs()
+        zip_button = components.zip_download()
 
-    download_button.click(user_errors(lambda url: str(download_audio(url))), inputs=[link], outputs=[audio],
-                          api_name=f"download_link_{spec.id}")
+    # Handlers take named arguments (inputs_kwargs), which are also the API's parameter names:
+    # model, output_format, audio / input_path + output_path, and every ParamSpec key.
+    fields = {"model": model, "output_format": output_format, **params}
 
     @user_errors
-    def run_single(data, progress=gr.Progress(track_tqdm=True)):
-        selected = _selected_model(ctx, spec, data[model])
-        audio_path = require(data[audio], N_("Please provide an input audio"))
-        _notify_first_use(ctx, selected)
+    def run_single(model, output_format, audio, progress=gr.Progress(track_tqdm=True), **values):
+        selected = _selected_model(ctx, spec, model)
+        audio_path = require(audio, N_("Please provide an input audio"))
+        notify_first_use(ctx, selected)
         with presence.track(spec.id):
             results = separate_file(
-                spec, selected, audio_path, data[output_format] or DEFAULT_OUTPUT_FORMAT,
-                {key: data[comp] for key, comp in params.items()},
-                progress=progress_callback(progress),
+                spec, selected, audio_path, output_format or DEFAULT_OUTPUT_FORMAT, values,
+                progress=progress_callback(progress), options=RuntimeOptions.from_config(ctx.config),
             )
-        return components.stem_updates(results)
+        return [*components.stem_updates(results), components.zip_update(results, audio_path)]
+
+    def validate_single(model, output_format, audio, **values):
+        return validations(
+            (fields["model"], filled(model), N_("Please select a model first")),
+            (inputs.audio, filled(audio), N_("Please provide an input audio")),
+        )
 
     @user_errors
-    def run_batch(data, progress=gr.Progress()):
-        selected = _selected_model(ctx, spec, data[model])
-        _notify_first_use(ctx, selected)
+    def run_batch(model, output_format, input_path, output_path, progress=gr.Progress(), **values):
+        selected = _selected_model(ctx, spec, model)
+        notify_first_use(ctx, selected)
         lines = []
         with presence.track(spec.id, batch=True):
             for line in separate_batch(
-                spec, selected, data[input_path], data[output_path], data[output_format] or DEFAULT_OUTPUT_FORMAT,
-                {key: data[comp] for key, comp in params.items()},
-                progress=progress_callback(progress),
+                spec, selected, input_path, output_path, output_format or DEFAULT_OUTPUT_FORMAT, values,
+                progress=progress_callback(progress), options=RuntimeOptions.from_config(ctx.config),
             ):
                 lines.append(line)
                 yield "\n".join(lines)
 
+    def validate_batch(model, output_format, input_path, output_path, **values):
+        return validations(
+            (fields["model"], filled(model), N_("Please select a model first")),
+            (inputs.input_path, filled(input_path) and Path(input_path.strip()).is_dir(),
+             N_("The input path must be an existing folder")),
+        )
+
     separate_button.click(
-        run_single, inputs={model, output_format, audio, *params.values()}, outputs=stems,
-        api_name=f"separate_{spec.id}", concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
+        run_single, inputs_kwargs={**fields, "audio": inputs.audio}, outputs=[*stems, zip_button],
+        validator=validate_single, api_name=f"separate_{spec.id}",
+        concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
-    batch_button.click(
-        run_batch, inputs={model, output_format, input_path, output_path, *params.values()}, outputs=[batch_info],
-        api_name=f"batch_{spec.id}", concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
+    batch_event = inputs.batch_button.click(
+        run_batch, inputs_kwargs={**fields, "input_path": inputs.input_path, "output_path": inputs.output_path},
+        outputs=[inputs.batch_info], validator=validate_batch, api_name=f"batch_{spec.id}",
+        concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
+    )
+    inputs.wire_stop(batch_event)
+
+    return SeparationTab(
+        section=spec.settings_section,
+        settings={
+            "model": model,
+            "output_format": output_format,
+            **params,
+            "link": inputs.link,
+            "input_path": inputs.input_path,
+            "output_path": inputs.output_path,
+        },
+        spec=spec,
+        params=params,
     )
 
-    tab = SeparationTab(spec)
-    tab.settings = {
-        "model": model,
-        "output_format": output_format,
-        **params,
-        "link": link,
-        "input_path": input_path,
-        "output_path": output_path,
-    }
-    return tab
 
-
-def _output_format_dropdown(section: dict):
+def output_format_dropdown(section: dict):
     return gr.Dropdown(
         label=i18n("Select the output format"),
         choices=OUTPUT_FORMATS,
@@ -158,6 +156,6 @@ def _selected_model(ctx: AppContext, spec: ArchSpec, model_id):
     return ctx.catalog.get(spec.id, model_id)
 
 
-def _notify_first_use(ctx: AppContext, model) -> None:
+def notify_first_use(ctx: AppContext, model) -> None:
     if not ctx.catalog.is_downloaded(model):
         gr.Info(i18n(FIRST_USE_MESSAGE).format(model=model.id))

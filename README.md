@@ -41,6 +41,9 @@ You can also try it on HuggingFace Spaces running with Zero GPU (A100)!
 * VIP Models
 * Separation of an audio/video from all sites supported by [yt_dlp](https://github.com/yt-dlp/yt-dlp). Check the complete list [here](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md).
 * Batch Separation
+* Ensembles: combine 2 to 6 models of any architecture with 11 algorithms, curated presets or your own
+* Native FP16, torch.compile and chunked processing for long audio (Settings > Performance)
+* Custom output file names and a one-click download of all the stems
 * Available in multiple languages
 * Colab/Kaggle/Lightning.ai support
 * Windows/Linux support
@@ -95,6 +98,7 @@ Extra options can be added to the run scripts (or to `python app.py`):
 | `--listen-port 8080` | Use another port (default: 9999) |
 | `--server-name 0.0.0.0` | Make the UI reachable from other devices on your network |
 | `--open` | Open the UI in your browser (the run scripts already do this) |
+| `--run-history` | Keep a history of your separations in the browser (off by default) |
 
 Example: `run-UVR5-UI.bat --share --listen-port 8080`
 
@@ -140,7 +144,14 @@ env/python.exe -m pytest
 
 # Check that every translatable string exists in assets/i18n/languages/en_US.json
 env/python.exe tools/i18n_scan.py --check
+
+# Model catalog (needs internet)
+env/python.exe tools/check_model_links.py          # are all download links working? which models are not on the Hugging Face mirror yet?
+env/python.exe tools/sync_models.py --write        # add the models audio-separator supports and fill the sources that now work
+env/python.exe -m pytest --network                 # also run the tests that check the links and the catalog online
 ```
+
+After updating audio-separator, run `tools/sync_models.py --write`: the catalog must list every model it supports (`tests/test_catalog.py` checks its bundled list offline). New models only get a Hugging Face source once all their files are on the mirror; run the sync again after uploading them.
 
 - **Add a model:** add an entry to `assets/models.json` (`id`, `arch`, `filename`, download `sources`). It appears in its tab automatically.
 - **Add a parameter:** add a `ParamSpec` to its architecture in `uvr5_ui/core/separation/specs.py` and its default to `assets/default_settings.json`.

@@ -17,6 +17,7 @@ ACTIVITIES = {
     "mdxnet": ("mdxnet", "MDX-NET"),
     "vrarch": ("vrarch", "VR Arch"),
     "demucs": ("demucs", "Demucs"),
+    "ensemble": ("logo", "Ensemble"),
 }
 
 

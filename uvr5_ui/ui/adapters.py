@@ -32,7 +32,7 @@ def user_errors(func):
             return e
         if isinstance(e, UVRError):
             logger.warning("%s", e, exc_info=e.__cause__ is not None)
-            return gr.Error(str(e))
+            return gr.Error(i18n(str(e)))  # some messages are i18n keys; the rest pass through
         logger.exception("Unexpected error in %s", func.__name__)
         return gr.Error(f"{i18n('An unexpected error occurred, check the console for details')}: {e}")
 
@@ -52,6 +52,19 @@ def user_errors(func):
         except Exception as e:
             raise to_gr_error(e) from e
     return wrapper
+
+
+def validations(*checks) -> dict:
+    """Validator result from ``(component, is_valid, message)`` checks.
+
+    Validators run before the event is queued, so a missing input is flagged on its
+    component right away instead of after waiting for the GPU.
+    """
+    return {component: gr.validate(bool(is_valid), i18n(message)) for component, is_valid, message in checks}
+
+
+def filled(value) -> bool:
+    return value is not None and not (isinstance(value, str) and not value.strip())
 
 
 def require(value, message: str):

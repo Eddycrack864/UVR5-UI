@@ -7,12 +7,16 @@ from uvr5_ui.i18n import i18n
 from uvr5_ui.ui import theme
 from uvr5_ui.ui.context import AppContext
 from uvr5_ui.ui.tabs.credits import render_credits_tab
+from uvr5_ui.ui.tabs.ensemble import render_ensemble_tab
 from uvr5_ui.ui.tabs.leaderboard import render_leaderboard_tab
 from uvr5_ui.ui.tabs.separation import render_separation_tab
 from uvr5_ui.ui.tabs.settings import render_settings_tab
 from uvr5_ui.ui.tabs.themes import render_themes_tab
 
 TITLE = "🎵 UVR5 UI 🎵"
+# Every uploaded audio and every returned stem is copied to Gradio's temp cache: once a
+# day, delete the files older than a day so it doesn't grow without limit.
+DELETE_CACHE = (86400, 86400)
 
 
 def launch_kwargs(ctx: AppContext) -> dict:
@@ -27,13 +31,14 @@ def create_app(ctx: AppContext = None) -> gr.Blocks:
     ctx = ctx or AppContext.create()
 
     # No Gradio telemetry: it reports every launch to huggingface.co
-    with gr.Blocks(title=TITLE, analytics_enabled=False) as app:
+    with gr.Blocks(title=TITLE, analytics_enabled=False, delete_cache=DELETE_CACHE) as app:
         gr.Markdown(f"<h1> {TITLE} </h1>")
         gr.Markdown(i18n("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)"))
         gr.Markdown(i18n("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)"))
 
         with gr.Tabs():
             separation_tabs = [render_separation_tab(spec, ctx) for spec in ARCHITECTURES]
+            separation_tabs.append(render_ensemble_tab(ctx, separation_tabs))
             render_leaderboard_tab()
             render_themes_tab(ctx)
             render_settings_tab(ctx, separation_tabs)

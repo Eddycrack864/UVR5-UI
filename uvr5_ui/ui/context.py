@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from uvr5_ui.config.settings import SeparationSettings
 from uvr5_ui.config.store import ConfigStore, get_config
 from uvr5_ui.core.models.catalog import ModelCatalog, get_catalog
+from uvr5_ui.core.separation.ensemble_presets import PresetStore
 
 
 @dataclass
@@ -13,6 +14,7 @@ class AppContext:
     settings: SeparationSettings
     catalog: ModelCatalog
     initial_settings: dict = field(default_factory=dict)
+    presets: PresetStore = field(default_factory=PresetStore)
 
     @classmethod
     def create(cls) -> "AppContext":

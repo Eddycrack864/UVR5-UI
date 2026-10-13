@@ -10,7 +10,9 @@ from uvr5_ui import paths
 from uvr5_ui.core.audio import list_audio_files, parse_stem_label, rename_output
 from uvr5_ui.core.errors import SeparationError
 from uvr5_ui.core.models.catalog import Model
-from uvr5_ui.core.separation.runtime import RuntimeOptions, SeparatorCache, execution_summary, separator_cache
+from uvr5_ui.core.separation.runtime import (
+    RuntimeOptions, SeparatorCache, execution_summary, separation_lock, separator_cache,
+)
 from uvr5_ui.core.separation.specs import ArchSpec
 
 logger = logging.getLogger(__name__)
@@ -67,10 +69,11 @@ def separate_file(
 
     try:
         progress(0.2, "Loading model...")
-        separator = cache.get(spec, model, values, output_dir, output_format, options=options)
-        summary = execution_summary(separator)
-        progress(0.7, f"Separating audio ({summary})..." if summary else "Separating audio...")
-        outputs = separator.separate(audio_path)
+        with separation_lock:
+            separator = cache.get(spec, model, values, output_dir, output_format, options=options)
+            summary = execution_summary(separator)
+            progress(0.7, f"Separating audio ({summary})..." if summary else "Separating audio...")
+            outputs = separator.separate(audio_path)
     except Exception as e:
         cache.clear()
         raise SeparationError(f"{spec.tab_label} separation failed: {describe_error(e)}") from e
@@ -113,7 +116,8 @@ def separate_batch(
 
     try:
         yield "Loading model..."
-        separator = cache.get(spec, model, values, output_dir, output_format, options=options)
+        with separation_lock:
+            separator = cache.get(spec, model, values, output_dir, output_format, options=options)
     except Exception as e:
         cache.clear()
         raise SeparationError(f"Could not load model {model.id}: {describe_error(e)}") from e
@@ -125,7 +129,8 @@ def separate_batch(
         progress(i / total, f"Processing file {i + 1}/{total}")
         yield f"Separating file: {file.name}"
         try:
-            outputs = separator.separate(str(file))
+            with separation_lock:
+                outputs = separator.separate(str(file))
             if not outputs:
                 raise SeparationError("no output produced, check the console for details")
             for name in outputs:

@@ -183,5 +183,7 @@
     "Name template": "Name template",
     "Placeholders: {input} = input file name, {stem} = stem (required), {model} = model. Press Enter to save.": "Placeholders: {input} = input file name, {stem} = stem (required), {model} = model. Press Enter to save.",
     "Invalid name template": "Invalid name template",
-    "Name template saved": "Name template saved"
+    "Name template saved": "Name template saved",
+    "Stop": "Stop",
+    "Download all stems (.zip)": "Download all stems (.zip)"
 }

@@ -1,9 +1,12 @@
 """Reusable Gradio widget factories. Must be called inside a ``gr.Blocks`` context."""
 
+import tempfile
 from dataclasses import dataclass
+from pathlib import Path
 
 import gradio as gr
 
+from uvr5_ui.core.audio import zip_files
 from uvr5_ui.core.downloads.ytdl import download_audio
 from uvr5_ui.core.separation.specs import ParamSpec
 from uvr5_ui.i18n import N_, i18n
@@ -54,7 +57,12 @@ class InputSections:
     input_path: gr.Textbox
     output_path: gr.Textbox
     batch_button: gr.Button
+    stop_button: gr.Button
     batch_info: gr.Textbox
+
+    def wire_stop(self, batch_event) -> None:
+        """Let the stop button cancel ``batch_event``; the file being separated still finishes."""
+        self.stop_button.click(None, cancels=[batch_event], api_visibility="undocumented")
 
 
 def input_sections(section: dict, api_suffix: str) -> InputSections:
@@ -80,12 +88,13 @@ def input_sections(section: dict, api_suffix: str) -> InputSections:
             )
         with gr.Row():
             batch_button = gr.Button(i18n("Separate!"), variant="primary")
+            stop_button = gr.Button(i18n("Stop"), variant="stop")
         with gr.Row():
             batch_info = output_log()
 
     download_button.click(user_errors(lambda url: str(download_audio(url))), inputs=[link], outputs=[audio],
                           api_name=f"download_link_{api_suffix}")
-    return InputSections(audio, link, input_path, output_path, batch_button, batch_info)
+    return InputSections(audio, link, input_path, output_path, batch_button, stop_button, batch_info)
 
 
 def stem_outputs() -> list[gr.Audio]:
@@ -103,6 +112,17 @@ def stem_outputs() -> list[gr.Audio]:
                     visible=index <= 2,
                 ))
     return stems
+
+
+def zip_download() -> gr.DownloadButton:
+    """Downloads every stem of the last separation at once. Hidden until there is a result."""
+    return gr.DownloadButton(i18n("Download all stems (.zip)"), variant="secondary", visible=False)
+
+
+def zip_update(results, audio_path: str):
+    name = Path(audio_path or "stems").stem
+    archive = zip_files([r.path for r in results], Path(tempfile.gettempdir()) / "uvr5_ui-zips" / f"{name}_stems.zip")
+    return gr.update(value=str(archive), visible=True) if archive else gr.update(value=None, visible=False)
 
 
 def stem_updates(results) -> list:

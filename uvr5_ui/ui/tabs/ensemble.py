@@ -135,6 +135,7 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
         with gr.Row():
             separate_button = gr.Button(i18n("Separate!"), variant="primary")
         stems = components.stem_outputs()
+        zip_button = components.zip_download()
 
     # Presets, models, algorithm and weights
     def apply_preset(preset_id):
@@ -240,7 +241,7 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
             results = ensemble_file(members, audio_path, data[output_format] or DEFAULT_OUTPUT_FORMAT, options,
                                     progress=progress_callback(progress),
                                     runtime_options=RuntimeOptions.from_config(ctx.config))
-        return components.stem_updates(results)
+        return [*components.stem_updates(results), components.zip_update(results, audio_path)]
 
     @user_errors
     def run_batch(data, progress=gr.Progress()):
@@ -256,13 +257,14 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
 
     common = {preset, models, algorithm, weights, output_format, *params.values(), *arch_params}
     separate_button.click(
-        run_single, inputs={*common, inputs.audio}, outputs=stems,
+        run_single, inputs={*common, inputs.audio}, outputs=[*stems, zip_button],
         api_name="separate_ensemble", concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
-    inputs.batch_button.click(
+    batch_event = inputs.batch_button.click(
         run_batch, inputs={*common, inputs.input_path, inputs.output_path}, outputs=[inputs.batch_info],
         api_name="batch_ensemble", concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
+    inputs.wire_stop(batch_event)
 
     return SeparationTab(
         section=ENSEMBLE_SECTION,

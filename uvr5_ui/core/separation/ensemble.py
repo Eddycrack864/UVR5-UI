@@ -27,7 +27,9 @@ from uvr5_ui.core.audio import (
 )
 from uvr5_ui.core.errors import SeparationError
 from uvr5_ui.core.models.catalog import Model
-from uvr5_ui.core.separation.runtime import RuntimeOptions, SeparatorCache, execution_summary, separator_cache
+from uvr5_ui.core.separation.runtime import (
+    RuntimeOptions, SeparatorCache, execution_summary, separation_lock, separator_cache,
+)
 from uvr5_ui.core.separation.service import (
     ProgressFn, StemResult, describe_error, noop_progress, resolve_batch_dirs,
 )
@@ -236,8 +238,9 @@ def _run(members, files, output_dir, output_format, options, cache, progress, wo
                 step(f"Loading model {index + 1}/{len(members)}...")
                 yield f"Loading model {index + 1}/{len(members)}: {member.model.id}"
                 try:
-                    separator = cache.get(member.spec, member.model, member.separator_values(), member_dir, "wav",
-                                          options=runtime_options)
+                    with separation_lock:
+                        separator = cache.get(member.spec, member.model, member.separator_values(), member_dir,
+                                              "wav", options=runtime_options)
                 except Exception as e:
                     cache.clear()
                     raise SeparationError(f"Could not load model {member.model.id}: {describe_error(e)}") from e
@@ -251,7 +254,8 @@ def _run(members, files, output_dir, output_format, options, cache, progress, wo
                     step(f"Model {index + 1}/{len(members)}: {file.name}")
                     yield f"Separating {file.name} with {member.model.id}"
                     try:
-                        names = separator.separate(str(file))
+                        with separation_lock:
+                            names = separator.separate(str(file))
                         if not names:
                             raise SeparationError("no output produced, check the console for details")
                         outputs[file].append([member_dir / name for name in names])

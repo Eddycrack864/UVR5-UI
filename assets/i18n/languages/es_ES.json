@@ -183,5 +183,7 @@
     "Name template": "Plantilla de nombre",
     "Placeholders: {input} = input file name, {stem} = stem (required), {model} = model. Press Enter to save.": "Marcadores: {input} = nombre del archivo de entrada, {stem} = stem (obligatorio), {model} = modelo. Pulsa Enter para guardar.",
     "Invalid name template": "Plantilla de nombre inválida",
-    "Name template saved": "Plantilla de nombre guardada"
+    "Name template saved": "Plantilla de nombre guardada",
+    "Stop": "Detener",
+    "Download all stems (.zip)": "Descargar todos los stems (.zip)"
 }

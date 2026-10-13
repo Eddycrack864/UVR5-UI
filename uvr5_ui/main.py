@@ -29,6 +29,7 @@ def main(argv: list[str] | None = None) -> None:
             server_name=options.server_name,
             server_port=options.listen_port,
             inbrowser=options.open_browser,
+            run_history=options.run_history,
             **launch_kwargs(ctx),
         )
     finally:

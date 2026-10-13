@@ -65,6 +65,7 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
         with gr.Row():
             separate_button = gr.Button(i18n("Separate!"), variant="primary")
         stems = components.stem_outputs()
+        zip_button = components.zip_download()
 
     @user_errors
     def run_single(data, progress=gr.Progress(track_tqdm=True)):
@@ -77,7 +78,7 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
                 {key: data[comp] for key, comp in params.items()},
                 progress=progress_callback(progress), options=RuntimeOptions.from_config(ctx.config),
             )
-        return components.stem_updates(results)
+        return [*components.stem_updates(results), components.zip_update(results, audio_path)]
 
     @user_errors
     def run_batch(data, progress=gr.Progress()):
@@ -95,14 +96,15 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
                 yield "\n".join(lines)
 
     separate_button.click(
-        run_single, inputs={model, output_format, inputs.audio, *params.values()}, outputs=stems,
+        run_single, inputs={model, output_format, inputs.audio, *params.values()}, outputs=[*stems, zip_button],
         api_name=f"separate_{spec.id}", concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
-    inputs.batch_button.click(
+    batch_event = inputs.batch_button.click(
         run_batch, inputs={model, output_format, inputs.input_path, inputs.output_path, *params.values()},
         outputs=[inputs.batch_info],
         api_name=f"batch_{spec.id}", concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
+    inputs.wire_stop(batch_event)
 
     return SeparationTab(
         section=spec.settings_section,

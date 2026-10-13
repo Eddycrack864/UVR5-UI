@@ -128,3 +128,7 @@ class SeparatorCache:
 
 
 separator_cache = SeparatorCache()
+
+# Held around every model load and separation. Gradio already queues separations one at a
+# time; this also covers a cancelled event whose worker thread is still finishing a file.
+separation_lock = threading.Lock()

@@ -1,6 +1,7 @@
 """UI smoke tests: build the Blocks app without launching it and drive handlers directly."""
 
 import json
+import zipfile
 
 import pytest
 
@@ -72,10 +73,11 @@ def test_single_separation_shows_only_produced_stems(app):
             data[comp] = comp.value
     updates = fn.fn(data, NoProgress())
 
-    assert len(updates) == 6
+    assert len(updates) == 7
+    assert updates[6]["visible"] is False  # FakeSeparator writes no files: nothing to zip
     assert updates[0]["visible"] and updates[0]["label"] == "Stem 1 (Vocals)"
     assert updates[1]["label"] == "Stem 2 (Instrumental)"
-    assert [u["visible"] for u in updates[2:]] == [False] * 4
+    assert [u["visible"] for u in updates[2:6]] == [False] * 4
     assert FakeSeparator.instances[0].kwargs["mdx_params"]["hop_length"] == 1024
 
 
@@ -132,7 +134,11 @@ def test_ensemble_runs_each_model_with_its_tab_settings(app, tmp_root, wav_separ
 
     assert updates[0]["label"] == "Stem 1 (Vocals)"
     assert updates[0]["value"].endswith("song_(Vocals)_ensemble_avg_wave.wav")
-    assert [u["visible"] for u in updates[2:]] == [False] * 4
+    assert [u["visible"] for u in updates[2:6]] == [False] * 4
+    assert updates[6]["visible"] and updates[6]["value"].endswith("song_stems.zip")
+    with zipfile.ZipFile(updates[6]["value"]) as archive:
+        assert sorted(archive.namelist()) == ["song_(Instrumental)_ensemble_avg_wave.wav",
+                                              "song_(Vocals)_ensemble_avg_wave.wav"]
     mdxnet, roformer = WavSeparator.instances
     assert mdxnet.kwargs["mdx_params"]["hop_length"] == 1024
     assert roformer.kwargs["mdxc_params"]["overlap"] == 8
@@ -185,3 +191,13 @@ def test_name_template_setting(app, ctx):
         save.fn("{input}")
     assert ctx.config.get("output.name_template") == "{stem} - {input}"
     assert save.fn("  ") == "{input}_({stem})_{model}"
+
+
+def test_temp_cache_is_cleaned(app):
+    assert app.delete_cache == (86400, 86400)
+
+
+def test_batch_can_be_stopped(app):
+    batch = find_fn(app, "batch_mdxnet")
+    cancellers = [f for f in app.fns.values() if f.fn is None and batch._id in (f.cancels or [])]
+    assert len(cancellers) == 1

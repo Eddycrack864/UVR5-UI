@@ -139,3 +139,18 @@ def rename_output(path: Path, template: str) -> Path:
     if target != path:
         os.replace(path, target)
     return target
+
+
+def zip_files(files, destination: Path) -> Path | None:
+    """Store the existing ``files`` in the zip ``destination`` (overwritten). None if there is nothing to zip."""
+    import zipfile
+
+    files = [Path(f) for f in files if f and Path(f).is_file()]
+    if not files:
+        return None
+    destination = Path(destination)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(destination, "w", zipfile.ZIP_STORED) as archive:  # audio doesn't compress
+        for file in files:
+            archive.write(file, file.name)
+    return destination

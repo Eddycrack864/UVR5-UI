@@ -144,7 +144,14 @@ env/python.exe -m pytest
 
 # Check that every translatable string exists in assets/i18n/languages/en_US.json
 env/python.exe tools/i18n_scan.py --check
+
+# Model catalog (needs internet)
+env/python.exe tools/check_model_links.py          # are all download links working? which models are not on the Hugging Face mirror yet?
+env/python.exe tools/sync_models.py --write        # add the models audio-separator supports and fill the sources that now work
+env/python.exe -m pytest --network                 # also run the tests that check the links and the catalog online
 ```
+
+After updating audio-separator, run `tools/sync_models.py --write`: the catalog must list every model it supports (`tests/test_catalog.py` checks its bundled list offline). New models only get a Hugging Face source once all their files are on the mirror; run the sync again after uploading them.
 
 - **Add a model:** add an entry to `assets/models.json` (`id`, `arch`, `filename`, download `sources`). It appears in its tab automatically.
 - **Add a parameter:** add a `ParamSpec` to its architecture in `uvr5_ui/core/separation/specs.py` and its default to `assets/default_settings.json`.

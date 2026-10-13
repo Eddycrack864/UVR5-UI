@@ -274,3 +274,9 @@ def test_user_presets(tmp_path):
     assert store.delete("vocal_x") is False
     assert store.delete("user_my_vocals") is True
     assert [p.id for p in store.all()] == ["vocal_x"]
+
+
+@pytest.mark.parametrize("algorithm", ["uvr_max_spec", "min_fft", "median_wave", "ensemble_wav"])
+def test_every_algorithm_keeps_the_length(tmp_path, cache, algorithm):
+    results = run([member(ROFORMER, "a.ckpt"), member(MDXNET, "b.onnx")], tmp_path, cache, algorithm=algorithm)
+    assert sf.info(results[0].path).frames == SR // 10

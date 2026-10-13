@@ -9,5 +9,11 @@
     "selected_lang": "en_US"
   },
   "discord_presence": true,
-  "load_custom_settings": false
+  "load_custom_settings": false,
+  "performance": {
+    "precision": "auto",
+    "torch_compile": false,
+    "chunk_duration": 0,
+    "use_soundfile": false
+  }
 }

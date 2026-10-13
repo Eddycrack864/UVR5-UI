@@ -167,3 +167,11 @@ def test_ensemble_presets(app, ctx):
     choices, _ = delete.fn("user_mine")
     assert choices["value"] == "custom"
     assert ctx.presets.get("user_mine") is None
+
+
+def test_performance_settings_reach_the_separator(app, ctx):
+    ctx.config.set("performance.precision", "native_fp16")
+    ctx.config.set("performance.chunk_duration", 600)
+    test_single_separation_shows_only_produced_stems(app)
+    kwargs = FakeSeparator.instances[-1].kwargs
+    assert kwargs["use_native_fp16"] is True and kwargs["chunk_duration"] == 600

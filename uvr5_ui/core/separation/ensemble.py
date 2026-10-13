@@ -24,7 +24,7 @@ from uvr5_ui import paths
 from uvr5_ui.core.audio import audio_subtype, list_audio_files, load_audio, normalize_peak, parse_stem_label, write_audio
 from uvr5_ui.core.errors import SeparationError
 from uvr5_ui.core.models.catalog import Model
-from uvr5_ui.core.separation.runtime import SeparatorCache, separator_cache
+from uvr5_ui.core.separation.runtime import RuntimeOptions, SeparatorCache, execution_summary, separator_cache
 from uvr5_ui.core.separation.service import (
     ProgressFn, StemResult, describe_error, noop_progress, resolve_batch_dirs,
 )
@@ -104,7 +104,7 @@ class EnsembleOptions:
     keep_intermediates: bool = False  # keep each model's own stems next to the result
     normalization_threshold: float = 0.9
     amplification_threshold: float = 0.0
-    sample_rate: int = DEFAULT_SAMPLE_RATE
+    sample_rate: int = DEFAULT_SAMPLE_RATE  # the rate audio-separator writes stems at
 
     @property
     def label(self) -> str:
@@ -158,6 +158,7 @@ def ensemble_file(
     progress: ProgressFn = noop_progress,
     cache: SeparatorCache = separator_cache,
     work_dir: Path = None,
+    runtime_options: RuntimeOptions = None,
 ) -> list[StemResult]:
     """Separate ``audio_path`` with every member and combine their stems."""
     check_ensemble(len(members), options.algorithm, options.weights)
@@ -166,7 +167,7 @@ def ensemble_file(
     output_dir = Path(output_dir or paths.OUTPUTS_DIR)
     file = Path(audio_path)
 
-    run = _run(members, [file], output_dir, output_format, options, cache, progress, work_dir)
+    run = _run(members, [file], output_dir, output_format, options, cache, progress, work_dir, runtime_options)
     while True:
         try:
             logger.info(next(run))
@@ -188,6 +189,7 @@ def ensemble_batch(
     progress: ProgressFn = noop_progress,
     cache: SeparatorCache = separator_cache,
     work_dir: Path = None,
+    runtime_options: RuntimeOptions = None,
 ) -> Iterator[str]:
     """Ensemble every audio file in ``input_dir``. Yields one log line at a time.
 
@@ -202,13 +204,14 @@ def ensemble_batch(
 
     yield f"{len(files)} audio files found"
     progress(0, "Starting processing...")
-    results = yield from _run(members, files, output_dir, output_format, options, cache, progress, work_dir)
+    results = yield from _run(members, files, output_dir, output_format, options, cache, progress, work_dir,
+                              runtime_options)
     failed = sum(isinstance(r, Exception) for r in results.values())
     progress(1.0, "Processing complete")
     yield f"Done: {len(files) - failed} ensembled, {failed} failed. Output: {output_dir}"
 
 
-def _run(members, files, output_dir, output_format, options, cache, progress, work_dir,
+def _run(members, files, output_dir, output_format, options, cache, progress, work_dir, runtime_options,
          ) -> Generator[str, None, dict[Path, list[StemResult] | Exception]]:
     work_dir = Path(work_dir or default_work_dir())
     total_steps = len(files) * (len(members) + 1)  # one separation per model + combining, per file
@@ -230,10 +233,13 @@ def _run(members, files, output_dir, output_format, options, cache, progress, wo
                 step(f"Loading model {index + 1}/{len(members)}...")
                 yield f"Loading model {index + 1}/{len(members)}: {member.model.id}"
                 try:
-                    separator = cache.get(member.spec, member.model, member.separator_values(), member_dir, "wav")
+                    separator = cache.get(member.spec, member.model, member.separator_values(), member_dir, "wav",
+                                          options=runtime_options)
                 except Exception as e:
                     cache.clear()
                     raise SeparationError(f"Could not load model {member.model.id}: {describe_error(e)}") from e
+                if summary := execution_summary(separator):
+                    yield f"Model loaded ({summary})"
 
                 for file in group:
                     if file in failed:
@@ -311,6 +317,9 @@ def _combine(file: Path, member_outputs: list[list[Path]], output_dir: Path, out
         if options.weights is not None and options.algorithm in WEIGHTED_ALGORITHMS:
             weights = [float(options.weights[index]) for index, _ in items]
         combined = Ensembler(logger, options.algorithm, weights).ensemble(waves)
+        # Spectrogram algorithms can return a few samples less: keep the members' length
+        length = max(w.shape[1] for w in waves)
+        combined = np.pad(combined, ((0, 0), (0, max(length - combined.shape[1], 0))))[:, :length]
         if mono:
             combined = combined[:1]
         combined = normalize_peak(combined, options.normalization_threshold, options.amplification_threshold)

@@ -160,5 +160,17 @@
     "Preset deleted": "Preset eliminado",
     "Only your own presets can be deleted": "Solo se pueden eliminar tus propios presets",
     "Unknown model": "Modelo desconocido",
-    "Some models are used for the first time ({models}). The ensemble will take a little longer because they need to be downloaded.": "Algunos modelos se usan por primera vez ({models}). El ensemble tardará un poco más porque hay que descargarlos."
+    "Some models are used for the first time ({models}). The ensemble will take a little longer because they need to be downloaded.": "Algunos modelos se usan por primera vez ({models}). El ensemble tardará un poco más porque hay que descargarlos.",
+    "Performance": "Rendimiento",
+    "Precision": "Precisión",
+    "Native FP16 makes BS/Mel Roformer models faster and lighter on NVIDIA and Apple GPUs. Unsupported combinations fall back to FP32.": "FP16 nativo hace que los modelos BS/Mel Roformer sean más rápidos y livianos en GPUs NVIDIA y Apple. Las combinaciones no compatibles vuelven a FP32.",
+    "Automatic (autocast on CUDA)": "Automático (autocast en CUDA)",
+    "Native FP16": "FP16 nativo",
+    "Compile BS/Mel Roformer models (torch.compile)": "Compilar los modelos BS/Mel Roformer (torch.compile)",
+    "Experimental: speeds up long or repeated separations, but the first one is slower. Needs Triton (Linux, Colab); without it, it is skipped.": "Experimental: acelera las separaciones largas o repetidas, pero la primera es más lenta. Requiere Triton (Linux, Colab); sin él se omite.",
+    "Process long audio in chunks (seconds)": "Procesar audios largos en fragmentos (segundos)",
+    "0 = disabled. Use 600 for audio longer than an hour to avoid running out of memory. Chunks are joined without a crossfade.": "0 = desactivado. Usa 600 para audios de más de una hora y así evitar quedarte sin memoria. Los fragmentos se unen sin crossfade.",
+    "Write outputs with soundfile": "Escribir las salidas con soundfile",
+    "Uses less memory when writing very long files": "Usa menos memoria al escribir archivos muy largos",
+    "Changes apply to the next separation.": "Los cambios se aplican a la siguiente separación."
 }

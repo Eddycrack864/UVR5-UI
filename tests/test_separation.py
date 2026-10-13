@@ -9,7 +9,7 @@ from uvr5_ui.core.audio import list_audio_files, parse_stem_label
 from uvr5_ui.core.errors import SeparationError
 from uvr5_ui.core.models.catalog import Model
 from uvr5_ui.core.separation import runtime
-from uvr5_ui.core.separation.runtime import SeparatorCache
+from uvr5_ui.core.separation.runtime import RuntimeOptions, SeparatorCache, execution_summary
 from uvr5_ui.core.separation.service import separate_batch, separate_file
 from uvr5_ui.core.separation.specs import (
     ARCHITECTURES, ARCHITECTURES_BY_ID, ENSEMBLE_PARAMS, ENSEMBLE_SECTION, build_separator_kwargs,
@@ -182,3 +182,48 @@ def test_core_does_not_import_gradio():
     )
     out = subprocess.run([sys.executable, "-c", code], cwd=REPO_ROOT, capture_output=True, text=True, check=True)
     assert out.stdout.strip() == "False"
+
+
+class FakeConfig(dict):
+    def get(self, key, default=None):
+        return super().get(key, default)
+
+
+def test_runtime_options(monkeypatch):
+    assert RuntimeOptions.from_config(FakeConfig()) == RuntimeOptions()
+    options = RuntimeOptions.from_config(FakeConfig({
+        "performance.precision": "native_fp16", "performance.torch_compile": True,
+        "performance.chunk_duration": "600", "performance.use_soundfile": True,
+    }))
+    assert options.separator_kwargs() == {"use_autocast": False, "use_native_fp16": True, "use_torch_compile": True,
+                                          "chunk_duration": 600.0, "use_soundfile": True}
+    bad = RuntimeOptions.from_config(FakeConfig({"performance.precision": "fp8", "performance.chunk_duration": "x"}))
+    assert bad.precision == "auto" and bad.chunk_duration == 0
+
+    monkeypatch.setattr(runtime, "use_autocast", lambda: True)
+    assert RuntimeOptions().separator_kwargs()["use_autocast"] is True
+    assert RuntimeOptions().separator_kwargs()["chunk_duration"] is None
+    assert RuntimeOptions(precision="fp32").separator_kwargs()["use_autocast"] is False
+
+
+def test_runtime_kwargs_are_accepted_by_audio_separator():
+    pytest.importorskip("audio_separator")
+    from audio_separator.separator import Separator
+
+    assert set(RuntimeOptions().separator_kwargs()) <= set(inspect.signature(Separator.__init__).parameters)
+
+
+def test_runtime_options_reach_the_separator(cache, tmp_path):
+    separate_file(MDXNET, MODEL, "a.wav", "wav", {}, output_dir=tmp_path, cache=cache,
+                  options=RuntimeOptions(precision="native_fp16", chunk_duration=300))
+    kwargs = FakeSeparator.instances[0].kwargs
+    assert kwargs["use_native_fp16"] is True and kwargs["chunk_duration"] == 300
+
+
+def test_execution_summary():
+    class Loaded:
+        effective_precision = "native_fp16"
+        effective_torch_compile = True
+
+    assert execution_summary(Loaded()) == "native_fp16 + torch.compile"
+    assert execution_summary(FakeSeparator()) is None

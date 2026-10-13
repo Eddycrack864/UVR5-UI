@@ -8,6 +8,7 @@ settings (single files, consecutive runs, or every file of a batch).
 import json
 import logging
 import threading
+from dataclasses import dataclass
 from pathlib import Path
 
 from uvr5_ui import paths
@@ -16,6 +17,56 @@ from uvr5_ui.core.models.catalog import Model
 from uvr5_ui.core.separation.specs import ArchSpec, build_separator_kwargs
 
 logger = logging.getLogger(__name__)
+
+PRECISIONS = ("auto", "fp32", "autocast", "native_fp16")
+
+
+@dataclass(frozen=True)
+class RuntimeOptions:
+    """Separator options shared by every architecture (the "Performance" settings)."""
+
+    precision: str = "auto"  # auto = autocast on CUDA, fp32 otherwise
+    torch_compile: bool = False  # regional torch.compile of BS/Mel Roformer models
+    chunk_duration: float = 0  # split inputs longer than this many seconds; 0 = never
+    use_soundfile: bool = False  # write outputs with soundfile instead of pydub (less memory)
+
+    @classmethod
+    def from_config(cls, config) -> "RuntimeOptions":
+        precision = config.get("performance.precision", "auto")
+        try:
+            chunk_duration = max(float(config.get("performance.chunk_duration", 0) or 0), 0.0)
+        except (TypeError, ValueError):
+            chunk_duration = 0.0
+        return cls(
+            precision=precision if precision in PRECISIONS else "auto",
+            torch_compile=bool(config.get("performance.torch_compile", False)),
+            chunk_duration=chunk_duration,
+            use_soundfile=bool(config.get("performance.use_soundfile", False)),
+        )
+
+    def separator_kwargs(self) -> dict:
+        precision = self.precision
+        if precision == "auto":
+            precision = "autocast" if use_autocast() else "fp32"
+        return {
+            "use_autocast": precision == "autocast",
+            "use_native_fp16": precision == "native_fp16",
+            "use_torch_compile": self.torch_compile,
+            "chunk_duration": self.chunk_duration or None,
+            "use_soundfile": self.use_soundfile,
+        }
+
+
+def execution_summary(separator) -> str | None:
+    """What audio-separator actually enabled for the loaded model, e.g. ``native_fp16 + torch.compile``.
+
+    Unsupported requests (fp16 on CPU, compile without Triton...) silently fall back,
+    so this is what the user should see.
+    """
+    precision = getattr(separator, "effective_precision", None)
+    if not isinstance(precision, str):
+        return None
+    return precision + (" + torch.compile" if getattr(separator, "effective_torch_compile", False) is True else "")
 
 
 def _separator_class():
@@ -33,7 +84,7 @@ class SeparatorCache:
         self._lock = threading.Lock()
 
     def get(self, spec: ArchSpec, model: Model, values: dict, output_dir: Path, output_format: str,
-            models_dir: Path = None):
+            models_dir: Path = None, options: RuntimeOptions = None):
         """Return a Separator with ``model`` loaded, reusing the cached one when possible."""
         models_dir = Path(models_dir or paths.MODELS_DIR)
         kwargs = dict(
@@ -41,7 +92,7 @@ class SeparatorCache:
             model_file_dir=str(models_dir),
             output_dir=str(output_dir),
             output_format=output_format,
-            use_autocast=use_autocast(),
+            **(options or RuntimeOptions()).separator_kwargs(),
             **build_separator_kwargs(spec, values),
         )
         key = (model.filename, json.dumps(kwargs, sort_keys=True, default=str))
@@ -56,6 +107,9 @@ class SeparatorCache:
             factory = self._factory or _separator_class()
             separator = factory(**kwargs)
             separator.load_model(model_filename=model.filename)
+            summary = execution_summary(separator)
+            if summary:
+                logger.info("Loaded %s (%s)", model.filename, summary)
             self._key, self._separator = key, separator
             return separator
 

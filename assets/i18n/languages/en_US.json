@@ -160,5 +160,17 @@
     "Preset deleted": "Preset deleted",
     "Only your own presets can be deleted": "Only your own presets can be deleted",
     "Unknown model": "Unknown model",
-    "Some models are used for the first time ({models}). The ensemble will take a little longer because they need to be downloaded.": "Some models are used for the first time ({models}). The ensemble will take a little longer because they need to be downloaded."
+    "Some models are used for the first time ({models}). The ensemble will take a little longer because they need to be downloaded.": "Some models are used for the first time ({models}). The ensemble will take a little longer because they need to be downloaded.",
+    "Performance": "Performance",
+    "Precision": "Precision",
+    "Native FP16 makes BS/Mel Roformer models faster and lighter on NVIDIA and Apple GPUs. Unsupported combinations fall back to FP32.": "Native FP16 makes BS/Mel Roformer models faster and lighter on NVIDIA and Apple GPUs. Unsupported combinations fall back to FP32.",
+    "Automatic (autocast on CUDA)": "Automatic (autocast on CUDA)",
+    "Native FP16": "Native FP16",
+    "Compile BS/Mel Roformer models (torch.compile)": "Compile BS/Mel Roformer models (torch.compile)",
+    "Experimental: speeds up long or repeated separations, but the first one is slower. Needs Triton (Linux, Colab); without it, it is skipped.": "Experimental: speeds up long or repeated separations, but the first one is slower. Needs Triton (Linux, Colab); without it, it is skipped.",
+    "Process long audio in chunks (seconds)": "Process long audio in chunks (seconds)",
+    "0 = disabled. Use 600 for audio longer than an hour to avoid running out of memory. Chunks are joined without a crossfade.": "0 = disabled. Use 600 for audio longer than an hour to avoid running out of memory. Chunks are joined without a crossfade.",
+    "Write outputs with soundfile": "Write outputs with soundfile",
+    "Uses less memory when writing very long files": "Uses less memory when writing very long files",
+    "Changes apply to the next separation.": "Changes apply to the next separation."
 }

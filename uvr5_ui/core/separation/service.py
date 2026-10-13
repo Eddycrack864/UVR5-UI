@@ -10,7 +10,7 @@ from uvr5_ui import paths
 from uvr5_ui.core.audio import list_audio_files, parse_stem_label
 from uvr5_ui.core.errors import SeparationError
 from uvr5_ui.core.models.catalog import Model
-from uvr5_ui.core.separation.runtime import SeparatorCache, separator_cache
+from uvr5_ui.core.separation.runtime import RuntimeOptions, SeparatorCache, execution_summary, separator_cache
 from uvr5_ui.core.separation.specs import ArchSpec
 
 logger = logging.getLogger(__name__)
@@ -23,8 +23,14 @@ def noop_progress(fraction: float, desc: str) -> None:
 
 
 def describe_error(e: Exception) -> str:
-    # Some audio-separator errors carry no message (e.g. audioread's NoBackendError for unreadable files)
-    return str(e) or type(e).__name__
+    # Matched by name: importing audio_separator's exceptions would import torch
+    kind = type(e).__name__
+    if kind == "AudioExportError":
+        return f"could not write the output file ({e}). Check the output format and that FFmpeg is installed"
+    if kind == "InvalidAudioDataError":
+        return f"the audio is empty or invalid ({e})"
+    # Some errors carry no message (e.g. audioread's NoBackendError for unreadable files)
+    return str(e) or kind
 
 
 def resolve_batch_dirs(input_dir: str, output_dir: str) -> tuple[Path, Path]:
@@ -53,6 +59,7 @@ def separate_file(
     output_dir: Path = None,
     progress: ProgressFn = noop_progress,
     cache: SeparatorCache = separator_cache,
+    options: RuntimeOptions = None,
 ) -> list[StemResult]:
     if not audio_path:
         raise SeparationError("No input audio")
@@ -60,8 +67,9 @@ def separate_file(
 
     try:
         progress(0.2, "Loading model...")
-        separator = cache.get(spec, model, values, output_dir, output_format)
-        progress(0.7, "Separating audio...")
+        separator = cache.get(spec, model, values, output_dir, output_format, options=options)
+        summary = execution_summary(separator)
+        progress(0.7, f"Separating audio ({summary})..." if summary else "Separating audio...")
         outputs = separator.separate(audio_path)
     except Exception as e:
         cache.clear()
@@ -83,6 +91,7 @@ def separate_batch(
     *,
     progress: ProgressFn = noop_progress,
     cache: SeparatorCache = separator_cache,
+    options: RuntimeOptions = None,
 ) -> Iterator[str]:
     """Separate every audio file in ``input_dir``. Yields one log line at a time.
 
@@ -100,10 +109,12 @@ def separate_batch(
 
     try:
         yield "Loading model..."
-        separator = cache.get(spec, model, values, output_dir, output_format)
+        separator = cache.get(spec, model, values, output_dir, output_format, options=options)
     except Exception as e:
         cache.clear()
         raise SeparationError(f"Could not load model {model.id}: {describe_error(e)}") from e
+    if summary := execution_summary(separator):
+        yield f"Model loaded ({summary})"
 
     failed = []
     for i, file in enumerate(files):

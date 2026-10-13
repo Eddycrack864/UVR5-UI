@@ -4,6 +4,7 @@ import gradio as gr
 
 from uvr5_ui.core.device import get_device
 from uvr5_ui.core.downloads.model_downloader import METHOD_PYTHON, METHODS, SOURCES, download_model
+from uvr5_ui.core.separation.runtime import RuntimeOptions
 from uvr5_ui.i18n import AUTO_LANGUAGE, N_, i18n
 from uvr5_ui.ui.adapters import progress_callback, require, user_errors
 from uvr5_ui.ui.components import output_log
@@ -48,6 +49,42 @@ def render_settings_tab(ctx: AppContext, separation_tabs: list[SeparationTab]) -
             )
             download_button = gr.Button(i18n("Download!"), variant="primary")
             download_output = output_log()
+
+        with gr.Accordion(i18n("Performance"), open=False):
+            runtime = RuntimeOptions.from_config(ctx.config)
+            precision = gr.Dropdown(
+                label=i18n("Precision"),
+                info=i18n("Native FP16 makes BS/Mel Roformer models faster and lighter on NVIDIA and Apple GPUs. "
+                          "Unsupported combinations fall back to FP32."),
+                choices=[(i18n("Automatic (autocast on CUDA)"), "auto"), ("FP32", "fp32"), ("Autocast", "autocast"),
+                         (i18n("Native FP16"), "native_fp16")],
+                value=runtime.precision,
+                interactive=True,
+            )
+            torch_compile = gr.Checkbox(
+                label=i18n("Compile BS/Mel Roformer models (torch.compile)"),
+                info=i18n("Experimental: speeds up long or repeated separations, but the first one is slower. "
+                          "Needs Triton (Linux, Colab); without it, it is skipped."),
+                value=runtime.torch_compile,
+                interactive=True,
+            )
+            chunk_duration = gr.Number(
+                label=i18n("Process long audio in chunks (seconds)"),
+                info=i18n("0 = disabled. Use 600 for audio longer than an hour to avoid running out of memory. "
+                          "Chunks are joined without a crossfade."),
+                value=runtime.chunk_duration,
+                minimum=0,
+                step=60,
+                precision=0,
+                interactive=True,
+            )
+            use_soundfile = gr.Checkbox(
+                label=i18n("Write outputs with soundfile"),
+                info=i18n("Uses less memory when writing very long files"),
+                value=runtime.use_soundfile,
+                interactive=True,
+            )
+            gr.Markdown(i18n("Changes apply to the next separation."))
 
         with gr.Accordion(i18n("Separation settings management"), open=False):
             gr.Markdown(i18n("Save your current separation parameter settings or reset them to the application defaults"))
@@ -128,6 +165,16 @@ def render_settings_tab(ctx: AppContext, separation_tabs: list[SeparationTab]) -
 
     save_button.click(save_settings, inputs=all_inputs, api_visibility="undocumented")
     reset_button.click(reset_settings, outputs=all_inputs, api_visibility="undocumented")
+
+    # Performance
+    for component, key, convert in (
+        (precision, "performance.precision", str),
+        (torch_compile, "performance.torch_compile", bool),
+        (chunk_duration, "performance.chunk_duration", lambda v: max(int(v or 0), 0)),
+        (use_soundfile, "performance.use_soundfile", bool),
+    ):
+        component.change(lambda value, key=key, convert=convert: ctx.config.set(key, convert(value)),
+                         inputs=[component], api_visibility="undocumented")
 
     # Discord
     def save_discord(enabled):

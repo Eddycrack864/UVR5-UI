@@ -6,6 +6,7 @@ from itertools import groupby
 import gradio as gr
 
 from uvr5_ui.core.audio import OUTPUT_FORMATS
+from uvr5_ui.core.separation.runtime import RuntimeOptions
 from uvr5_ui.core.separation.service import separate_batch, separate_file
 from uvr5_ui.core.separation.specs import ArchSpec
 from uvr5_ui.i18n import N_, i18n
@@ -74,7 +75,7 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
             results = separate_file(
                 spec, selected, audio_path, data[output_format] or DEFAULT_OUTPUT_FORMAT,
                 {key: data[comp] for key, comp in params.items()},
-                progress=progress_callback(progress),
+                progress=progress_callback(progress), options=RuntimeOptions.from_config(ctx.config),
             )
         return components.stem_updates(results)
 
@@ -88,7 +89,7 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
                 spec, selected, data[inputs.input_path], data[inputs.output_path],
                 data[output_format] or DEFAULT_OUTPUT_FORMAT,
                 {key: data[comp] for key, comp in params.items()},
-                progress=progress_callback(progress),
+                progress=progress_callback(progress), options=RuntimeOptions.from_config(ctx.config),
             ):
                 lines.append(line)
                 yield "\n".join(lines)

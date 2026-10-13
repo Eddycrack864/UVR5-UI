@@ -11,6 +11,7 @@ from uvr5_ui.core.separation.ensemble import (
     ensemble_batch, ensemble_file,
 )
 from uvr5_ui.core.separation.ensemble_presets import EnsemblePreset
+from uvr5_ui.core.separation.runtime import RuntimeOptions
 from uvr5_ui.core.separation.specs import ARCHITECTURES, ARCHITECTURES_BY_ID, ENSEMBLE_PARAMS, ENSEMBLE_SECTION
 from uvr5_ui.i18n import N_, i18n
 from uvr5_ui.integrations.discord_presence import presence
@@ -237,7 +238,8 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
         members, options = members_and_options(data)
         with presence.track("ensemble"):
             results = ensemble_file(members, audio_path, data[output_format] or DEFAULT_OUTPUT_FORMAT, options,
-                                    progress=progress_callback(progress))
+                                    progress=progress_callback(progress),
+                                    runtime_options=RuntimeOptions.from_config(ctx.config))
         return components.stem_updates(results)
 
     @user_errors
@@ -247,7 +249,8 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
         with presence.track("ensemble", batch=True):
             for line in ensemble_batch(members, data[inputs.input_path], data[inputs.output_path],
                                        data[output_format] or DEFAULT_OUTPUT_FORMAT, options,
-                                       progress=progress_callback(progress)):
+                                       progress=progress_callback(progress),
+                                       runtime_options=RuntimeOptions.from_config(ctx.config)):
                 lines.append(line)
                 yield "\n".join(lines)
 

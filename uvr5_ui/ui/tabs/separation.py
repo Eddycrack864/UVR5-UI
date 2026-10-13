@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass, field
 from itertools import groupby
+from pathlib import Path
 
 import gradio as gr
 
@@ -12,7 +13,7 @@ from uvr5_ui.core.separation.specs import ArchSpec
 from uvr5_ui.i18n import N_, i18n
 from uvr5_ui.integrations.discord_presence import presence
 from uvr5_ui.ui import components
-from uvr5_ui.ui.adapters import GPU_CONCURRENCY_ID, progress_callback, require, user_errors
+from uvr5_ui.ui.adapters import GPU_CONCURRENCY_ID, filled, progress_callback, require, user_errors, validations
 from uvr5_ui.ui.context import AppContext
 
 DEFAULT_OUTPUT_FORMAT = "wav"
@@ -67,42 +68,57 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
         stems = components.stem_outputs()
         zip_button = components.zip_download()
 
+    # Handlers take named arguments (inputs_kwargs), which are also the API's parameter names:
+    # model, output_format, audio / input_path + output_path, and every ParamSpec key.
+    fields = {"model": model, "output_format": output_format, **params}
+
     @user_errors
-    def run_single(data, progress=gr.Progress(track_tqdm=True)):
-        selected = _selected_model(ctx, spec, data[model])
-        audio_path = require(data[inputs.audio], N_("Please provide an input audio"))
+    def run_single(model, output_format, audio, progress=gr.Progress(track_tqdm=True), **values):
+        selected = _selected_model(ctx, spec, model)
+        audio_path = require(audio, N_("Please provide an input audio"))
         notify_first_use(ctx, selected)
         with presence.track(spec.id):
             results = separate_file(
-                spec, selected, audio_path, data[output_format] or DEFAULT_OUTPUT_FORMAT,
-                {key: data[comp] for key, comp in params.items()},
+                spec, selected, audio_path, output_format or DEFAULT_OUTPUT_FORMAT, values,
                 progress=progress_callback(progress), options=RuntimeOptions.from_config(ctx.config),
             )
         return [*components.stem_updates(results), components.zip_update(results, audio_path)]
 
+    def validate_single(model, output_format, audio, **values):
+        return validations(
+            (fields["model"], filled(model), N_("Please select a model first")),
+            (inputs.audio, filled(audio), N_("Please provide an input audio")),
+        )
+
     @user_errors
-    def run_batch(data, progress=gr.Progress()):
-        selected = _selected_model(ctx, spec, data[model])
+    def run_batch(model, output_format, input_path, output_path, progress=gr.Progress(), **values):
+        selected = _selected_model(ctx, spec, model)
         notify_first_use(ctx, selected)
         lines = []
         with presence.track(spec.id, batch=True):
             for line in separate_batch(
-                spec, selected, data[inputs.input_path], data[inputs.output_path],
-                data[output_format] or DEFAULT_OUTPUT_FORMAT,
-                {key: data[comp] for key, comp in params.items()},
+                spec, selected, input_path, output_path, output_format or DEFAULT_OUTPUT_FORMAT, values,
                 progress=progress_callback(progress), options=RuntimeOptions.from_config(ctx.config),
             ):
                 lines.append(line)
                 yield "\n".join(lines)
 
+    def validate_batch(model, output_format, input_path, output_path, **values):
+        return validations(
+            (fields["model"], filled(model), N_("Please select a model first")),
+            (inputs.input_path, filled(input_path) and Path(input_path.strip()).is_dir(),
+             N_("The input path must be an existing folder")),
+        )
+
     separate_button.click(
-        run_single, inputs={model, output_format, inputs.audio, *params.values()}, outputs=[*stems, zip_button],
-        api_name=f"separate_{spec.id}", concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
+        run_single, inputs_kwargs={**fields, "audio": inputs.audio}, outputs=[*stems, zip_button],
+        validator=validate_single, api_name=f"separate_{spec.id}",
+        concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
     batch_event = inputs.batch_button.click(
-        run_batch, inputs={model, output_format, inputs.input_path, inputs.output_path, *params.values()},
-        outputs=[inputs.batch_info],
-        api_name=f"batch_{spec.id}", concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
+        run_batch, inputs_kwargs={**fields, "input_path": inputs.input_path, "output_path": inputs.output_path},
+        outputs=[inputs.batch_info], validator=validate_batch, api_name=f"batch_{spec.id}",
+        concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
     inputs.wire_stop(batch_event)
 

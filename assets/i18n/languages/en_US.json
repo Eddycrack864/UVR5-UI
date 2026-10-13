@@ -185,5 +185,6 @@
     "Invalid name template": "Invalid name template",
     "Name template saved": "Name template saved",
     "Stop": "Stop",
-    "Download all stems (.zip)": "Download all stems (.zip)"
+    "Download all stems (.zip)": "Download all stems (.zip)",
+    "The input path must be an existing folder": "The input path must be an existing folder"
 }

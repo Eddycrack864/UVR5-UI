@@ -2,13 +2,14 @@
 
 import math
 from itertools import groupby
+from pathlib import Path
 
 import gradio as gr
 
 from uvr5_ui.core.downloads.model_downloader import METHOD_PYTHON, download_model
 from uvr5_ui.core.separation.ensemble import (
-    ALGORITHMS, DEFAULT_ALGORITHM, MAX_MODELS, WEIGHTED_ALGORITHMS, EnsembleMember, EnsembleOptions,
-    ensemble_batch, ensemble_file,
+    ALGORITHMS, DEFAULT_ALGORITHM, MAX_MODELS, WEIGHTED_ALGORITHMS, EnsembleConfigError, EnsembleMember,
+    EnsembleOptions, check_ensemble, ensemble_batch, ensemble_file,
 )
 from uvr5_ui.core.separation.ensemble_presets import EnsemblePreset
 from uvr5_ui.core.separation.runtime import RuntimeOptions
@@ -16,7 +17,7 @@ from uvr5_ui.core.separation.specs import ARCHITECTURES, ARCHITECTURES_BY_ID, EN
 from uvr5_ui.i18n import N_, i18n
 from uvr5_ui.integrations.discord_presence import presence
 from uvr5_ui.ui import components
-from uvr5_ui.ui.adapters import GPU_CONCURRENCY_ID, progress_callback, require, user_errors
+from uvr5_ui.ui.adapters import GPU_CONCURRENCY_ID, filled, progress_callback, require, user_errors, validations
 from uvr5_ui.ui.context import AppContext
 from uvr5_ui.ui.tabs.separation import DEFAULT_OUTPUT_FORMAT, SeparationTab, output_format_dropdown
 
@@ -205,12 +206,15 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
     delete_preset.click(run_delete_preset, inputs=[preset], outputs=[preset, preset_info],
                         api_visibility="undocumented")
 
-    # Separation
-    arch_params = [comp for tab in arch_tabs for comp in tab.params.values()]
+    # Separation. Handlers take named arguments (inputs_kwargs), which are also the API's
+    # parameter names. Each architecture's params are prefixed with its id (roformer_overlap...).
+    fields = {"preset": preset, "models": models, "algorithm": algorithm, "weights": weights,
+              "output_format": output_format, **params}
+    arch_fields = {f"{tab.spec.id}_{key}": comp for tab in arch_tabs for key, comp in tab.params.items()}
 
-    def members_and_options(data):
-        files = data[models] or []
-        algorithm_name = data[algorithm] or DEFAULT_ALGORITHM
+    def members_and_options(files, algorithm_name, rows, preset_id, values):
+        files = files or []
+        algorithm_name = algorithm_name or DEFAULT_ALGORITHM
         members = []
         for filename in files:
             model = ctx.catalog.by_filename(filename)
@@ -218,51 +222,73 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
                 raise gr.Error(f"{i18n('Unknown model')}: {filename}")
             tab = tabs_by_arch[model.arch]
             members.append(EnsembleMember(ARCHITECTURES_BY_ID[model.arch], model,
-                                          {key: data[comp] for key, comp in tab.params.items()}))
+                                          {key: values[f"{model.arch}_{key}"] for key in tab.params}))
         options = EnsembleOptions(
             algorithm=algorithm_name,
-            weights=_weights(ctx, files, data[weights], algorithm_name),
-            name=_ensemble_name(ctx, data[preset], files, algorithm_name),
-            include_unmatched=bool(data[params["include_unmatched"]]),
-            keep_intermediates=bool(data[params["keep_intermediates"]]),
-            normalization_threshold=data[params["normalization_threshold"]],
-            amplification_threshold=data[params["amplification_threshold"]],
+            weights=_weights(ctx, files, rows, algorithm_name),
+            name=_ensemble_name(ctx, preset_id, files, algorithm_name),
+            include_unmatched=bool(values["include_unmatched"]),
+            keep_intermediates=bool(values["keep_intermediates"]),
+            normalization_threshold=values["normalization_threshold"],
+            amplification_threshold=values["amplification_threshold"],
         )
         missing = [m.id for m in _missing_models(ctx, files)]
         if missing:
             gr.Info(i18n(FIRST_USE_MESSAGE).format(models=", ".join(missing)))
         return members, options
 
+    def ensemble_checks(files, algorithm_name, rows) -> list:
+        files = files or []
+        algorithm_name = algorithm_name or DEFAULT_ALGORITHM
+        try:
+            check_ensemble(len(files), algorithm_name, _weights(ctx, files, rows, algorithm_name))
+        except EnsembleConfigError as e:
+            component = {"models": fields["models"], "algorithm": fields["algorithm"]}.get(e.field, fields["weights"])
+            return [(component, False, e.message)]
+        return []
+
     @user_errors
-    def run_single(data, progress=gr.Progress(track_tqdm=True)):
-        audio_path = require(data[inputs.audio], N_("Please provide an input audio"))
-        members, options = members_and_options(data)
+    def run_single(models, algorithm, weights, preset, output_format, audio, progress=gr.Progress(track_tqdm=True),
+                   **values):
+        audio_path = require(audio, N_("Please provide an input audio"))
+        members, options = members_and_options(models, algorithm, weights, preset, values)
         with presence.track("ensemble"):
-            results = ensemble_file(members, audio_path, data[output_format] or DEFAULT_OUTPUT_FORMAT, options,
+            results = ensemble_file(members, audio_path, output_format or DEFAULT_OUTPUT_FORMAT, options,
                                     progress=progress_callback(progress),
                                     runtime_options=RuntimeOptions.from_config(ctx.config))
         return [*components.stem_updates(results), components.zip_update(results, audio_path)]
 
+    def validate_single(models, algorithm, weights, preset, output_format, audio, **values):
+        return validations(*ensemble_checks(models, algorithm, weights),
+                           (inputs.audio, filled(audio), N_("Please provide an input audio")))
+
     @user_errors
-    def run_batch(data, progress=gr.Progress()):
-        members, options = members_and_options(data)
+    def run_batch(models, algorithm, weights, preset, output_format, input_path, output_path,
+                  progress=gr.Progress(), **values):
+        members, options = members_and_options(models, algorithm, weights, preset, values)
         lines = []
         with presence.track("ensemble", batch=True):
-            for line in ensemble_batch(members, data[inputs.input_path], data[inputs.output_path],
-                                       data[output_format] or DEFAULT_OUTPUT_FORMAT, options,
-                                       progress=progress_callback(progress),
+            for line in ensemble_batch(members, input_path, output_path, output_format or DEFAULT_OUTPUT_FORMAT,
+                                       options, progress=progress_callback(progress),
                                        runtime_options=RuntimeOptions.from_config(ctx.config)):
                 lines.append(line)
                 yield "\n".join(lines)
 
-    common = {preset, models, algorithm, weights, output_format, *params.values(), *arch_params}
+    def validate_batch(models, algorithm, weights, preset, output_format, input_path, output_path, **values):
+        return validations(*ensemble_checks(models, algorithm, weights),
+                           (inputs.input_path, filled(input_path) and Path(input_path.strip()).is_dir(),
+                            N_("The input path must be an existing folder")))
+
     separate_button.click(
-        run_single, inputs={*common, inputs.audio}, outputs=[*stems, zip_button],
-        api_name="separate_ensemble", concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
+        run_single, inputs_kwargs={**fields, **arch_fields, "audio": inputs.audio}, outputs=[*stems, zip_button],
+        validator=validate_single, api_name="separate_ensemble",
+        concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
     batch_event = inputs.batch_button.click(
-        run_batch, inputs={*common, inputs.input_path, inputs.output_path}, outputs=[inputs.batch_info],
-        api_name="batch_ensemble", concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
+        run_batch,
+        inputs_kwargs={**fields, **arch_fields, "input_path": inputs.input_path, "output_path": inputs.output_path},
+        outputs=[inputs.batch_info], validator=validate_batch, api_name="batch_ensemble",
+        concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
     inputs.wire_stop(batch_event)
 

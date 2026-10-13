@@ -51,6 +51,18 @@ def find_fn(app, name, nth=0):
     return fns[nth]
 
 
+def kwargs_of(fn, **overrides):
+    """Every input of an inputs_kwargs event at its initial value, by parameter name."""
+    values = {name: comp.value for name, comp in zip(fn.input_keyword_names, fn.inputs)}
+    values.update(overrides)
+    return values
+
+
+def invalid(result: dict) -> dict:
+    """{component label: message} for the failed checks of a validator."""
+    return {comp.label: v["message"] for comp, v in result.items() if not v["is_valid"]}
+
+
 def test_tabs(app):
     labels = [b.label for b in app.blocks.values() if type(b).__name__ == "Tab"]
     assert labels == ["BS/Mel Roformer", "MDX23C", "MDX-NET", "VR ARCH", "Demucs", "Ensemble",
@@ -62,16 +74,9 @@ def test_telemetry_disabled(app):
 
 
 def test_single_separation_shows_only_produced_stems(app):
-    fn = find_fn(app, "run_single", nth=2)  # MDX-NET tab
-    data = {}
-    for comp in fn.inputs:
-        if isinstance(comp, gr.Dropdown) and comp.label == "Select the model":
-            data[comp] = "UVR-MDX-NET-Inst_HQ_3.onnx"
-        elif isinstance(comp, gr.Audio):
-            data[comp] = "song.wav"
-        else:
-            data[comp] = comp.value
-    updates = fn.fn(data, NoProgress())
+    fn = find_fn(app, "separate_mdxnet")
+    assert fn.input_keyword_names[:3] == ["model", "output_format", "hop_length"]
+    updates = fn.fn(**kwargs_of(fn, model="UVR-MDX-NET-Inst_HQ_3.onnx", audio="song.wav"), progress=NoProgress())
 
     assert len(updates) == 7
     assert updates[6]["visible"] is False  # FakeSeparator writes no files: nothing to zip
@@ -82,10 +87,19 @@ def test_single_separation_shows_only_produced_stems(app):
 
 
 def test_single_separation_requires_model(app):
-    fn = find_fn(app, "run_single")
-    data = {comp: None for comp in fn.inputs}
+    fn = find_fn(app, "separate_roformer")
     with pytest.raises(gr.Error):
-        fn.fn(data, NoProgress())
+        fn.fn(**kwargs_of(fn, audio="song.wav"), progress=NoProgress())
+    assert invalid(fn.validator(**kwargs_of(fn))) == {
+        "Select the model": "Please select a model first", "Input audio": "Please provide an input audio"}
+    assert invalid(fn.validator(**kwargs_of(fn, model="BS-Roformer-Viperx-1297", audio="song.wav"))) == {}
+
+
+def test_batch_validator(app, tmp_path):
+    fn = find_fn(app, "batch_vrarch")
+    assert invalid(fn.validator(**kwargs_of(fn, model="1_HP-UVR.pth", input_path=str(tmp_path / "missing")))) == {
+        "Input path": "The input path must be an existing folder"}
+    assert invalid(fn.validator(**kwargs_of(fn, model="1_HP-UVR.pth", input_path=str(tmp_path)))) == {}
 
 
 def test_save_and_reset_settings(app, ctx, tmp_root):
@@ -109,10 +123,6 @@ def test_save_and_reset_settings(app, ctx, tmp_root):
     assert ctx.config.get("load_custom_settings") is False
 
 
-def by_label(fn, label, cls=None):
-    return next(c for c in fn.inputs if getattr(c, "label", None) == label and (cls is None or isinstance(c, cls)))
-
-
 @pytest.fixture
 def wav_separator(tmp_root, monkeypatch):
     monkeypatch.setattr(runtime, "_separator_class", lambda: WavSeparator)
@@ -125,12 +135,11 @@ def test_ensemble_runs_each_model_with_its_tab_settings(app, tmp_root, wav_separ
     fn = find_fn(app, "separate_ensemble")
     audio = tmp_root / "song.wav"
     audio.touch()
-    data = {comp: comp.value for comp in fn.inputs}
-    data[by_label(fn, "Models")] = ENSEMBLE_MODELS
-    data[by_label(fn, "Weights")] = [["UVR-MDX-NET-Inst_HQ_3.onnx", 3], ["BS-Roformer-Viperx-1297", 1]]
-    data[by_label(fn, "Input audio")] = str(audio)
+    kwargs = kwargs_of(fn, models=ENSEMBLE_MODELS, audio=str(audio),
+                       weights=[["UVR-MDX-NET-Inst_HQ_3.onnx", 3], ["BS-Roformer-Viperx-1297", 1]])
+    assert kwargs["roformer_overlap"] == 8 and "mdxnet_hop_length" in kwargs
 
-    updates = fn.fn(data, NoProgress())
+    updates = fn.fn(**kwargs, progress=NoProgress())
 
     assert updates[0]["label"] == "Stem 1 (Vocals)"
     assert updates[0]["value"].endswith("song_(Vocals)_ensemble_avg_wave.wav")
@@ -147,11 +156,14 @@ def test_ensemble_runs_each_model_with_its_tab_settings(app, tmp_root, wav_separ
 
 def test_ensemble_requires_two_models(app, tmp_root, wav_separator):
     fn = find_fn(app, "separate_ensemble")
-    data = {comp: comp.value for comp in fn.inputs}
-    data[by_label(fn, "Models")] = ENSEMBLE_MODELS[:1]
-    data[by_label(fn, "Input audio")] = "song.wav"
+    kwargs = kwargs_of(fn, models=ENSEMBLE_MODELS[:1], audio="song.wav", weights=[])
     with pytest.raises(gr.Error, match="at least two models"):
-        fn.fn(data, NoProgress())
+        fn.fn(**kwargs, progress=NoProgress())
+    assert invalid(fn.validator(**kwargs)) == {"Models": "Select at least two models for the ensemble"}
+    bad_weights = kwargs_of(fn, models=ENSEMBLE_MODELS, audio="song.wav", weights=[["BS-Roformer-Viperx-1297", -1]])
+    assert invalid(fn.validator(**bad_weights)) == {
+        "Weights": "Weights must be non-negative numbers that add up to more than zero"}
+    assert invalid(fn.validator(**kwargs_of(fn, models=ENSEMBLE_MODELS, audio="song.wav", weights=[]))) == {}
 
 
 def test_ensemble_presets(app, ctx):

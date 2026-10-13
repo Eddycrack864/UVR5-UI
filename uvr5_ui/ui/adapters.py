@@ -54,6 +54,19 @@ def user_errors(func):
     return wrapper
 
 
+def validations(*checks) -> dict:
+    """Validator result from ``(component, is_valid, message)`` checks.
+
+    Validators run before the event is queued, so a missing input is flagged on its
+    component right away instead of after waiting for the GPU.
+    """
+    return {component: gr.validate(bool(is_valid), i18n(message)) for component, is_valid, message in checks}
+
+
+def filled(value) -> bool:
+    return value is not None and not (isinstance(value, str) and not value.strip())
+
+
 def require(value, message: str):
     """Raise a translated Gradio error when a required input is missing."""
     if value is None or (isinstance(value, str) and not value.strip()):

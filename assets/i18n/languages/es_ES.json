@@ -185,5 +185,6 @@
     "Invalid name template": "Plantilla de nombre inválida",
     "Name template saved": "Plantilla de nombre guardada",
     "Stop": "Detener",
-    "Download all stems (.zip)": "Descargar todos los stems (.zip)"
+    "Download all stems (.zip)": "Descargar todos los stems (.zip)",
+    "The input path must be an existing folder": "La ruta de entrada debe ser una carpeta existente"
 }

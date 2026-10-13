@@ -11,7 +11,7 @@ def catalog():
 
 def test_counts_per_arch(catalog):
     counts = {arch: len(catalog.by_arch(arch)) for arch in ("roformer", "mdx23c", "mdxnet", "vrarch", "demucs")}
-    assert counts == {"roformer": 86, "mdx23c": 5, "mdxnet": 39, "vrarch": 29, "demucs": 4}
+    assert counts == {"roformer": 92, "mdx23c": 5, "mdxnet": 39, "vrarch": 29, "demucs": 4}
     assert len(catalog) == sum(counts.values())
 
 
@@ -48,8 +48,7 @@ def test_filenames_unique_and_lookup(catalog):
 
 def test_downloadable_excludes_models_without_urls(catalog):
     downloadable = {m.id for m in catalog.downloadable()}
-    assert "BS Roformer SW by jarredou" not in downloadable
-    assert "htdemucs_ft.yaml" not in downloadable
+    assert "htdemucs_ft.yaml" not in downloadable  # Demucs weights are not on GitHub nor the mirror
     assert "UVR-MDX-NET-Inst_HQ_3.onnx" in downloadable
 
 
@@ -68,3 +67,24 @@ def test_downloaded(catalog, tmp_path):
     assert [m.id for m in catalog.downloaded("mdxnet", tmp_path)] == ["UVR-MDX-NET-Inst_HQ_3.onnx"]
     assert [m.id for m in catalog.downloaded("roformer", tmp_path)] == ["BS Roformer SW by jarredou"]
     assert catalog.downloaded("vrarch", tmp_path / "missing") == []
+
+
+def test_catalog_has_audio_separator_own_models(catalog):
+    """Every model of audio-separator's bundled list (the ones it adds to UVR's) is in the catalog.
+
+    UVR's own list is downloaded at runtime, so it's checked by tests/test_model_links.py (--network).
+    """
+    import importlib.util
+    import json
+    from pathlib import Path
+
+    spec = importlib.util.find_spec("audio_separator")
+    if spec is None:
+        pytest.skip("audio-separator is not installed")
+    bundled = json.loads((Path(next(iter(spec.submodule_search_locations))) / "models.json").read_text(encoding="utf-8"))
+    filenames = set()
+    for models in bundled.values():
+        for value in models.values():
+            filenames.add(next(iter(value)) if isinstance(value, dict) else value)
+    missing = sorted(filenames - {m.filename for m in catalog})
+    assert not missing, f"Run tools/sync_models.py --write to add: {missing}"

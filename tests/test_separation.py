@@ -148,6 +148,21 @@ def test_separate_file_wraps_errors(cache, tmp_path):
         separate_file(MDXNET, MODEL, None, "wav", {}, output_dir=tmp_path, cache=cache)
 
 
+def test_missing_model_files_are_downloaded_before_loading(cache, tmp_path):
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "model.onnx").write_bytes(b"weights")
+    model = Model("model.onnx", "mdxnet", "model.onnx", {"github": [(src / "model.onnx").as_uri()]})
+    models_dir = tmp_path / "models"
+    seen = []
+
+    cache.get(MDXNET, model, {}, tmp_path, "wav", models_dir=models_dir, progress=lambda f, d: seen.append(d))
+
+    assert (models_dir / "model.onnx").read_bytes() == b"weights"
+    assert FakeSeparator.instances[0].loaded == ["model.onnx"]
+    assert seen[-1] == "Download process completed"
+
+
 def test_batch_loads_model_once_and_continues_on_error(cache, tmp_path):
     src = tmp_path / "in"
     src.mkdir()

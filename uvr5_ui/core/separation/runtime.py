@@ -14,6 +14,7 @@ from pathlib import Path
 from uvr5_ui import paths
 from uvr5_ui.core.audio import DEFAULT_NAME_TEMPLATE, check_name_template
 from uvr5_ui.core.device import use_autocast
+from uvr5_ui.core.downloads.model_downloader import ensure_downloaded
 from uvr5_ui.core.models.catalog import Model
 from uvr5_ui.core.separation.specs import ArchSpec, build_separator_kwargs
 
@@ -93,8 +94,11 @@ class SeparatorCache:
         self._lock = threading.Lock()
 
     def get(self, spec: ArchSpec, model: Model, values: dict, output_dir: Path, output_format: str,
-            models_dir: Path = None, options: RuntimeOptions = None):
-        """Return a Separator with ``model`` loaded, reusing the cached one when possible."""
+            models_dir: Path = None, options: RuntimeOptions = None, progress=None):
+        """Return a Separator with ``model`` loaded, reusing the cached one when possible.
+
+        Missing model files are downloaded first (``progress`` reports it), see ``ensure_downloaded``.
+        """
         models_dir = Path(models_dir or paths.MODELS_DIR)
         kwargs = dict(
             log_level=logging.WARNING,
@@ -113,6 +117,7 @@ class SeparatorCache:
 
             # Drop the previous model before loading a new one to free (GPU) memory.
             self._key = self._separator = None
+            ensure_downloaded(model, models_dir, progress)
             factory = self._factory or _separator_class()
             separator = factory(**kwargs)
             separator.load_model(model_filename=model.filename)

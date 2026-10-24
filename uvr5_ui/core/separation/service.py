@@ -83,7 +83,8 @@ def separate_file(
     try:
         progress(0.2, "Loading model...")
         with separation_lock:
-            separator = cache.get(spec, model, values, output_dir, output_format, options=options)
+            separator = cache.get(spec, model, values, output_dir, output_format, options=options,
+                                  progress=lambda fraction, desc: progress(0.2 + 0.5 * fraction, desc))
             summary = execution_summary(separator)
             progress(0.7, f"Separating audio ({summary})..." if summary else "Separating audio...")
             outputs = separator.separate(audio_path)
@@ -130,7 +131,7 @@ def separate_batch(
     try:
         yield "Loading model..."
         with separation_lock:
-            separator = cache.get(spec, model, values, output_dir, output_format, options=options)
+            separator = cache.get(spec, model, values, output_dir, output_format, options=options, progress=progress)
     except Exception as e:
         cache.clear()
         raise SeparationError(f"Could not load model {model.id}: {describe_error(e)}") from e

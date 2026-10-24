@@ -2,7 +2,6 @@
 
 import math
 from itertools import groupby
-from pathlib import Path
 
 import gradio as gr
 
@@ -13,6 +12,7 @@ from uvr5_ui.core.separation.ensemble import (
 )
 from uvr5_ui.core.separation.ensemble_presets import EnsemblePreset
 from uvr5_ui.core.separation.runtime import RuntimeOptions
+from uvr5_ui.core.separation.service import is_folder
 from uvr5_ui.core.separation.specs import ARCHITECTURES, ARCHITECTURES_BY_ID, ENSEMBLE_PARAMS, ENSEMBLE_SECTION
 from uvr5_ui.i18n import N_, i18n
 from uvr5_ui.integrations.discord_presence import presence
@@ -276,7 +276,7 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
 
     def validate_batch(models, algorithm, weights, preset, output_format, input_path, output_path, **values):
         return validations(*ensemble_checks(models, algorithm, weights),
-                           (inputs.input_path, filled(input_path) and Path(input_path.strip()).is_dir(),
+                           (inputs.input_path, is_folder(input_path),
                             N_("The input path must be an existing folder")))
 
     separate_button.click(

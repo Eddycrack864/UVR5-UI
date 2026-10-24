@@ -2,13 +2,12 @@
 
 from dataclasses import dataclass, field
 from itertools import groupby
-from pathlib import Path
 
 import gradio as gr
 
 from uvr5_ui.core.audio import OUTPUT_FORMATS
 from uvr5_ui.core.separation.runtime import RuntimeOptions
-from uvr5_ui.core.separation.service import separate_batch, separate_file
+from uvr5_ui.core.separation.service import is_folder, separate_batch, separate_file
 from uvr5_ui.core.separation.specs import ArchSpec
 from uvr5_ui.i18n import N_, i18n
 from uvr5_ui.integrations.discord_presence import presence
@@ -106,7 +105,7 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
     def validate_batch(model, output_format, input_path, output_path, **values):
         return validations(
             (fields["model"], filled(model), N_("Please select a model first")),
-            (inputs.input_path, filled(input_path) and Path(input_path.strip()).is_dir(),
+            (inputs.input_path, is_folder(input_path),
              N_("The input path must be an existing folder")),
         )
 

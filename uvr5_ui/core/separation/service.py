@@ -35,12 +35,25 @@ def describe_error(e: Exception) -> str:
     return str(e) or kind
 
 
+def clean_path(value: str | None) -> str:
+    """Strip whitespace and the quotes that Windows' "Copy as path" adds around a path."""
+    value = (value or "").strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+        value = value[1:-1].strip()
+    return value
+
+
+def is_folder(value: str | None) -> bool:
+    path = clean_path(value)
+    return bool(path) and Path(path).is_dir()
+
+
 def resolve_batch_dirs(input_dir: str, output_dir: str) -> tuple[Path, Path]:
     """Validate a batch input folder and create the output folder (``outputs/`` when empty)."""
-    input_dir = Path(input_dir.strip()) if input_dir and input_dir.strip() else None
-    if input_dir is None or not input_dir.is_dir():
-        raise SeparationError(f"Input path is not a folder: {input_dir}")
-    output_dir = Path(output_dir.strip()) if output_dir and output_dir.strip() else paths.OUTPUTS_DIR
+    if not is_folder(input_dir):
+        raise SeparationError(f"Input path is not a folder: {clean_path(input_dir) or None}")
+    input_dir = Path(clean_path(input_dir))
+    output_dir = Path(clean_path(output_dir) or paths.OUTPUTS_DIR)
     output_dir.mkdir(parents=True, exist_ok=True)
     return input_dir, output_dir
 

@@ -12,7 +12,7 @@ from uvr5_ui.core.errors import SeparationError
 from uvr5_ui.core.models.catalog import Model
 from uvr5_ui.core.separation import runtime
 from uvr5_ui.core.separation.runtime import RuntimeOptions, SeparatorCache, execution_summary
-from uvr5_ui.core.separation.service import separate_batch, separate_file
+from uvr5_ui.core.separation.service import clean_path, is_folder, separate_batch, separate_file
 from uvr5_ui.core.separation.specs import (
     ARCHITECTURES, ARCHITECTURES_BY_ID, ENSEMBLE_PARAMS, ENSEMBLE_SECTION, build_separator_kwargs,
 )
@@ -171,6 +171,24 @@ def test_batch_validates_input(cache, tmp_path):
     with pytest.raises(SeparationError):
         list(separate_batch(MDXNET, MODEL, str(tmp_path / "missing"), "", "wav", {}, cache=cache))
     assert list(separate_batch(MDXNET, MODEL, str(tmp_path), "", "wav", {}, cache=cache)) == ["No valid audio files."]
+
+
+def test_batch_accepts_quoted_paths(cache, tmp_path):
+    # Windows' "Copy as path" wraps the path in quotes (issue #71)
+    (tmp_path / "song.wav").touch()
+    out = tmp_path / "stems"
+    log = list(separate_batch(MDXNET, MODEL, f'"{tmp_path}"', f' "{out}" ', "wav", {}, cache=cache))
+    assert log[-1].startswith("Done: 1 separated, 0 failed")
+    assert out.is_dir()
+
+
+def test_clean_path(tmp_path):
+    assert clean_path(r'  "C:\Users\me\Desktop"  ') == r"C:\Users\me\Desktop"
+    assert clean_path("'/home/me/music'") == "/home/me/music"
+    assert clean_path('"unbalanced') == '"unbalanced'
+    assert clean_path(None) == clean_path('""') == ""
+    assert is_folder(f'"{tmp_path}"')
+    assert not is_folder('""') and not is_folder("") and not is_folder(None)
 
 
 def test_parse_stem_label():

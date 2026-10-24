@@ -11,7 +11,7 @@ from uvr5_ui.core.separation.service import is_folder, separate_batch, separate_
 from uvr5_ui.core.separation.specs import ArchSpec
 from uvr5_ui.i18n import N_, i18n
 from uvr5_ui.integrations.discord_presence import presence
-from uvr5_ui.ui import components
+from uvr5_ui.ui import components, stem_mixer
 from uvr5_ui.ui.adapters import GPU_CONCURRENCY_ID, filled, progress_callback, require, user_errors, validations
 from uvr5_ui.ui.context import AppContext
 
@@ -67,6 +67,7 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
             separate_button = gr.Button(i18n("Separate!"), variant="primary")
         stems = components.stem_outputs()
         zip_button = components.zip_download()
+        mixer_box, mixer = stem_mixer.stem_mixer()
 
     # Handlers take named arguments (inputs_kwargs), which are also the API's parameter names:
     # model, output_format, audio / input_path + output_path, and every ParamSpec key.
@@ -114,6 +115,9 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
         run_single, inputs_kwargs={**fields, "audio": inputs.audio}, outputs=[*stems, zip_button],
         validator=validate_single, api_name=f"separate_{spec.id}",
         concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
+    ).success(  # a separate step, so the API's outputs stay the same
+        stem_mixer.mixer_update, inputs=[inputs.audio, *stems], outputs=[mixer_box, mixer],
+        api_visibility="undocumented",
     )
     batch_event = inputs.batch_button.click(
         run_batch, inputs_kwargs={**fields, "input_path": inputs.input_path, "output_path": inputs.output_path},

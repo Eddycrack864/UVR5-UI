@@ -3,7 +3,9 @@
 import json
 import zipfile
 
+import numpy as np
 import pytest
+import soundfile as sf
 
 gr = pytest.importorskip("gradio")
 
@@ -16,6 +18,7 @@ from uvr5_ui.core.separation.ensemble_presets import PresetStore  # noqa: E402
 from uvr5_ui.core.separation.runtime import separator_cache  # noqa: E402
 from uvr5_ui.ui.app import create_app  # noqa: E402
 from uvr5_ui.ui.components import model_choices  # noqa: E402
+from uvr5_ui.ui.stem_mixer import mixer_update, mixer_value  # noqa: E402
 from uvr5_ui.ui.context import AppContext  # noqa: E402
 from tests.test_ensemble import WavSeparator  # noqa: E402
 from tests.test_separation import FakeSeparator  # noqa: E402
@@ -226,4 +229,41 @@ def test_recommended_models_come_first_with_their_stem(ctx):
     # The values stay the model ids, so saved settings and the API are unchanged
     assert sorted(value for _, value in choices) == sorted(ctx.catalog.ids("roformer"))
     assert sum("⭐" in label for label, _ in choices) == 5
+
+
+def test_mixer_value():
+    paths = ["/c/song_(Vocals)_m.wav", None, "/c/song_(Instrumental)_m.flac", "/c/custom_name.wav", None, None]
+    value = mixer_value("/tmp/My Song.mp3", paths)
+    assert value["name"] == "My Song_mix"
+    assert [s["label"] for s in value["stems"]] == ["Vocals", "Instrumental", "custom_name"]
+    assert value["stems"][0]["file"] == {"path": "/c/song_(Vocals)_m.wav", "meta": {"_type": "gradio.FileData"}}
+    assert value["sample_rate"] is None  # unreadable: the browser picks the rate
+    assert mixer_value(None, paths)["name"] == "stems_mix"
+    assert mixer_value("song.wav", ["/c/song_(Vocals)_m.wav"] + [None] * 5) is None  # nothing to mix
+
+
+def test_mixer_value_reads_the_sample_rate(tmp_path):
+    stems = []
+    for name in ("a_(Vocals)_m.wav", "a_(Instrumental)_m.wav"):
+        sf.write(tmp_path / name, np.zeros((441, 2), dtype="float32"), 44100)
+        stems.append(str(tmp_path / name))
+    assert mixer_value("a.wav", stems)["sample_rate"] == 44100
+
+
+def test_mixer_update_hides_the_mixer_without_two_stems():
+    shown, value = mixer_update("song.wav", "/c/a_(Vocals)_m.wav", "/c/a_(Drums)_m.wav")
+    assert shown["visible"] is True and len(value["stems"]) == 2
+    hidden, value = mixer_update("song.wav", None, None)
+    assert hidden["visible"] is False and value is None
+
+
+def test_mixer_is_chained_after_separating_without_changing_the_api(app):
+    mixers = [b for b in app.blocks.values() if type(b).__name__ == "HTML" and "uvr-mixer" in b.html_template]
+    assert len(mixers) == 6  # five architecture tabs + Ensemble
+    for name in ("separate_roformer", "separate_mdxnet", "separate_ensemble"):
+        fn = find_fn(app, name)
+        assert len(fn.outputs) == 7  # six stems + zip, as before
+        mixer_steps = [f for f in app.fns.values() if f.fn is mixer_update and f.trigger_after == fn._id]
+        assert len(mixer_steps) == 1 and mixer_steps[0].trigger_only_on_success
+        assert mixer_steps[0].outputs[1] in mixers
 

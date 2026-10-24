@@ -183,5 +183,16 @@
     "Name template saved": "名前のテンプレートを保存しました",
     "Stop": "停止",
     "Download all stems (.zip)": "すべてのステムをダウンロード（.zip）",
-    "The input path must be an existing folder": "入力パスは既存のフォルダーである必要があります"
+    "The input path must be an existing folder": "入力パスは既存のフォルダーである必要があります",
+    "Stem mixer": "ステムミキサー",
+    "Play all the stems together and adjust the volume of each one": "すべてのステムを同時に再生し、それぞれの音量を調整します",
+    "Play": "再生",
+    "Pause": "一時停止",
+    "Mute": "ミュート",
+    "Solo": "ソロ",
+    "Volume": "音量",
+    "Position": "再生位置",
+    "Download mix (.wav)": "ミックスをダウンロード（.wav）",
+    "Loading stems...": "ステムを読み込み中...",
+    "This stem can't be played in the browser": "このステムはブラウザで再生できません"
 }

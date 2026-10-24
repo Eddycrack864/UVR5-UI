@@ -183,5 +183,16 @@
     "Name template saved": "Đã lưu mẫu tên",
     "Stop": "Dừng",
     "Download all stems (.zip)": "Tải xuống tất cả stem (.zip)",
-    "The input path must be an existing folder": "Đường dẫn đầu vào phải là một thư mục có sẵn"
+    "The input path must be an existing folder": "Đường dẫn đầu vào phải là một thư mục có sẵn",
+    "Stem mixer": "Bộ trộn stem",
+    "Play all the stems together and adjust the volume of each one": "Phát tất cả stem cùng lúc và điều chỉnh âm lượng của từng stem",
+    "Play": "Phát",
+    "Pause": "Tạm dừng",
+    "Mute": "Tắt tiếng",
+    "Solo": "Solo",
+    "Volume": "Âm lượng",
+    "Position": "Vị trí",
+    "Download mix (.wav)": "Tải xuống bản mix (.wav)",
+    "Loading stems...": "Đang tải stem...",
+    "This stem can't be played in the browser": "Không thể phát stem này trong trình duyệt"
 }

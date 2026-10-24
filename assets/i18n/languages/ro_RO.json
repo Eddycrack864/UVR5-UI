@@ -183,5 +183,16 @@
     "Name template saved": "Șablon de nume salvat",
     "Stop": "Oprește",
     "Download all stems (.zip)": "Descarcă toate stem-urile (.zip)",
-    "The input path must be an existing folder": "Calea de intrare trebuie să fie un folder existent"
+    "The input path must be an existing folder": "Calea de intrare trebuie să fie un folder existent",
+    "Stem mixer": "Mixer de stem-uri",
+    "Play all the stems together and adjust the volume of each one": "Redă toate stem-urile împreună și ajustează volumul fiecăruia",
+    "Play": "Redare",
+    "Pause": "Pauză",
+    "Mute": "Mut",
+    "Solo": "Solo",
+    "Volume": "Volum",
+    "Position": "Poziție",
+    "Download mix (.wav)": "Descarcă mixul (.wav)",
+    "Loading stems...": "Se încarcă stem-urile...",
+    "This stem can't be played in the browser": "Acest stem nu poate fi redat în browser"
 }

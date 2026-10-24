@@ -183,5 +183,16 @@
     "Name template saved": "Ad şablonu kaydedildi",
     "Stop": "Durdur",
     "Download all stems (.zip)": "Tüm stem'leri indir (.zip)",
-    "The input path must be an existing folder": "Giriş yolu mevcut bir klasör olmalıdır"
+    "The input path must be an existing folder": "Giriş yolu mevcut bir klasör olmalıdır",
+    "Stem mixer": "Stem mikseri",
+    "Play all the stems together and adjust the volume of each one": "Tüm stem'leri birlikte çalın ve her birinin ses seviyesini ayarlayın",
+    "Play": "Oynat",
+    "Pause": "Duraklat",
+    "Mute": "Sessiz",
+    "Solo": "Solo",
+    "Volume": "Ses seviyesi",
+    "Position": "Konum",
+    "Download mix (.wav)": "Miksi indir (.wav)",
+    "Loading stems...": "Stem'ler yükleniyor...",
+    "This stem can't be played in the browser": "Bu stem tarayıcıda çalınamıyor"
 }

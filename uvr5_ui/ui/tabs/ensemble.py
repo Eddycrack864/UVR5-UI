@@ -16,7 +16,7 @@ from uvr5_ui.core.separation.service import is_folder
 from uvr5_ui.core.separation.specs import ARCHITECTURES, ARCHITECTURES_BY_ID, ENSEMBLE_PARAMS, ENSEMBLE_SECTION
 from uvr5_ui.i18n import N_, i18n
 from uvr5_ui.integrations.discord_presence import presence
-from uvr5_ui.ui import components
+from uvr5_ui.ui import components, stem_mixer
 from uvr5_ui.ui.adapters import GPU_CONCURRENCY_ID, filled, progress_callback, require, user_errors, validations
 from uvr5_ui.ui.context import AppContext
 from uvr5_ui.ui.tabs.separation import DEFAULT_OUTPUT_FORMAT, SeparationTab, output_format_dropdown
@@ -138,6 +138,7 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
             separate_button = gr.Button(i18n("Separate!"), variant="primary")
         stems = components.stem_outputs()
         zip_button = components.zip_download()
+        mixer_box, mixer = stem_mixer.stem_mixer()
 
     # Presets, models, algorithm and weights
     def apply_preset(preset_id):
@@ -284,6 +285,9 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
         run_single, inputs_kwargs={**fields, **arch_fields, "audio": inputs.audio}, outputs=[*stems, zip_button],
         validator=validate_single, api_name="separate_ensemble",
         concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
+    ).success(  # a separate step, so the API's outputs stay the same
+        stem_mixer.mixer_update, inputs=[inputs.audio, *stems], outputs=[mixer_box, mixer],
+        api_visibility="undocumented",
     )
     batch_event = inputs.batch_button.click(
         run_batch,

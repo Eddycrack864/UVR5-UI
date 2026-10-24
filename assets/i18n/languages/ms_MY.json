@@ -183,5 +183,16 @@
     "Name template saved": "Templat nama disimpan",
     "Stop": "Henti",
     "Download all stems (.zip)": "Muat turun semua stem (.zip)",
-    "The input path must be an existing folder": "Laluan input mestilah folder yang wujud"
+    "The input path must be an existing folder": "Laluan input mestilah folder yang wujud",
+    "Stem mixer": "Pengadun stem",
+    "Play all the stems together and adjust the volume of each one": "Mainkan semua stem bersama-sama dan laraskan kelantangan setiap satu",
+    "Play": "Main",
+    "Pause": "Jeda",
+    "Mute": "Senyap",
+    "Solo": "Solo",
+    "Volume": "Kelantangan",
+    "Position": "Kedudukan",
+    "Download mix (.wav)": "Muat turun campuran (.wav)",
+    "Loading stems...": "Memuatkan stem...",
+    "This stem can't be played in the browser": "Stem ini tidak boleh dimainkan dalam pelayar"
 }

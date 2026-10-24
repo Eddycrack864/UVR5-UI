@@ -183,5 +183,16 @@
     "Name template saved": "Plantilla de nombre guardada",
     "Stop": "Detener",
     "Download all stems (.zip)": "Descargar todos los stems (.zip)",
-    "The input path must be an existing folder": "La ruta de entrada debe ser una carpeta existente"
+    "The input path must be an existing folder": "La ruta de entrada debe ser una carpeta existente",
+    "Stem mixer": "Mezclador de stems",
+    "Play all the stems together and adjust the volume of each one": "Reproduce todos los stems juntos y ajusta el volumen de cada uno",
+    "Play": "Reproducir",
+    "Pause": "Pausar",
+    "Mute": "Silenciar",
+    "Solo": "Solo",
+    "Volume": "Volumen",
+    "Position": "Posición",
+    "Download mix (.wav)": "Descargar mezcla (.wav)",
+    "Loading stems...": "Cargando stems...",
+    "This stem can't be played in the browser": "Este stem no se puede reproducir en el navegador"
 }

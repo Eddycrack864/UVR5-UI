@@ -1,6 +1,9 @@
+import json
+import re
+
 import pytest
 
-from uvr5_ui.core.models.catalog import Model, ModelCatalog
+from uvr5_ui.core.models.catalog import Model, ModelCatalog, load_recommended
 from tests.conftest import REPO_ROOT
 
 
@@ -88,3 +91,55 @@ def test_catalog_has_audio_separator_own_models(catalog):
             filenames.add(next(iter(value)) if isinstance(value, dict) else value)
     missing = sorted(filenames - {m.filename for m in catalog})
     assert not missing, f"Run tools/sync_models.py --write to add: {missing}"
+
+
+RECOMMENDED_FILE = REPO_ROOT / "assets" / "recommended_models.json"
+
+
+def test_recommended_models_are_in_the_catalog(catalog):
+    recommended = load_recommended(RECOMMENDED_FILE)
+    assert recommended, "assets/recommended_models.json is empty or invalid"
+    missing = {stem: model_id for stem, model_id in recommended.items() if catalog.find(model_id) is None}
+    assert not missing, f"Recommended models not found in assets/models.json (use the exact id): {missing}"
+
+
+def docs_top_models() -> dict[str, str]:
+    """The first "(Added)" model of each stem in the "Best Models" section of info/docs.md."""
+    section = (REPO_ROOT / "info" / "docs.md").read_text(encoding="utf-8").split("## Best Models", 1)[1]
+    section = section.split("\n## ", 1)[0]
+    top = {}
+    for block in section.split("### ")[1:]:
+        stem, *lines = block.strip().splitlines()
+        for line in lines:
+            if match := re.match(r"\d+\.\s+(.+?)\s+\(Added\)\s*$", line.strip()):
+                top[stem.strip()] = match.group(1)
+                break
+    return top
+
+
+def test_recommended_models_match_the_docs():
+    # Updating "Best Models" in info/docs.md? Copy each stem's Top 1 to assets/recommended_models.json
+    docs = docs_top_models()
+    assert docs, "No models found in the Best Models section of info/docs.md"
+    assert load_recommended(RECOMMENDED_FILE) == docs
+
+
+def test_recommended_first_and_stems(tmp_path):
+    models = [Model(name, "roformer", f"{name}.ckpt") for name in ("a", "b", "c", "d")]
+    catalog = ModelCatalog(models, {"Vocals": "c", "Instrumental": "a", "Karaoke": "c", "Gone": "zzz"})
+    assert [m.id for m in catalog.recommended_first(models)] == ["c", "a", "b", "d"]
+    assert catalog.recommended_stems(models[2]) == ["Vocals", "Karaoke"]
+    assert catalog.recommended_stems(models[1]) == []
+    assert catalog.recommended_first(models[1:2]) == models[1:2]
+
+
+def test_recommended_file_is_optional(tmp_path):
+    assert load_recommended(tmp_path / "missing.json") == {}
+    (tmp_path / "bad.json").write_text("{not json")
+    assert load_recommended(tmp_path / "bad.json") == {}
+    (tmp_path / "catalog.json").write_text(json.dumps({"version": 2, "models": [
+        {"id": "a", "arch": "roformer", "filename": "a.ckpt"}]}))
+    (tmp_path / "recommended_models.json").write_text(json.dumps({"version": 1, "recommended": {"Vocals": "a"}}))
+    catalog = ModelCatalog.from_file(tmp_path / "catalog.json")
+    assert catalog.recommended_stems(catalog.find("a")) == ["Vocals"]
+

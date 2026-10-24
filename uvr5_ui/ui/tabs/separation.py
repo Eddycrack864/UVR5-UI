@@ -38,7 +38,8 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
 
     with gr.TabItem(spec.tab_label):
         with gr.Row():
-            model = gr.Dropdown(label=i18n("Select the model"), choices=model_ids, value=initial_model, interactive=True)
+            model = gr.Dropdown(label=i18n("Select the model"), value=initial_model, interactive=True,
+                                choices=components.model_choices(ctx.catalog, ctx.catalog.by_arch(spec.id)))
             if spec.show_model_filter:
                 with gr.Row():
                     with gr.Column():
@@ -147,7 +148,7 @@ def output_format_dropdown(section: dict):
 
 def _model_choices(ctx: AppContext, spec: ArchSpec, downloaded_only: bool):
     models = ctx.catalog.downloaded(spec.id) if downloaded_only else ctx.catalog.by_arch(spec.id)
-    return gr.update(choices=[m.id for m in models], value=None)
+    return gr.update(choices=components.model_choices(ctx.catalog, models), value=None)
 
 
 def _selected_model(ctx: AppContext, spec: ArchSpec, model_id):

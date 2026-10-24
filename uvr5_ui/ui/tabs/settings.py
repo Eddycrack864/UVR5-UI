@@ -8,7 +8,7 @@ from uvr5_ui.core.downloads.model_downloader import METHOD_PYTHON, METHODS, SOUR
 from uvr5_ui.core.separation.runtime import RuntimeOptions
 from uvr5_ui.i18n import AUTO_LANGUAGE, N_, i18n, normalize_language
 from uvr5_ui.ui.adapters import progress_callback, require, user_errors
-from uvr5_ui.ui.components import output_log
+from uvr5_ui.ui.components import model_choices, output_log
 from uvr5_ui.ui.context import AppContext
 from uvr5_ui.ui.tabs.separation import DEFAULT_OUTPUT_FORMAT, SeparationTab
 
@@ -45,7 +45,7 @@ def render_settings_tab(ctx: AppContext, separation_tabs: list[SeparationTab]) -
                 label=i18n("Model to download"),
                 info=i18n("Select the model to download using the selected method"),
                 value=lambda: None,
-                choices=[m.id for m in ctx.catalog.downloadable()],
+                choices=model_choices(ctx.catalog, ctx.catalog.downloadable()),
                 interactive=True,
             )
             download_button = gr.Button(i18n("Download!"), variant="primary")

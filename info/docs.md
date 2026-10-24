@@ -135,38 +135,28 @@ The **Ensemble** tab runs two to six models (of any architecture) on the same au
 
 ## Best Models
 ### Instrumental
-1. MelBand Roformer Kim | Inst V1 (E) Plus by Unwa (Added)
-2. MelBand Roformer | INSTV7 by Gabox (Added)
-3. MelBand Roformer | Instrumental FV8 by Gabo (Added)
-4. BS Roformer | Instrumental Resurrection by unwa (Added)
+1. BS Roformer | Instrumental Resurrection by unwa (Added)
+2. MelBand Roformer Kim | Inst V1 (E) Plus by Unwa (Added)
+3. MelBand Roformer | Instrumental FV8 by Gabox (Added)
 
 ### Vocals
-1. MelBand Roformer 2025.07 (Only available on MVSEP)
-2. MelBand Roformer Bas Curtiz edition (Only available on MVSEP)
-3. MelBand Roformer Kim | FT2 Bleedlees by unwa (Added)
-4. BS Roformer | Vocals Resurrection by unwa (Added)
-5. BS Roformer | Vocals Revive V2 by Unwa (Added)
+1. BS Roformer SW by jarredou (Added)
+2. MelBand Roformer Kim | FT2 Bleedlees by unwa (Added)
+3. BS Roformer | Vocals Resurrection by unwa (Added)
 
 ### Karaoke
-1. MelBand Roformer | Karaoke by becruily (Added)
-2. Mel-Roformer-Karaoke-Aufr33-Viperx (Added)
-3. MelBand Roformer | Karaoke by Gabox (Added)
-4. UVR-BVE-4B_SN-44100-2 (Added)
+1. BS Roformer | Karaoke by anvuew (Added)
+2. BS Roformer | Karaoke by frazer-becruily (Added)
 
 ### De-Reverb
 1. MelBand Roformer | De-Reverb by anvuew (Added)
 2. MelBand Roformer | De-Reverb Mono by anvuew (Added)
 3. MelBand Roformer | De-Reverb-Echo Fused by Sucial (Added)
-4. MelBand Roformer | De-Reverb Less Aggressive by anvuew (Added)
 
 ### Denoise
-1. Mel-Roformer-Denoise-Aufr33 (Added)
-2. MelBand Roformer | Denoise-Debleed by Gabox (Added)
+1. MelBand Roformer | Denoise-Debleed by Gabox (Added)
+2. Mel-Roformer-Denoise-Aufr33 (Added)
 3. UVR-DeNoise (Added)
-
-### Crowd
-1. UVR-MDX-NET_Crowd_HQ_1 (Added)
-2. Mel-Roformer-Crowd-Aufr33-Viperx (Added)
 
 ## Advanced Documentation
 You can review more advanced and detailed documentation about models, UVR5 and other stuff [here](https://docs.google.com/document/d/17fjNvJzj8ZGSer7c7OFe_CNfUKbAxEh_OBv94ZdRG5c/edit?usp=sharing)

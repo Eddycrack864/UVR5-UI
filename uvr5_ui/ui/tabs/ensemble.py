@@ -58,9 +58,10 @@ ALGORITHM_INFO = {
 def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> SeparationTab:
     section = ctx.initial_settings.get(ENSEMBLE_SECTION, {})
     tabs_by_arch = {tab.spec.id: tab for tab in arch_tabs if tab.spec}
+    all_models = [model for spec in ARCHITECTURES for model in ctx.catalog.by_arch(spec.id)]
     model_choices = [
-        (f"{spec.tab_label} · {model.id}", model.filename)
-        for spec in ARCHITECTURES for model in ctx.catalog.by_arch(spec.id)
+        (components.model_label(ctx.catalog, model, f"{ARCHITECTURES_BY_ID[model.arch].tab_label} · "), model.filename)
+        for model in ctx.catalog.recommended_first(all_models)
     ]
     valid_files = {filename for _, filename in model_choices}
     initial_models = [f for f in section.get("models") or [] if f in valid_files]

@@ -15,6 +15,7 @@ from uvr5_ui.core.separation import ensemble, runtime  # noqa: E402
 from uvr5_ui.core.separation.ensemble_presets import PresetStore  # noqa: E402
 from uvr5_ui.core.separation.runtime import separator_cache  # noqa: E402
 from uvr5_ui.ui.app import create_app  # noqa: E402
+from uvr5_ui.ui.components import model_choices  # noqa: E402
 from uvr5_ui.ui.context import AppContext  # noqa: E402
 from tests.test_ensemble import WavSeparator  # noqa: E402
 from tests.test_separation import FakeSeparator  # noqa: E402
@@ -213,3 +214,16 @@ def test_batch_can_be_stopped(app):
     batch = find_fn(app, "batch_mdxnet")
     cancellers = [f for f in app.fns.values() if f.fn is None and batch._id in (f.cancels or [])]
     assert len(cancellers) == 1
+
+
+def test_recommended_models_come_first_with_their_stem(ctx):
+    choices = model_choices(ctx.catalog, ctx.catalog.by_arch("roformer"))
+    assert choices[:2] == [
+        ("BS Roformer | Instrumental Resurrection by unwa (Instrumental ⭐)",
+         "BS Roformer | Instrumental Resurrection by unwa"),
+        ("BS Roformer SW by jarredou (Vocals ⭐)", "BS Roformer SW by jarredou"),
+    ]
+    # The values stay the model ids, so saved settings and the API are unchanged
+    assert sorted(value for _, value in choices) == sorted(ctx.catalog.ids("roformer"))
+    assert sum("⭐" in label for label, _ in choices) == 5
+

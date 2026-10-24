@@ -198,5 +198,6 @@
     "Separate all files!": "Tách tất cả tệp!",
     "Separation finished: {stems}": "Đã tách xong: {stems}",
     "Batch separation finished": "Đã tách hàng loạt xong",
-    "Models in the list: {count}": "Mô hình trong danh sách: {count}"
+    "Models in the list: {count}": "Mô hình trong danh sách: {count}",
+    "Complete": "Hoàn tất"
 }

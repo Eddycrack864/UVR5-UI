@@ -198,5 +198,6 @@
     "Separate all files!": "Pisahkan semua file!",
     "Separation finished: {stems}": "Pemisahan selesai: {stems}",
     "Batch separation finished": "Pemisahan batch selesai",
-    "Models in the list: {count}": "Model dalam daftar: {count}"
+    "Models in the list: {count}": "Model dalam daftar: {count}",
+    "Complete": "Selesai"
 }

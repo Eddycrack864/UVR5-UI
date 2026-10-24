@@ -198,5 +198,6 @@
     "Separate all files!": "Разделить все файлы!",
     "Separation finished: {stems}": "Разделение завершено: {stems}",
     "Batch separation finished": "Пакетное разделение завершено",
-    "Models in the list: {count}": "Моделей в списке: {count}"
+    "Models in the list: {count}": "Моделей в списке: {count}",
+    "Complete": "Готово"
 }

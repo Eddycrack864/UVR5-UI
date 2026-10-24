@@ -42,6 +42,15 @@ def gradio_locale(language: str) -> str:
     return "en"
 
 
+def gradio_i18n(language: str) -> gr.I18n:
+    """Translations missing from Gradio itself.
+
+    Its progress announcement for screen readers reads "common.complete", a key no Gradio
+    language defines, so NVDA said "common.complete" after every action.
+    """
+    return gr.I18n(**{gradio_locale(language): {"common.complete": i18n("Complete")}})
+
+
 def head_html(language: str) -> str:
     config = {"page_lang": page_language(language), "gradio_locale": gradio_locale(language)}
     script = (_HERE / "a11y.js").read_text(encoding="utf-8").replace("__CONFIG__", json.dumps(config))

@@ -26,6 +26,7 @@ def launch_kwargs(ctx: AppContext) -> dict:
         "js": theme.mode_js(theme.current_mode(ctx.config)),
         "head": a11y.head_html(i18n.language),
         "css": a11y.CSS,
+        "i18n": a11y.gradio_i18n(i18n.language),
     }
 
 

@@ -11,12 +11,13 @@
 8. [Ensembles](#ensembles)
 9. [Stem Mixer](#stem-mixer)
 10. [Settings](#settings)
-11. [Best Models](#best-models)
-12. [Advanced Documentation](#advanced-documentation)
-13. [Contributions](#contributions)
-14. [TO-DO](#to-do)
-15. [Credits](#credits)
-16. [Feedback and Support](#feedback-and-support)
+11. [Accessibility](#accessibility)
+12. [Best Models](#best-models)
+13. [Advanced Documentation](#advanced-documentation)
+14. [Contributions](#contributions)
+15. [TO-DO](#to-do)
+16. [Credits](#credits)
+17. [Feedback and Support](#feedback-and-support)
 
 ## Introduction
 UVR5-UI is a user-friendly interface for the Ultimate Vocal Remover 5, designed to separate audio files into various stems using multiple models. Built on top of the `python-audio-separator`, it provides a Gradio UI for easier interaction, making it accessible to both novice and advanced users.
@@ -29,6 +30,7 @@ UVR5-UI is a user-friendly interface for the Ultimate Vocal Remover 5, designed 
 - **Ensembles**: Combines the results of several models, with curated presets and your own (see [Ensembles](#ensembles)).
 - **Stem Mixer**: Plays all the stems together with a volume, mute and solo control per stem, and downloads the mix (see [Stem Mixer](#stem-mixer)).
 - **Performance Settings**: Native FP16, torch.compile and chunked processing for long audio (see [Settings](#settings)).
+- **Accessibility**: Usable with the keyboard and screen readers such as NVDA (see [Accessibility](#accessibility)).
 - **Multi-Language Support**: Available in several languages to cater to a global user base.
 - **Cross-Platform Compatibility**: Runs on Windows, Linux, and through cloud services like Colab, Kaggle, and Hugging Face Spaces.
 - **Integration with Cloud Services**: Direct links to run in Google Colab, Kaggle, and Lightning.ai.
@@ -147,6 +149,30 @@ Notes:
   - *Process long audio in chunks*: splits audio longer than the given seconds (e.g. 600 for files over an hour) to avoid running out of memory. Chunks are joined without a crossfade.
   - *Write outputs with soundfile*: uses less memory when writing very long files.
 - **Output file names**: a template with `{input}`, `{stem}` and `{model}`, e.g. `{stem} - {input}`. The default is `{input}_({stem})_{model}`.
+
+## Accessibility
+UVR5 UI can be used with the keyboard and a screen reader. It has been tested with **NVDA** on Windows and Chrome; other screen readers (JAWS, Narrator, Orca, VoiceOver) should work as well, since it uses standard ARIA roles and live regions.
+
+- **Tabs**: Tab moves into the tab bar and out of it in one step; use the **Left/Right arrows** (or Home/End) to move between tabs and **Enter** or **Space** to open one.
+- **Model and format lists**: they are combo boxes. Press **Down arrow** to open the list and move through the models (e.g. "BS Roformer SW by jarredou (Vocals ⭐), 2 of 92"), or type part of a name to filter it, and press **Enter** to choose. The focus stays on the list. The recommended model of each stem is the first one, marked with a ⭐.
+- **Advanced settings, Separation by link, Batch separation**: they are collapsible sections; screen readers say whether each one is expanded or collapsed. Press Enter on its title to open or close it.
+- **What gets announced**:
+  - validation messages, e.g. "Please select a model first";
+  - when "All models" / "Downloaded models only" change the list ("Models in the list: 92");
+  - the progress of a separation, and which stems it produced ("Separation finished: Vocals, Instrumental");
+  - the summary of a batch separation;
+  - errors and notifications.
+- **Single file vs. batch**: the batch button is called "Separate all files!", so it isn't confused with "Separate!".
+- **Stem mixer**: every control has a name ("Mute: Vocals", "Volume: Vocals"), and the volume sliders are read as a percentage.
+- **Language**: the page uses the language selected in Settings, so screen readers can pick the matching voice. In NVDA this needs *Automatic language switching* enabled (Settings → Speech) and a voice for that language installed in Windows.
+- **Keyboard focus** is always shown with a visible outline, with any theme.
+
+Known limitations (they come from Gradio, the framework UVR5 UI is built on):
+- NVDA says "clickable" on some paragraphs and regions.
+- The "Reset to default value" buttons next to each slider don't say which setting they reset; the slider before them does.
+- Descriptions under some checkboxes aren't read when the checkbox gets the focus.
+
+If something isn't accessible to you, please [open an issue](https://github.com/Eddycrack864/UVR5-UI/issues) describing your screen reader, browser and what happened.
 
 ## Best Models
 ### Instrumental

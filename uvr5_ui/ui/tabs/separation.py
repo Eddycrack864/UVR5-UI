@@ -119,17 +119,19 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
         validator=validate_single, api_name=f"separate_{spec.id}",
         concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
-    # Separate steps, so the API's outputs stay the same
+    # Separate steps, so the API's outputs stay the same. No progress of their own, so screen
+    # readers hear "Complete" once
     separate_event.success(stem_mixer.mixer_update, inputs=[inputs.audio, *stems], outputs=[mixer_box, mixer],
+                           show_progress="hidden", api_visibility="undocumented")
+    separate_event.success(a11y.announce_stems, inputs=stems, outputs=announcer, show_progress="hidden",
                            api_visibility="undocumented")
-    separate_event.success(a11y.announce_stems, inputs=stems, outputs=announcer, api_visibility="undocumented")
     batch_event = inputs.batch_button.click(
         run_batch, inputs_kwargs={**fields, "input_path": inputs.input_path, "output_path": inputs.output_path},
         outputs=[inputs.batch_info], validator=validate_batch, api_name=f"batch_{spec.id}",
         concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
     batch_event.success(a11y.announce_batch, inputs=inputs.batch_info, outputs=announcer,
-                        api_visibility="undocumented")
+                        show_progress="hidden", api_visibility="undocumented")
     inputs.wire_stop(batch_event)
 
     return SeparationTab(

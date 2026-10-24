@@ -198,5 +198,6 @@
     "Separate all files!": "افصل جميع الملفات!",
     "Separation finished: {stems}": "اكتمل الفصل: {stems}",
     "Batch separation finished": "اكتمل الفصل الجماعي",
-    "Models in the list: {count}": "النماذج في القائمة: {count}"
+    "Models in the list: {count}": "النماذج في القائمة: {count}",
+    "Complete": "اكتمل"
 }

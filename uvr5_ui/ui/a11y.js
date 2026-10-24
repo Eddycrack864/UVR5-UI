@@ -65,13 +65,15 @@
       if (text) errors.push(text);
     }
     if (errors.length) window.uvr5Announce(errors.join(". "));
+    patchTabs();
   }
 
   // The observer already batches the changes of each task (requestAnimationFrame would stall
-  // in a background tab). Only class changes are watched, so patch() doesn't retrigger itself.
+  // in a background tab). Only class and aria-selected are watched, which patch() never
+  // changes, so it doesn't retrigger itself.
   const start = () => {
     new MutationObserver(patch).observe(document.body, {
-      subtree: true, childList: true, attributes: true, attributeFilter: ["class"],
+      subtree: true, childList: true, attributes: true, attributeFilter: ["class", "aria-selected"],
     });
     patch();
   };
@@ -79,16 +81,53 @@
   else start();
 
   // Choosing a dropdown option with Enter leaves the focus on <body>, so the screen reader
-  // jumps back to the top of the page: put it back on the dropdown. Gradio reopens the list on
-  // focus, so close it again with the Escape its own handler listens for.
+  // jumps back to the top of the page: put it back on the dropdown right away, before the
+  // screen reader announces the page. Gradio reopens the list on focus, so close it again with
+  // the Escape its own handler listens for.
+  let enterOn = null;
   document.addEventListener("keydown", (event) => {
-    if (event.key !== "Enter" || !event.isTrusted || !event.target.closest) return;
-    const box = event.target.closest('[role="combobox"]');
-    if (!box) return;
-    setTimeout(() => {
-      if (document.activeElement !== document.body || !box.isConnected) return;
+    const box = event.target.closest && event.target.closest('[role="combobox"]');
+    enterOn = event.key === "Enter" && event.isTrusted && box ? box : null;
+  }, true);
+  document.addEventListener("focusout", (event) => {
+    const box = enterOn;
+    if (!box || event.target !== box || event.relatedTarget) return;
+    enterOn = null;
+    queueMicrotask(() => {
+      if (!box.isConnected || (document.activeElement && document.activeElement !== document.body)) return;
       box.focus({ preventScroll: true });
       box.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", code: "Escape", bubbles: true }));
-    }, 50);
+    });
   }, true);
+
+  // Tabs: Gradio makes every tab a Tab stop and ignores the arrow keys. Use the ARIA tabs
+  // pattern: only the selected tab is a Tab stop, and the arrows/Home/End move between tabs
+  // (Enter or Space opens one).
+  const visibleTabs = (list) => [...list.querySelectorAll('[role="tab"]')].filter((tab) => tab.offsetParent);
+  function patchTabs() {
+    for (const list of document.querySelectorAll('[role="tablist"]')) {
+      const tabs = visibleTabs(list);
+      const current = tabs.find((tab) => tab === document.activeElement)
+        || tabs.find((tab) => tab.getAttribute("aria-selected") === "true") || tabs[0];
+      for (const tab of tabs) {
+        const index = tab === current ? 0 : -1;
+        if (tab.tabIndex !== index) tab.tabIndex = index;
+      }
+    }
+  }
+  document.addEventListener("keydown", (event) => {
+    const tab = event.target.closest && event.target.closest('[role="tab"]');
+    const list = tab && tab.closest('[role="tablist"]');
+    if (!list || !["ArrowRight", "ArrowLeft", "Home", "End"].includes(event.key)) return;
+    const tabs = visibleTabs(list);
+    const index = tabs.indexOf(tab);
+    const next = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 }[event.key];
+    const target = tabs[(next + tabs.length) % tabs.length];
+    event.preventDefault();
+    target.focus();
+    patchTabs();
+  });
+  document.addEventListener("focusout", (event) => {
+    if (event.target.closest && event.target.closest('[role="tablist"]')) setTimeout(patchTabs);
+  });
 })();

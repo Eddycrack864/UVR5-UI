@@ -284,7 +284,10 @@ function render() {
     seekTo((ui.seek.value / 1000) * duration);
   });
   ui.time = make("span", { className: "time" }, "0:00 / 0:00");
-  ui.export = make("button", { type: "button", className: "export" }, `⬇ ${L.export}`);
+  ui.export = make("button", { type: "button", className: "export" });
+  const arrow = make("span", {}, "⬇ ");
+  arrow.setAttribute("aria-hidden", "true"); // the arrow isn't read aloud
+  ui.export.append(arrow, L.export);
   ui.export.addEventListener("click", downloadMix);
   const transport = make("div", { className: "transport" });
   transport.append(ui.play, stopButton, ui.seek, ui.time, ui.export);
@@ -308,15 +311,16 @@ function render() {
     row.setAttribute("role", "group");
     row.setAttribute("aria-label", stem.label);
     const name = make("span", { className: "label", title: stem.label }, stem.label);
-    const mute = make("button", { type: "button", className: "toggle", title: L.mute }, "M");
-    mute.setAttribute("aria-label", `${L.mute}: ${stem.label}`);
+    // The title matches the name, otherwise screen readers read it again as a description
+    const mute = make("button", { type: "button", className: "toggle", title: `${L.mute}: ${stem.label}` }, "M");
+    mute.setAttribute("aria-label", mute.title);
     mute.addEventListener("click", () => {
       stem.muted = !stem.muted;
       updateRow(stem);
       applyGains();
     });
-    const solo = make("button", { type: "button", className: "toggle", title: L.solo }, "S");
-    solo.setAttribute("aria-label", `${L.solo}: ${stem.label}`);
+    const solo = make("button", { type: "button", className: "toggle", title: `${L.solo}: ${stem.label}` }, "S");
+    solo.setAttribute("aria-label", solo.title);
     solo.addEventListener("click", () => {
       stem.solo = !stem.solo;
       updateRow(stem);

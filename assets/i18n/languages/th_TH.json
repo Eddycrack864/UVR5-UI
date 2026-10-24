@@ -198,5 +198,6 @@
     "Separate all files!": "แยกไฟล์ทั้งหมด!",
     "Separation finished: {stems}": "แยกเสร็จแล้ว: {stems}",
     "Batch separation finished": "แยกแบบกลุ่มเสร็จแล้ว",
-    "Models in the list: {count}": "จำนวนโมเดลในรายการ: {count}"
+    "Models in the list: {count}": "จำนวนโมเดลในรายการ: {count}",
+    "Complete": "เสร็จสิ้น"
 }

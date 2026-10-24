@@ -285,6 +285,9 @@ def test_launch_adds_the_accessibility_fixes(ctx):
     kwargs = launch_kwargs(ctx)
     assert kwargs["head"].startswith("<script>")
     assert ":focus-visible" in kwargs["css"]
+    # Gradio's progress announcement reads this key, which no Gradio language defines
+    assert kwargs["i18n"].translations_dict == {"en": {"common.complete": "Complete"}}
+    assert a11y.gradio_i18n("pt_BR").translations_dict.keys() == {"pt-BR"}
 
 
 def test_announcements():

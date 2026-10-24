@@ -198,5 +198,6 @@
     "Separate all files!": "すべてのファイルを分離！",
     "Separation finished: {stems}": "分離が完了しました：{stems}",
     "Batch separation finished": "バッチ分離が完了しました",
-    "Models in the list: {count}": "リスト内のモデル数：{count}"
+    "Models in the list: {count}": "リスト内のモデル数：{count}",
+    "Complete": "完了"
 }

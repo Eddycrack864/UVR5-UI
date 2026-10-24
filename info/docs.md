@@ -141,7 +141,7 @@ The **Ensemble** tab runs two to six models (of any architecture) on the same au
 
 ### Vocals
 1. BS Roformer SW by jarredou (Added)
-2. MelBand Roformer Kim | FT2 Bleedlees by unwa (Added)
+2. MelBand Roformer Kim | FT 2 Bleedless by unwa (Added)
 3. BS Roformer | Vocals Resurrection by unwa (Added)
 
 ### Karaoke

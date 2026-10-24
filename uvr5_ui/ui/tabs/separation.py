@@ -37,6 +37,7 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
     initial_model = section.get("model") if section.get("model") in model_ids else None
 
     with gr.TabItem(spec.tab_label):
+        a11y.tab_heading(spec.tab_label)
         with gr.Row():
             model = gr.Dropdown(label=i18n("Select the model"), value=initial_model, interactive=True,
                                 choices=components.model_choices(ctx.catalog, ctx.catalog.by_arch(spec.id)))

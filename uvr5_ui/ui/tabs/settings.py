@@ -6,7 +6,8 @@ from uvr5_ui.core.audio import DEFAULT_NAME_TEMPLATE, check_name_template
 from uvr5_ui.core.device import get_device
 from uvr5_ui.core.downloads.model_downloader import METHOD_PYTHON, METHODS, SOURCES, download_model
 from uvr5_ui.core.separation.runtime import RuntimeOptions
-from uvr5_ui.i18n import AUTO_LANGUAGE, N_, i18n, normalize_language
+from uvr5_ui.i18n import AUTO_LANGUAGE, LANGUAGE_NAMES, N_, i18n, normalize_language
+from uvr5_ui.ui import a11y
 from uvr5_ui.ui.adapters import progress_callback, require, user_errors
 from uvr5_ui.ui.components import model_choices, output_log
 from uvr5_ui.ui.context import AppContext
@@ -17,12 +18,15 @@ logger = logging.getLogger(__name__)
 
 def render_settings_tab(ctx: AppContext, separation_tabs: list[SeparationTab]) -> None:
     with gr.TabItem(i18n("Settings")):
+        a11y.tab_heading(i18n("Settings"))
         with gr.Accordion(i18n("Language selector"), open=False):
             selected_language = gr.Dropdown(
                 label=i18n("Language"),
                 info=i18n("Select the language you want to use. (Requires restarting the App)"),
                 value=_current_language(ctx),
-                choices=[AUTO_LANGUAGE] + i18n.available_languages(),
+                # Names instead of bare codes, which screen readers spell out ("a r underscore A R")
+                choices=[(i18n("Language automatically detected by system"), AUTO_LANGUAGE)]
+                + [(f"{LANGUAGE_NAMES.get(code, code)} ({code})", code) for code in i18n.available_languages()],
                 interactive=True,
             )
 

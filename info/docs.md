@@ -153,7 +153,7 @@ Notes:
 ## Accessibility
 UVR5 UI can be used with the keyboard and a screen reader. It has been tested with **NVDA** on Windows and Chrome; other screen readers (JAWS, Narrator, Orca, VoiceOver) should work as well, since it uses standard ARIA roles and live regions.
 
-- **Tabs**: Tab moves into the tab bar and out of it in one step; use the **Left/Right arrows** (or Home/End) to move between tabs and **Enter** or **Space** to open one.
+- **Tabs**: Tab moves into the tab bar and out of it in one step; use the **Left/Right arrows** (or Home/End) to move between tabs and **Enter** or **Space** to open one. Each tab starts with a heading with its name, so the heading keys of your screen reader (H in NVDA) jump to it.
 - **Model and format lists**: they are combo boxes. Press **Down arrow** to open the list and move through the models (e.g. "BS Roformer SW by jarredou (Vocals ⭐), 2 of 92"), or type part of a name to filter it, and press **Enter** to choose. The focus stays on the list. The recommended model of each stem is the first one, marked with a ⭐.
 - **Advanced settings, Separation by link, Batch separation**: they are collapsible sections; screen readers say whether each one is expanded or collapsed. Press Enter on its title to open or close it.
 - **What gets announced**:
@@ -161,7 +161,9 @@ UVR5 UI can be used with the keyboard and a screen reader. It has been tested wi
   - when "All models" / "Downloaded models only" change the list ("Models in the list: 92");
   - the progress of a separation, and which stems it produced ("Separation finished: Vocals, Instrumental");
   - the summary of a batch separation;
-  - errors and notifications.
+  - errors and notifications, e.g. "Current settings saved successfully!".
+- **Audio players**: each download button says which audio it saves ("Download: Stem 1 (Vocals)").
+- **Language selector**: languages are listed by name ("Español (es_ES)").
 - **Single file vs. batch**: the batch button is called "Separate all files!", so it isn't confused with "Separate!".
 - **Stem mixer**: every control has a name ("Mute: Vocals", "Volume: Vocals"), and the volume sliders are read as a percentage.
 - **Language**: the page uses the language selected in Settings, so screen readers can pick the matching voice. In NVDA this needs *Automatic language switching* enabled (Settings → Speech) and a voice for that language installed in Windows.

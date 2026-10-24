@@ -9,6 +9,7 @@
   (a finished separation, a refreshed model list), read through the same live region.
 """
 
+import html
 import json
 import time
 from pathlib import Path
@@ -55,6 +56,11 @@ def head_html(language: str) -> str:
     config = {"page_lang": page_language(language), "gradio_locale": gradio_locale(language)}
     script = (_HERE / "a11y.js").read_text(encoding="utf-8").replace("__CONFIG__", json.dumps(config))
     return f"<script>{script}</script>"
+
+
+def tab_heading(label: str) -> gr.HTML:
+    """A heading only screen readers see, so each tab can be reached with their heading keys (H)."""
+    return gr.HTML(f"<h2>{html.escape(label)}</h2>", elem_classes=["uvr-sr-only"])
 
 
 def announcer() -> gr.HTML:

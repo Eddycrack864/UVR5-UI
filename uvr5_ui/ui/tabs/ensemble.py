@@ -70,6 +70,7 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
     initial_missing = _missing_models(ctx, initial_models)
 
     with gr.TabItem(i18n("Ensemble")):
+        a11y.tab_heading(i18n("Ensemble"))
         gr.Markdown(i18n("Combine the results of several models into a single, better separation. "
                          "Each model runs with the advanced settings of its own tab."))
         with gr.Row():

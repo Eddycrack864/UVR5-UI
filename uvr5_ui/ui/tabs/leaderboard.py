@@ -2,11 +2,13 @@ import gradio as gr
 
 from uvr5_ui.core.leaderboard import COLUMNS, STEM_FILTERS, get_leaderboard
 from uvr5_ui.i18n import i18n
+from uvr5_ui.ui import a11y
 from uvr5_ui.ui.adapters import user_errors
 
 
 def render_leaderboard_tab() -> None:
     with gr.TabItem(i18n("Leaderboard")):
+        a11y.tab_heading(i18n("Leaderboard"))
         with gr.Group():
             with gr.Row(equal_height=True):
                 list_filter = gr.Dropdown(

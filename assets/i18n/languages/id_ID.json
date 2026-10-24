@@ -199,5 +199,6 @@
     "Separation finished: {stems}": "Pemisahan selesai: {stems}",
     "Batch separation finished": "Pemisahan batch selesai",
     "Models in the list: {count}": "Model dalam daftar: {count}",
-    "Complete": "Selesai"
+    "Complete": "Selesai",
+    "Language automatically detected by system": "Bahasa yang terdeteksi otomatis oleh sistem"
 }

@@ -199,5 +199,6 @@
     "Separation finished: {stems}": "Ayırma tamamlandı: {stems}",
     "Batch separation finished": "Toplu ayırma tamamlandı",
     "Models in the list: {count}": "Listedeki modeller: {count}",
-    "Complete": "Tamamlandı"
+    "Complete": "Tamamlandı",
+    "Language automatically detected by system": "Sistem tarafından otomatik algılanan dil"
 }

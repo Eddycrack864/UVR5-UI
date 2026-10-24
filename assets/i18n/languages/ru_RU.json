@@ -199,5 +199,6 @@
     "Separation finished: {stems}": "Разделение завершено: {stems}",
     "Batch separation finished": "Пакетное разделение завершено",
     "Models in the list: {count}": "Моделей в списке: {count}",
-    "Complete": "Готово"
+    "Complete": "Готово",
+    "Language automatically detected by system": "Язык, автоматически определённый системой"
 }

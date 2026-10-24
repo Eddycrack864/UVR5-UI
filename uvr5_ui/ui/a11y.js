@@ -56,17 +56,47 @@
         }
       }
     }
-    // Validation messages ("Please select a model first") appear outside any live region
-    const errors = [];
-    for (const error of document.querySelectorAll(".validation-error")) {
-      if (announced.has(error)) continue;
-      announced.add(error);
-      const text = error.textContent.trim();
-      if (text) errors.push(text);
+    // Validation messages ("Please select a model first") appear outside any live region, and
+    // notifications (gr.Info/Warning/Error) are added together with their role="status", which
+    // screen readers don't announce: read both through our region
+    const messages = [];
+    for (const element of document.querySelectorAll('.validation-error, [data-testid="toast-body"]')) {
+      if (announced.has(element)) continue;
+      announced.add(element);
+      const body = element.querySelector(".toast-messages") || element;
+      const text = (body.innerText || body.textContent).replace("×", "").trim();
+      if (text) messages.push(text);
     }
-    if (errors.length) window.uvr5Announce(errors.join(". "));
+    if (messages.length) window.uvr5Announce(messages.join(". "));
     patchTabs();
+    patchDownloadLinks();
   }
+
+  // Every audio player has a link just called "Download": add the player's label
+  // ("Download: Stem 1 (Vocals)") so they can be told apart
+  function patchDownloadLinks() {
+    for (const link of document.querySelectorAll(".block a.download-link, .block a[download]")) {
+      const label = link.closest(".block").querySelector('[data-testid="block-label"]');
+      // Gradio puts an icon button with the name inside the link
+      const button = link.querySelector("button");
+      if (!label) continue;
+      if (!link.dataset.uvrName) {
+        link.dataset.uvrName = (button && button.getAttribute("aria-label")) || link.getAttribute("aria-label")
+          || link.textContent.trim();
+      }
+      if (!link.dataset.uvrName) continue;
+      const name = `${link.dataset.uvrName}: ${label.textContent.trim()}`;
+      for (const element of [link, button]) {
+        if (!element || element.getAttribute("aria-label") === name) continue;
+        element.setAttribute("aria-label", name);
+        if (element.title) element.title = name; // otherwise read again as a description
+      }
+    }
+  }
+  // The stem labels change without the element being replaced: refresh on focus too
+  document.addEventListener("focusin", (event) => {
+    if (event.target.closest && event.target.closest("a.download-link, a[download]")) patchDownloadLinks();
+  });
 
   // The observer already batches the changes of each task (requestAnimationFrame would stall
   // in a background tab). Only class and aria-selected are watched, which patch() never
@@ -84,6 +114,11 @@
   // jumps back to the top of the page: put it back on the dropdown right away, before the
   // screen reader announces the page. Gradio reopens the list on focus, so close it again with
   // the Escape its own handler listens for.
+  const refocus = (box) => {
+    if (!box.isConnected || (document.activeElement && document.activeElement !== document.body)) return;
+    box.focus({ preventScroll: true });
+    box.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", code: "Escape", bubbles: true }));
+  };
   let enterOn = null;
   document.addEventListener("keydown", (event) => {
     const box = event.target.closest && event.target.closest('[role="combobox"]');
@@ -93,11 +128,13 @@
     const box = enterOn;
     if (!box || event.target !== box || event.relatedTarget) return;
     enterOn = null;
-    queueMicrotask(() => {
-      if (!box.isConnected || (document.activeElement && document.activeElement !== document.body)) return;
-      box.focus({ preventScroll: true });
-      box.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", code: "Escape", bubbles: true }));
-    });
+    queueMicrotask(() => refocus(box));
+  }, true);
+  // In browse mode NVDA chooses an option by clicking it, which loses the focus the same way
+  document.addEventListener("click", (event) => {
+    const list = event.target.closest && event.target.closest('[role="listbox"]');
+    const box = list && list.id && document.querySelector(`[role="combobox"][aria-controls="${CSS.escape(list.id)}"]`);
+    if (box && event.target.closest('[role="option"]')) setTimeout(() => refocus(box));
   }, true);
 
   // Tabs: Gradio makes every tab a Tab stop and ignores the arrow keys. Use the ARIA tabs

@@ -199,5 +199,6 @@
     "Separation finished: {stems}": "Separare finalizată: {stems}",
     "Batch separation finished": "Separarea în lot s-a finalizat",
     "Models in the list: {count}": "Modele în listă: {count}",
-    "Complete": "Finalizat"
+    "Complete": "Finalizat",
+    "Language automatically detected by system": "Limbă detectată automat de sistem"
 }

@@ -199,5 +199,6 @@
     "Separation finished: {stems}": "اكتمل الفصل: {stems}",
     "Batch separation finished": "اكتمل الفصل الجماعي",
     "Models in the list: {count}": "النماذج في القائمة: {count}",
-    "Complete": "اكتمل"
+    "Complete": "اكتمل",
+    "Language automatically detected by system": "اللغة التي اكتشفها النظام تلقائيًا"
 }

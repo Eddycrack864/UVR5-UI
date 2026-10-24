@@ -199,5 +199,6 @@
     "Separation finished: {stems}": "Separação concluída: {stems}",
     "Batch separation finished": "Separação em lote concluída",
     "Models in the list: {count}": "Modelos na lista: {count}",
-    "Complete": "Concluído"
+    "Complete": "Concluído",
+    "Language automatically detected by system": "Idioma detectado automaticamente pelo sistema"
 }

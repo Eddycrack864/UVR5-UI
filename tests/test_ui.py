@@ -327,3 +327,17 @@ def test_every_control_has_a_label_and_buttons_are_distinct(app):
         names = list(buttons(tab))
         assert len(names) == len(set(names)), (tab.label, names)
 
+
+
+def test_every_tab_has_a_heading_for_screen_readers(app):
+    tabs = [b for b in app.blocks.values() if type(b).__name__ == "Tab"]
+    for tab in tabs:
+        headings = [c for c in tab.children if type(c).__name__ == "HTML" and "uvr-sr-only" in (c.elem_classes or [])]
+        assert headings and f"<h2>{tab.label}</h2>" in headings[0].value, tab.label
+
+
+def test_language_selector_shows_names(app):
+    selector = next(b for b in app.blocks.values() if type(b).__name__ == "Dropdown" and b.label == "Language")
+    choices = dict((value, label) for label, value in selector.choices)
+    assert choices["es_ES"] == "Español (es_ES)"
+    assert choices["zh_CN"] == "简体中文 (zh_CN)"

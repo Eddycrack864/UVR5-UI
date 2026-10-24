@@ -199,5 +199,6 @@
     "Separation finished: {stems}": "Đã tách xong: {stems}",
     "Batch separation finished": "Đã tách hàng loạt xong",
     "Models in the list: {count}": "Mô hình trong danh sách: {count}",
-    "Complete": "Hoàn tất"
+    "Complete": "Hoàn tất",
+    "Language automatically detected by system": "Ngôn ngữ do hệ thống tự động phát hiện"
 }

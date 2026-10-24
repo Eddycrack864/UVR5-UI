@@ -199,5 +199,6 @@
     "Separation finished: {stems}": "分离完成：{stems}",
     "Batch separation finished": "批量分离完成",
     "Models in the list: {count}": "列表中的模型数：{count}",
-    "Complete": "完成"
+    "Complete": "完成",
+    "Language automatically detected by system": "系统自动检测的语言"
 }

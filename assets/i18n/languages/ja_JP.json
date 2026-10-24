@@ -199,5 +199,6 @@
     "Separation finished: {stems}": "分離が完了しました：{stems}",
     "Batch separation finished": "バッチ分離が完了しました",
     "Models in the list: {count}": "リスト内のモデル数：{count}",
-    "Complete": "完了"
+    "Complete": "完了",
+    "Language automatically detected by system": "システムが自動検出した言語"
 }

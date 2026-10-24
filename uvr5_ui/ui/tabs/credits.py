@@ -1,6 +1,7 @@
 import gradio as gr
 
 from uvr5_ui.i18n import i18n
+from uvr5_ui.ui import a11y
 
 CREDITS = """
 UVR5 UI created by **[Eddycrack 864](https://github.com/Eddycrack864).** Join **[AI HUB](https://discord.gg/aihub)** community.
@@ -22,4 +23,5 @@ You can donate to the original UVR5 project here:
 
 def render_credits_tab() -> None:
     with gr.TabItem(i18n("Credits")):
+        a11y.tab_heading(i18n("Credits"))
         gr.Markdown(CREDITS)

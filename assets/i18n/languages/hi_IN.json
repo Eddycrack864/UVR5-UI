@@ -199,5 +199,6 @@
     "Separation finished: {stems}": "अलगाव पूरा हुआ: {stems}",
     "Batch separation finished": "बैच अलगाव पूरा हुआ",
     "Models in the list: {count}": "सूची में मॉडल: {count}",
-    "Complete": "पूर्ण"
+    "Complete": "पूर्ण",
+    "Language automatically detected by system": "सिस्टम द्वारा स्वचालित रूप से पहचानी गई भाषा"
 }

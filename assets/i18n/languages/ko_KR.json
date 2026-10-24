@@ -199,5 +199,6 @@
     "Separation finished: {stems}": "분리 완료: {stems}",
     "Batch separation finished": "일괄 분리 완료",
     "Models in the list: {count}": "목록의 모델 수: {count}",
-    "Complete": "완료"
+    "Complete": "완료",
+    "Language automatically detected by system": "시스템에서 자동으로 감지한 언어"
 }

@@ -9,13 +9,14 @@
 6. [Updating UVR5-UI](#updating-uvr5-ui)
 7. [Docker Instance Setup](#docker-instance-setup)
 8. [Ensembles](#ensembles)
-9. [Settings](#settings)
-10. [Best Models](#best-models)
-11. [Advanced Documentation](#advanced-documentation)
-12. [Contributions](#contributions)
-13. [TO-DO](#to-do)
-14. [Credits](#credits)
-15. [Feedback and Support](#feedback-and-support)
+9. [Stem Mixer](#stem-mixer)
+10. [Settings](#settings)
+11. [Best Models](#best-models)
+12. [Advanced Documentation](#advanced-documentation)
+13. [Contributions](#contributions)
+14. [TO-DO](#to-do)
+15. [Credits](#credits)
+16. [Feedback and Support](#feedback-and-support)
 
 ## Introduction
 UVR5-UI is a user-friendly interface for the Ultimate Vocal Remover 5, designed to separate audio files into various stems using multiple models. Built on top of the `python-audio-separator`, it provides a Gradio UI for easier interaction, making it accessible to both novice and advanced users.
@@ -26,6 +27,7 @@ UVR5-UI is a user-friendly interface for the Ultimate Vocal Remover 5, designed 
 - **Video/Audio Separation**: Supports separation from URLs using `yt_dlp`, covering platforms like YouTube, SoundCloud, etc.
 - **Batch Processing**: Enables processing multiple files at once for efficiency.
 - **Ensembles**: Combines the results of several models, with curated presets and your own (see [Ensembles](#ensembles)).
+- **Stem Mixer**: Plays all the stems together with a volume, mute and solo control per stem, and downloads the mix (see [Stem Mixer](#stem-mixer)).
 - **Performance Settings**: Native FP16, torch.compile and chunked processing for long audio (see [Settings](#settings)).
 - **Multi-Language Support**: Available in several languages to cater to a global user base.
 - **Cross-Platform Compatibility**: Runs on Windows, Linux, and through cloud services like Colab, Kaggle, and Hugging Face Spaces.
@@ -124,6 +126,19 @@ The **Ensemble** tab runs two to six models (of any architecture) on the same au
 
 - Only the stems produced by **every** model are combined (e.g. Vocals and Instrumental). Enable *Include unmatched stems* to also get the rest, and *Keep each model's stems* to save each model's own output next to the result.
 - Batches process the files model by model, so each model is loaded once per group of files.
+
+## Stem Mixer
+After a single-file separation that gives two or more stems, a **Stem mixer** section appears under the output players (in every architecture tab and in the Ensemble tab). Open it to listen to all the stems together, which makes it easy to check the separation: hear the rebuilt mix, find bleed between stems or compare how much of each stem is left.
+
+- **Playback**: ▶ plays every stem at the same time, perfectly in sync. Use ■ to stop and the position bar to jump to any point.
+- **Volume**: each stem has its own slider, from 0% to 150%, and the changes are heard right away while it plays.
+- **M (Mute)** silences a stem. **S (Solo)** plays only the soloed stems (several can be soloed at once); solo wins over mute.
+- **Download mix (.wav)**: saves the mix with the current volumes, mute and solo as `<song>_mix.wav`, at the stems' own sample rate. It is a 32-bit float WAV, so turning stems above 100% doesn't clip the file.
+
+Notes:
+- Everything runs in your browser: the stems are only loaded when you press ▶ or download the mix, and they take about 10 MB of browser memory per minute of audio per stem (a 5-minute song with 6 stems uses about 300 MB).
+- A stem in a format that your browser can't play (AIFF or AC3 in some browsers) is marked in its row and left out; the rest still work. WAV, FLAC and MP3 work in every browser.
+- Batch separations don't show the mixer: it uses the stems shown in the output players.
 
 ## Settings
 - **Performance** (applies to every tab):

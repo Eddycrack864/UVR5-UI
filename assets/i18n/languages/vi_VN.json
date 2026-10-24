@@ -194,5 +194,9 @@
     "Position": "Vị trí",
     "Download mix (.wav)": "Tải xuống bản mix (.wav)",
     "Loading stems...": "Đang tải stem...",
-    "This stem can't be played in the browser": "Không thể phát stem này trong trình duyệt"
+    "This stem can't be played in the browser": "Không thể phát stem này trong trình duyệt",
+    "Separate all files!": "Tách tất cả tệp!",
+    "Separation finished: {stems}": "Đã tách xong: {stems}",
+    "Batch separation finished": "Đã tách hàng loạt xong",
+    "Models in the list: {count}": "Mô hình trong danh sách: {count}"
 }

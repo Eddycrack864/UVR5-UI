@@ -16,7 +16,7 @@ from uvr5_ui.core.separation.service import is_folder
 from uvr5_ui.core.separation.specs import ARCHITECTURES, ARCHITECTURES_BY_ID, ENSEMBLE_PARAMS, ENSEMBLE_SECTION
 from uvr5_ui.i18n import N_, i18n
 from uvr5_ui.integrations.discord_presence import presence
-from uvr5_ui.ui import components, stem_mixer
+from uvr5_ui.ui import a11y, components, stem_mixer
 from uvr5_ui.ui.adapters import GPU_CONCURRENCY_ID, filled, progress_callback, require, user_errors, validations
 from uvr5_ui.ui.context import AppContext
 from uvr5_ui.ui.tabs.separation import DEFAULT_OUTPUT_FORMAT, SeparationTab, output_format_dropdown
@@ -139,6 +139,7 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
         stems = components.stem_outputs()
         zip_button = components.zip_download()
         mixer_box, mixer = stem_mixer.stem_mixer()
+        announcer = a11y.announcer()
 
     # Presets, models, algorithm and weights
     def apply_preset(preset_id):
@@ -281,20 +282,23 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
                            (inputs.input_path, is_folder(input_path),
                             N_("The input path must be an existing folder")))
 
-    separate_button.click(
+    separate_event = separate_button.click(
         run_single, inputs_kwargs={**fields, **arch_fields, "audio": inputs.audio}, outputs=[*stems, zip_button],
         validator=validate_single, api_name="separate_ensemble",
         concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
-    ).success(  # a separate step, so the API's outputs stay the same
-        stem_mixer.mixer_update, inputs=[inputs.audio, *stems], outputs=[mixer_box, mixer],
-        api_visibility="undocumented",
     )
+    # Separate steps, so the API's outputs stay the same
+    separate_event.success(stem_mixer.mixer_update, inputs=[inputs.audio, *stems], outputs=[mixer_box, mixer],
+                           api_visibility="undocumented")
+    separate_event.success(a11y.announce_stems, inputs=stems, outputs=announcer, api_visibility="undocumented")
     batch_event = inputs.batch_button.click(
         run_batch,
         inputs_kwargs={**fields, **arch_fields, "input_path": inputs.input_path, "output_path": inputs.output_path},
         outputs=[inputs.batch_info], validator=validate_batch, api_name="batch_ensemble",
         concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
+    batch_event.success(a11y.announce_batch, inputs=inputs.batch_info, outputs=announcer,
+                        api_visibility="undocumented")
     inputs.wire_stop(batch_event)
 
     return SeparationTab(

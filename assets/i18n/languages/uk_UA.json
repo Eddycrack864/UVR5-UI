@@ -194,5 +194,9 @@
     "Position": "Позиція",
     "Download mix (.wav)": "Завантажити мікс (.wav)",
     "Loading stems...": "Завантаження стемів...",
-    "This stem can't be played in the browser": "Цей стем неможливо відтворити в браузері"
+    "This stem can't be played in the browser": "Цей стем неможливо відтворити в браузері",
+    "Separate all files!": "Розділити всі файли!",
+    "Separation finished: {stems}": "Розділення завершено: {stems}",
+    "Batch separation finished": "Пакетне розділення завершено",
+    "Models in the list: {count}": "Моделей у списку: {count}"
 }

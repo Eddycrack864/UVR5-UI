@@ -185,6 +185,7 @@ function updateRow(stem) {
   mute.setAttribute("aria-pressed", String(stem.muted));
   solo.setAttribute("aria-pressed", String(stem.solo));
   percent.textContent = `${Math.round(stem.volume * 100)}%`;
+  volume.setAttribute("aria-valuetext", percent.textContent);
   row.classList.toggle("unavailable", stem.failed);
   error.hidden = !stem.failed;
   for (const control of [mute, solo, volume]) control.disabled = stem.failed;
@@ -304,6 +305,8 @@ function render() {
       failed: !(item.file && item.file.url),
     };
     const row = make("div", { className: "row" });
+    row.setAttribute("role", "group");
+    row.setAttribute("aria-label", stem.label);
     const name = make("span", { className: "label", title: stem.label }, stem.label);
     const mute = make("button", { type: "button", className: "toggle", title: L.mute }, "M");
     mute.setAttribute("aria-label", `${L.mute}: ${stem.label}`);

@@ -194,5 +194,9 @@
     "Position": "Poziție",
     "Download mix (.wav)": "Descarcă mixul (.wav)",
     "Loading stems...": "Se încarcă stem-urile...",
-    "This stem can't be played in the browser": "Acest stem nu poate fi redat în browser"
+    "This stem can't be played in the browser": "Acest stem nu poate fi redat în browser",
+    "Separate all files!": "Separă toate fișierele!",
+    "Separation finished: {stems}": "Separare finalizată: {stems}",
+    "Batch separation finished": "Separarea în lot s-a finalizat",
+    "Models in the list: {count}": "Modele în listă: {count}"
 }

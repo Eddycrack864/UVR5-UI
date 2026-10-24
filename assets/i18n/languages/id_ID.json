@@ -194,5 +194,9 @@
     "Position": "Posisi",
     "Download mix (.wav)": "Unduh mix (.wav)",
     "Loading stems...": "Memuat stem...",
-    "This stem can't be played in the browser": "Stem ini tidak dapat diputar di browser"
+    "This stem can't be played in the browser": "Stem ini tidak dapat diputar di browser",
+    "Separate all files!": "Pisahkan semua file!",
+    "Separation finished: {stems}": "Pemisahan selesai: {stems}",
+    "Batch separation finished": "Pemisahan batch selesai",
+    "Models in the list: {count}": "Model dalam daftar: {count}"
 }

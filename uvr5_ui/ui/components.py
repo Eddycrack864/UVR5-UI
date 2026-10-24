@@ -99,7 +99,7 @@ def input_sections(section: dict, api_suffix: str) -> InputSections:
                 i18n("Output path"), i18n("Place the output path here"), section.get("output_path", "")
             )
         with gr.Row():
-            batch_button = gr.Button(i18n("Separate!"), variant="primary")
+            batch_button = gr.Button(i18n("Separate all files!"), variant="primary")
             stop_button = gr.Button(i18n("Stop"), variant="stop")
         with gr.Row():
             batch_info = output_log()

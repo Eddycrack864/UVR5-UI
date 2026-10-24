@@ -194,5 +194,9 @@
     "Position": "स्थिति",
     "Download mix (.wav)": "मिक्स डाउनलोड करें (.wav)",
     "Loading stems...": "स्टेम लोड हो रहे हैं...",
-    "This stem can't be played in the browser": "यह स्टेम ब्राउज़र में नहीं चलाया जा सकता"
+    "This stem can't be played in the browser": "यह स्टेम ब्राउज़र में नहीं चलाया जा सकता",
+    "Separate all files!": "सभी फ़ाइलें अलग करें!",
+    "Separation finished: {stems}": "अलगाव पूरा हुआ: {stems}",
+    "Batch separation finished": "बैच अलगाव पूरा हुआ",
+    "Models in the list: {count}": "सूची में मॉडल: {count}"
 }

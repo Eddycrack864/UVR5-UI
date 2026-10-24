@@ -194,5 +194,9 @@
     "Position": "الموضع",
     "Download mix (.wav)": "تنزيل المزيج (.wav)",
     "Loading stems...": "جارٍ تحميل المسارات الصوتية...",
-    "This stem can't be played in the browser": "لا يمكن تشغيل هذا المسار الصوتي في المتصفح"
+    "This stem can't be played in the browser": "لا يمكن تشغيل هذا المسار الصوتي في المتصفح",
+    "Separate all files!": "افصل جميع الملفات!",
+    "Separation finished: {stems}": "اكتمل الفصل: {stems}",
+    "Batch separation finished": "اكتمل الفصل الجماعي",
+    "Models in the list: {count}": "النماذج في القائمة: {count}"
 }

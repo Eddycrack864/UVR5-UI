@@ -194,5 +194,9 @@
     "Position": "Konum",
     "Download mix (.wav)": "Miksi indir (.wav)",
     "Loading stems...": "Stem'ler yükleniyor...",
-    "This stem can't be played in the browser": "Bu stem tarayıcıda çalınamıyor"
+    "This stem can't be played in the browser": "Bu stem tarayıcıda çalınamıyor",
+    "Separate all files!": "Tüm dosyaları ayır!",
+    "Separation finished: {stems}": "Ayırma tamamlandı: {stems}",
+    "Batch separation finished": "Toplu ayırma tamamlandı",
+    "Models in the list: {count}": "Listedeki modeller: {count}"
 }

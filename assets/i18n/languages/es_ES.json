@@ -194,5 +194,9 @@
     "Position": "Posición",
     "Download mix (.wav)": "Descargar mezcla (.wav)",
     "Loading stems...": "Cargando stems...",
-    "This stem can't be played in the browser": "Este stem no se puede reproducir en el navegador"
+    "This stem can't be played in the browser": "Este stem no se puede reproducir en el navegador",
+    "Separate all files!": "¡Separar todos los archivos!",
+    "Separation finished: {stems}": "Separación terminada: {stems}",
+    "Batch separation finished": "Separación por lotes terminada",
+    "Models in the list: {count}": "Modelos en la lista: {count}"
 }

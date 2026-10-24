@@ -194,5 +194,9 @@
     "Position": "播放位置",
     "Download mix (.wav)": "下载混音（.wav）",
     "Loading stems...": "正在加载音轨...",
-    "This stem can't be played in the browser": "此音轨无法在浏览器中播放"
+    "This stem can't be played in the browser": "此音轨无法在浏览器中播放",
+    "Separate all files!": "分离所有文件！",
+    "Separation finished: {stems}": "分离完成：{stems}",
+    "Batch separation finished": "批量分离完成",
+    "Models in the list: {count}": "列表中的模型数：{count}"
 }

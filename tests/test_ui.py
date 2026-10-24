@@ -18,6 +18,10 @@ from uvr5_ui.core.separation.ensemble_presets import PresetStore  # noqa: E402
 from uvr5_ui.core.separation.runtime import separator_cache  # noqa: E402
 from uvr5_ui.ui.app import create_app  # noqa: E402
 from uvr5_ui.ui.components import model_choices  # noqa: E402
+from uvr5_ui.ui import a11y  # noqa: E402
+from uvr5_ui.ui.app import launch_kwargs  # noqa: E402
+from uvr5_ui.ui.tabs.separation import _model_choices  # noqa: E402
+from uvr5_ui.core.separation.specs import ARCHITECTURES_BY_ID as SPECS  # noqa: E402
 from uvr5_ui.ui.stem_mixer import mixer_update, mixer_value  # noqa: E402
 from uvr5_ui.ui.context import AppContext  # noqa: E402
 from tests.test_ensemble import WavSeparator  # noqa: E402
@@ -266,4 +270,57 @@ def test_mixer_is_chained_after_separating_without_changing_the_api(app):
         mixer_steps = [f for f in app.fns.values() if f.fn is mixer_update and f.trigger_after == fn._id]
         assert len(mixer_steps) == 1 and mixer_steps[0].trigger_only_on_success
         assert mixer_steps[0].outputs[1] in mixers
+
+
+def test_page_and_gradio_language_follow_the_app_language():
+    assert a11y.page_language("pt_BR") == "pt-BR"
+    locales = [a11y.gradio_locale(code) for code in ("es_ES", "pt_BR", "zh_CN", "it_IT", "vi_VN")]
+    assert locales == ["es", "pt-BR", "zh-CN", "en", "en"]  # Gradio has no Italian or Vietnamese texts
+    head = a11y.head_html("es_ES")
+    assert head.startswith("<script>") and head.endswith("</script>")
+    assert '"page_lang": "es-ES"' in head and "__CONFIG__" not in head
+
+
+def test_launch_adds_the_accessibility_fixes(ctx):
+    kwargs = launch_kwargs(ctx)
+    assert kwargs["head"].startswith("<script>")
+    assert ":focus-visible" in kwargs["css"]
+
+
+def test_announcements():
+    stems = a11y.announce_stems("/c/song_(Vocals)_m.wav", None, "/c/song_(Instrumental)_m.flac")
+    assert stems["text"] == "Separation finished: Vocals, Instrumental"
+    assert a11y.announce("Hi")["id"] != a11y.announce("Hi")["id"]  # repeated messages are read again
+    batch = a11y.announce_batch("2 audio files found\nDone: 2 separated, 0 failed. Output: /out")
+    assert batch["text"] == "Batch separation finished. Done: 2 separated, 0 failed. Output: /out"
+    assert a11y.announce_batch(None)["text"] == "Batch separation finished."
+
+
+def test_model_filter_announces_the_size_of_the_list(ctx):
+    update, message = _model_choices(ctx, SPECS["roformer"], downloaded_only=False)
+    assert len(update["choices"]) == 92
+    assert message["text"] == "Models in the list: 92"
+
+
+LABELLED = ("Textbox", "Dropdown", "Slider", "Checkbox", "CheckboxGroup", "Radio", "Number", "Audio", "File")
+
+
+def test_every_control_has_a_label_and_buttons_are_distinct(app):
+    # Screen readers announce controls by their label: none may be empty, and two buttons in
+    # the same tab may not share a name (e.g. the single and batch "Separate!" buttons)
+    unlabelled = [f"{type(b).__name__} #{b._id}" for b in app.blocks.values()
+                  if type(b).__name__ in LABELLED and not str(b.label or "").strip()]
+    assert not unlabelled
+
+    def buttons(block):
+        for child in getattr(block, "children", []):
+            if type(child).__name__ == "Button":
+                yield str(child.value)
+            elif type(child).__name__ == "DownloadButton":
+                yield str(child.label)  # its text; the value is the file
+            yield from buttons(child)
+
+    for tab in (b for b in app.blocks.values() if type(b).__name__ == "Tab"):
+        names = list(buttons(tab))
+        assert len(names) == len(set(names)), (tab.label, names)
 

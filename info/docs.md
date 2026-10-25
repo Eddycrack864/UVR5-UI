@@ -89,12 +89,12 @@ To update, run the respective updater script:
 Your preferences (language, theme, saved separation settings) are stored in `user_data/` and are kept across updates.
 
 ### Precompiled Version
-1. Get the precompiled version (.zip) for your PC:
-   - **[Windows](https://huggingface.co/Eddycrack864/UVR5-UI/tree/main/Windows)**
-   - **[Linux](https://huggingface.co/Eddycrack864/UVR5-UI/tree/main/Linux)**
+1. Get the precompiled version for your PC:
+   - **[Windows](https://huggingface.co/Eddycrack864/UVR5-UI/tree/main/Windows)** (`.zip`)
+   - **[Linux](https://huggingface.co/Eddycrack864/UVR5-UI/tree/main/Linux)** (`.tar.gz`, needs glibc 2.35 or newer)
 
-2. Extract the .zip file, I recommend using the "extract here" option.
-3. You can now use all the features of the normal installation.
+2. Extract it (on Linux: `tar -xzf UVR5-UI-vX.X.X-linux.tar.gz`); it contains a `UVR5-UI` folder.
+3. Run `run-UVR5-UI.bat` (Windows) or `./run-UVR5-UI.sh` (Linux). You can now use all the features of the normal installation (FFmpeg is still needed).
 
 > **Note**: Still, to update UVR5 UI you need to install Git.
 

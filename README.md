@@ -147,7 +147,13 @@ env/python.exe tools/i18n_scan.py --check --langs
 env/python.exe tools/check_model_links.py          # are all download links working? which models are not on the Hugging Face mirror yet?
 env/python.exe tools/sync_models.py --write        # add the models audio-separator supports and fill the sources that now work
 env/python.exe -m pytest --network                 # also run the tests that check the links and the catalog online
+
+# Hugging Face Space (needs `hf auth login` with write access)
+env/python.exe tools/sync_space.py                  # dry run: what would change on the Space
+env/python.exe tools/sync_space.py --ref main --upload   # make the Space a copy of the repo at that commit/tag
 ```
+
+On a Space (`SPACE_ID` is set) the app hides what would change the server for every visitor (batch separation, settings, themes, saving presets) and gives each separation its own output folder. On ZeroGPU (`SPACES_ZERO_GPU`) separations run inside `@spaces.GPU` with a duration based on the audio length (`uvr5_ui/hosting.py`, `uvr5_ui/ui/gpu.py`).
 
 After updating audio-separator, run `tools/sync_models.py --write`: the catalog must list every model it supports (`tests/test_catalog.py` checks its bundled list offline). New models only get a Hugging Face source once all their files are on the mirror; run the sync again after uploading them.
 

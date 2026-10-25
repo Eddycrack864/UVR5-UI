@@ -6,6 +6,7 @@ from pathlib import Path
 
 import gradio as gr
 
+from uvr5_ui import hosting
 from uvr5_ui.core.audio import zip_files
 from uvr5_ui.core.downloads.ytdl import download_audio
 from uvr5_ui.core.models.catalog import Model, ModelCatalog
@@ -90,7 +91,8 @@ def input_sections(section: dict, api_suffix: str) -> InputSections:
         with gr.Row():
             download_button = gr.Button(i18n("Download!"), variant="primary")
 
-    with gr.Accordion(i18n("Batch separation"), open=False):
+    # A Space has no batch: its folders are on the server
+    with gr.Accordion(i18n("Batch separation"), open=False, visible=not hosting.on_space()):
         with gr.Row():
             input_path = single_line_textbox(
                 i18n("Input path"), i18n("Place the input path here"), section.get("input_path", "")

@@ -5,10 +5,11 @@ from itertools import groupby
 
 import gradio as gr
 
+from uvr5_ui import hosting
 from uvr5_ui.core.downloads.model_downloader import METHOD_PYTHON, download_model
 from uvr5_ui.core.separation.ensemble import (
     ALGORITHMS, DEFAULT_ALGORITHM, MAX_MODELS, WEIGHTED_ALGORITHMS, EnsembleConfigError, EnsembleMember,
-    EnsembleOptions, check_ensemble, ensemble_batch, ensemble_file,
+    EnsembleOptions, check_ensemble, ensemble_batch,
 )
 from uvr5_ui.core.separation.ensemble_presets import EnsemblePreset
 from uvr5_ui.core.separation.runtime import RuntimeOptions
@@ -16,7 +17,7 @@ from uvr5_ui.core.separation.service import is_folder
 from uvr5_ui.core.separation.specs import ARCHITECTURES, ARCHITECTURES_BY_ID, ENSEMBLE_PARAMS, ENSEMBLE_SECTION
 from uvr5_ui.i18n import N_, i18n
 from uvr5_ui.integrations.discord_presence import presence
-from uvr5_ui.ui import a11y, components, stem_mixer
+from uvr5_ui.ui import a11y, components, gpu, stem_mixer
 from uvr5_ui.ui.adapters import GPU_CONCURRENCY_ID, filled, progress_callback, require, user_errors, validations
 from uvr5_ui.ui.context import AppContext
 from uvr5_ui.ui.tabs.separation import DEFAULT_OUTPUT_FORMAT, SeparationTab, output_format_dropdown
@@ -125,7 +126,8 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
                         for param in row_params:
                             params[param.key] = components.param_widget(param, section.get(param.key, param.default))
 
-        with gr.Accordion(i18n("Manage presets"), open=False):
+        # On a Space, saved presets would be shared by every visitor
+        with gr.Accordion(i18n("Manage presets"), open=False, visible=not hosting.on_space()):
             with gr.Row():
                 preset_name = components.single_line_textbox(i18n("Preset name"), i18n("Name of the new preset"))
                 preset_description = components.single_line_textbox(i18n("Description"), i18n("Optional"))
@@ -205,10 +207,11 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
         gr.Info(i18n("Preset deleted"))
         return gr.update(choices=_preset_choices(ctx), value=CUSTOM_PRESET), ""
 
-    save_preset.click(run_save_preset, inputs=[preset_name, preset_description, models, algorithm, weights],
-                      outputs=[preset, preset_info], api_visibility="undocumented")
-    delete_preset.click(run_delete_preset, inputs=[preset], outputs=[preset, preset_info],
-                        api_visibility="undocumented")
+    if not hosting.on_space():
+        save_preset.click(run_save_preset, inputs=[preset_name, preset_description, models, algorithm, weights],
+                          outputs=[preset, preset_info], api_visibility="undocumented")
+        delete_preset.click(run_delete_preset, inputs=[preset], outputs=[preset, preset_info],
+                            api_visibility="undocumented")
 
     # Separation. Handlers take named arguments (inputs_kwargs), which are also the API's
     # parameter names. Each architecture's params are prefixed with its id (roformer_overlap...).
@@ -256,10 +259,10 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
                    **values):
         audio_path = require(audio, N_("Please provide an input audio"))
         members, options = members_and_options(models, algorithm, weights, preset, values)
+        gpu.prefetch([member.model for member in members], progress)
         with presence.track("ensemble"):
-            results = ensemble_file(members, audio_path, output_format or DEFAULT_OUTPUT_FORMAT, options,
-                                    progress=progress_callback(progress),
-                                    runtime_options=RuntimeOptions.from_config(ctx.config))
+            results = gpu.ensemble(members, audio_path, output_format or DEFAULT_OUTPUT_FORMAT, options,
+                                   RuntimeOptions.from_config(ctx.config), gpu.output_dir(), progress)
         return [*components.stem_updates(results), components.zip_update(results, audio_path)]
 
     def validate_single(models, algorithm, weights, preset, output_format, audio, **values):
@@ -294,15 +297,17 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
                            show_progress="hidden", api_visibility="undocumented")
     separate_event.success(a11y.announce_stems, inputs=stems, outputs=announcer, show_progress="hidden",
                            api_visibility="undocumented")
-    batch_event = inputs.batch_button.click(
-        run_batch,
-        inputs_kwargs={**fields, **arch_fields, "input_path": inputs.input_path, "output_path": inputs.output_path},
-        outputs=[inputs.batch_info], validator=validate_batch, api_name="batch_ensemble",
-        concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
-    )
-    batch_event.success(a11y.announce_batch, inputs=inputs.batch_info, outputs=announcer,
-                        show_progress="hidden", api_visibility="undocumented")
-    inputs.wire_stop(batch_event)
+    if not hosting.on_space():  # a Space has no batch: its folders are on the server
+        batch_event = inputs.batch_button.click(
+            run_batch,
+            inputs_kwargs={**fields, **arch_fields,
+                           "input_path": inputs.input_path, "output_path": inputs.output_path},
+            outputs=[inputs.batch_info], validator=validate_batch, api_name="batch_ensemble",
+            concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
+        )
+        batch_event.success(a11y.announce_batch, inputs=inputs.batch_info, outputs=announcer,
+                            show_progress="hidden", api_visibility="undocumented")
+        inputs.wire_stop(batch_event)
 
     return SeparationTab(
         section=ENSEMBLE_SECTION,

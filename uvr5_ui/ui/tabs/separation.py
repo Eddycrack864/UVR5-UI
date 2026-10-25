@@ -5,13 +5,14 @@ from itertools import groupby
 
 import gradio as gr
 
+from uvr5_ui import hosting
 from uvr5_ui.core.audio import OUTPUT_FORMATS
 from uvr5_ui.core.separation.runtime import RuntimeOptions
-from uvr5_ui.core.separation.service import is_folder, separate_batch, separate_file
+from uvr5_ui.core.separation.service import is_folder, separate_batch
 from uvr5_ui.core.separation.specs import ArchSpec
 from uvr5_ui.i18n import N_, i18n
 from uvr5_ui.integrations.discord_presence import presence
-from uvr5_ui.ui import a11y, components, stem_mixer
+from uvr5_ui.ui import a11y, components, gpu, stem_mixer
 from uvr5_ui.ui.adapters import GPU_CONCURRENCY_ID, filled, progress_callback, require, user_errors, validations
 from uvr5_ui.ui.context import AppContext
 
@@ -77,10 +78,11 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
         selected = _selected_model(ctx, spec, model)
         audio_path = require(audio, N_("Please provide an input audio"))
         notify_first_use(ctx, selected)
+        gpu.prefetch([selected], progress)
         with presence.track(spec.id):
-            results = separate_file(
-                spec, selected, audio_path, output_format or DEFAULT_OUTPUT_FORMAT, values,
-                progress=progress_callback(progress), options=RuntimeOptions.from_config(ctx.config),
+            results = gpu.separate(
+                spec.id, selected, audio_path, output_format or DEFAULT_OUTPUT_FORMAT, values,
+                RuntimeOptions.from_config(ctx.config), gpu.output_dir(), progress,
             )
         return [*components.stem_updates(results), components.zip_update(results, audio_path)]
 
@@ -126,14 +128,15 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
                            show_progress="hidden", api_visibility="undocumented")
     separate_event.success(a11y.announce_stems, inputs=stems, outputs=announcer, show_progress="hidden",
                            api_visibility="undocumented")
-    batch_event = inputs.batch_button.click(
-        run_batch, inputs_kwargs={**fields, "input_path": inputs.input_path, "output_path": inputs.output_path},
-        outputs=[inputs.batch_info], validator=validate_batch, api_name=f"batch_{spec.id}",
-        concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
-    )
-    batch_event.success(a11y.announce_batch, inputs=inputs.batch_info, outputs=announcer,
-                        show_progress="hidden", api_visibility="undocumented")
-    inputs.wire_stop(batch_event)
+    if not hosting.on_space():  # a Space has no batch: its folders are on the server
+        batch_event = inputs.batch_button.click(
+            run_batch, inputs_kwargs={**fields, "input_path": inputs.input_path, "output_path": inputs.output_path},
+            outputs=[inputs.batch_info], validator=validate_batch, api_name=f"batch_{spec.id}",
+            concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
+        )
+        batch_event.success(a11y.announce_batch, inputs=inputs.batch_info, outputs=announcer,
+                            show_progress="hidden", api_visibility="undocumented")
+        inputs.wire_stop(batch_event)
 
     return SeparationTab(
         section=spec.settings_section,

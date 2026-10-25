@@ -156,12 +156,18 @@ After updating audio-separator, run `tools/sync_models.py --write`: the catalog 
 - **Translations:** the English text passed to `i18n("...")` is the key in every language file, so changing it breaks existing translations. A new string must be added to all the files in `assets/i18n/languages/` (named like `xx_XX.json`); `tests/test_i18n_scan.py` fails if a language is missing one.
 
 ## Precompiled Version
-1. Get the precompiled version (.zip) for your PC:
-   - **[Windows](https://huggingface.co/Eddycrack864/UVR5-UI/tree/main/Windows)**
-   - **[Linux](https://huggingface.co/Eddycrack864/UVR5-UI/tree/main/Linux)**
+The precompiled version already includes the Python environment, so there is nothing to install: download, extract and run.
 
-2. Extract the .zip file, I recommend using the "extract here" option.
-3. You can now use all the features of the normal installation.
+1. Get the precompiled version for your PC (the latest one is also linked in each [release](https://github.com/Eddycrack864/UVR5-UI/releases/latest)):
+   - **[Windows](https://huggingface.co/Eddycrack864/UVR5-UI/tree/main/Windows)** (`.zip`)
+   - **[Linux](https://huggingface.co/Eddycrack864/UVR5-UI/tree/main/Linux)** (`.tar.gz`, needs glibc 2.35 or newer: Ubuntu 22.04, Debian 12, Fedora 36 or later)
+
+2. Extract it, it contains a `UVR5-UI` folder:
+   - **Windows:** right click > "Extract All..." (or "Extract here" with 7-Zip/WinRAR).
+   - **Linux:** `tar -xzf UVR5-UI-vX.X.X-linux.tar.gz`
+3. Run `run-UVR5-UI.bat` (Windows) or `./run-UVR5-UI.sh` (Linux). You can now use all the features of the normal installation.
+
+FFmpeg is still needed (see the [prerequisites](#prerequisites)).
 
 > [!NOTE]  
 > Still, to update UVR5 UI you need to install Git.

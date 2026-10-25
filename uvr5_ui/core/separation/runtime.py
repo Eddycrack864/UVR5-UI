@@ -11,7 +11,7 @@ import threading
 from dataclasses import dataclass
 from pathlib import Path
 
-from uvr5_ui import paths
+from uvr5_ui import hosting, paths
 from uvr5_ui.core.audio import DEFAULT_NAME_TEMPLATE, check_name_template
 from uvr5_ui.core.device import use_autocast
 from uvr5_ui.core.downloads.model_downloader import ensure_downloaded
@@ -48,7 +48,8 @@ class RuntimeOptions:
             name_template = DEFAULT_NAME_TEMPLATE
         return cls(
             precision=precision if precision in PRECISIONS else "auto",
-            torch_compile=bool(config.get("performance.torch_compile", False)),
+            # ZeroGPU doesn't support torch.compile
+            torch_compile=bool(config.get("performance.torch_compile", False)) and not hosting.on_zerogpu(),
             chunk_duration=chunk_duration,
             use_soundfile=bool(config.get("performance.use_soundfile", False)),
             name_template=name_template,

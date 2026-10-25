@@ -2,6 +2,7 @@
 
 import gradio as gr
 
+from uvr5_ui import hosting
 from uvr5_ui.core.separation.specs import ARCHITECTURES
 from uvr5_ui.i18n import i18n
 from uvr5_ui.ui import a11y, theme
@@ -39,14 +40,16 @@ def create_app(ctx: AppContext = None) -> gr.Blocks:
         # gr.HTML, because the Markdown sanitizer drops aria-hidden
         gr.HTML('<h1><span aria-hidden="true">🎵</span> UVR5 UI <span aria-hidden="true">🎵</span></h1>')
         gr.Markdown(i18n("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)"))
-        gr.Markdown(i18n("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)"))
+        if not hosting.on_space():
+            gr.Markdown(i18n("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)"))
 
         with gr.Tabs():
             separation_tabs = [render_separation_tab(spec, ctx) for spec in ARCHITECTURES]
             separation_tabs.append(render_ensemble_tab(ctx, separation_tabs))
             render_leaderboard_tab()
-            render_themes_tab(ctx)
-            render_settings_tab(ctx, separation_tabs)
+            if not hosting.on_space():  # their changes would apply to every visitor of the Space
+                render_themes_tab(ctx)
+                render_settings_tab(ctx, separation_tabs)
             render_credits_tab()
 
     return app

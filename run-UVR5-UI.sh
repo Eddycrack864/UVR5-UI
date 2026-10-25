@@ -6,6 +6,11 @@ cd "$(dirname "$0")"
 # Extra arguments are passed through, e.g.: ./run-UVR5-UI.sh --share --listen-port 8080
 if [ -x "env/bin/python" ]; then
     PYTHON="env/bin/python"
+    # OpenSSL looks for certificates where env/ was created, which breaks HTTPS if the folder was moved
+    # (e.g. the precompiled version), so point it to the ones inside env/
+    if [ -z "$SSL_CERT_FILE" ] && [ -f "env/ssl/cert.pem" ]; then
+        export SSL_CERT_FILE="$PWD/env/ssl/cert.pem"
+    fi
 else
     echo "Searching for global python and dependencies..."
     if command -v python3 &> /dev/null; then

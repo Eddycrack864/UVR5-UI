@@ -2,17 +2,16 @@
 
 from dataclasses import dataclass, field
 from itertools import groupby
-from pathlib import Path
 
 import gradio as gr
 
 from uvr5_ui.core.audio import OUTPUT_FORMATS
 from uvr5_ui.core.separation.runtime import RuntimeOptions
-from uvr5_ui.core.separation.service import separate_batch, separate_file
+from uvr5_ui.core.separation.service import is_folder, separate_batch, separate_file
 from uvr5_ui.core.separation.specs import ArchSpec
 from uvr5_ui.i18n import N_, i18n
 from uvr5_ui.integrations.discord_presence import presence
-from uvr5_ui.ui import components
+from uvr5_ui.ui import a11y, components, stem_mixer
 from uvr5_ui.ui.adapters import GPU_CONCURRENCY_ID, filled, progress_callback, require, user_errors, validations
 from uvr5_ui.ui.context import AppContext
 
@@ -38,18 +37,17 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
     initial_model = section.get("model") if section.get("model") in model_ids else None
 
     with gr.TabItem(spec.tab_label):
+        a11y.tab_heading(spec.tab_label)
         with gr.Row():
-            model = gr.Dropdown(label=i18n("Select the model"), choices=model_ids, value=initial_model, interactive=True)
+            model = gr.Dropdown(label=i18n("Select the model"), value=initial_model, interactive=True,
+                                choices=components.model_choices(ctx.catalog, ctx.catalog.by_arch(spec.id)))
             if spec.show_model_filter:
                 with gr.Row():
                     with gr.Column():
                         all_models = gr.Button(i18n("All models"), variant="primary")
                         downloaded_models = gr.Button(i18n("Downloaded models only"), variant="primary")
                     output_format = output_format_dropdown(section)
-                all_models.click(lambda: _model_choices(ctx, spec, downloaded_only=False), outputs=[model],
-                                 api_visibility="undocumented")
-                downloaded_models.click(lambda: _model_choices(ctx, spec, downloaded_only=True), outputs=[model],
-                                        api_visibility="undocumented")
+                model_filters = [(all_models, False), (downloaded_models, True)]
             else:
                 output_format = output_format_dropdown(section)
 
@@ -67,6 +65,8 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
             separate_button = gr.Button(i18n("Separate!"), variant="primary")
         stems = components.stem_outputs()
         zip_button = components.zip_download()
+        mixer_box, mixer = stem_mixer.stem_mixer()
+        announcer = a11y.announcer()
 
     # Handlers take named arguments (inputs_kwargs), which are also the API's parameter names:
     # model, output_format, audio / input_path + output_path, and every ParamSpec key.
@@ -106,20 +106,33 @@ def render_separation_tab(spec: ArchSpec, ctx: AppContext) -> SeparationTab:
     def validate_batch(model, output_format, input_path, output_path, **values):
         return validations(
             (fields["model"], filled(model), N_("Please select a model first")),
-            (inputs.input_path, filled(input_path) and Path(input_path.strip()).is_dir(),
+            (inputs.input_path, is_folder(input_path),
              N_("The input path must be an existing folder")),
         )
 
-    separate_button.click(
+    if spec.show_model_filter:
+        for button, downloaded_only in model_filters:
+            button.click(lambda only=downloaded_only: _model_choices(ctx, spec, downloaded_only=only),
+                         outputs=[model, announcer], api_visibility="undocumented")
+
+    separate_event = separate_button.click(
         run_single, inputs_kwargs={**fields, "audio": inputs.audio}, outputs=[*stems, zip_button],
         validator=validate_single, api_name=f"separate_{spec.id}",
         concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
+    # Separate steps, so the API's outputs stay the same. No progress of their own, so screen
+    # readers hear "Complete" once
+    separate_event.success(stem_mixer.mixer_update, inputs=[inputs.audio, *stems], outputs=[mixer_box, mixer],
+                           show_progress="hidden", api_visibility="undocumented")
+    separate_event.success(a11y.announce_stems, inputs=stems, outputs=announcer, show_progress="hidden",
+                           api_visibility="undocumented")
     batch_event = inputs.batch_button.click(
         run_batch, inputs_kwargs={**fields, "input_path": inputs.input_path, "output_path": inputs.output_path},
         outputs=[inputs.batch_info], validator=validate_batch, api_name=f"batch_{spec.id}",
         concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
+    batch_event.success(a11y.announce_batch, inputs=inputs.batch_info, outputs=announcer,
+                        show_progress="hidden", api_visibility="undocumented")
     inputs.wire_stop(batch_event)
 
     return SeparationTab(
@@ -148,7 +161,9 @@ def output_format_dropdown(section: dict):
 
 def _model_choices(ctx: AppContext, spec: ArchSpec, downloaded_only: bool):
     models = ctx.catalog.downloaded(spec.id) if downloaded_only else ctx.catalog.by_arch(spec.id)
-    return gr.update(choices=[m.id for m in models], value=None)
+    # The list changes silently: tell screen readers how many models it has now
+    message = i18n("Models in the list: {count}").format(count=len(models))
+    return gr.update(choices=components.model_choices(ctx.catalog, models), value=None), a11y.announce(message)
 
 
 def _selected_model(ctx: AppContext, spec: ArchSpec, model_id):

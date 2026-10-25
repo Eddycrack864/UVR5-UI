@@ -183,5 +183,22 @@
     "Name template saved": "บันทึกเทมเพลตชื่อแล้ว",
     "Stop": "หยุด",
     "Download all stems (.zip)": "ดาวน์โหลดสเต็มทั้งหมด (.zip)",
-    "The input path must be an existing folder": "พาธอินพุตต้องเป็นโฟลเดอร์ที่มีอยู่"
+    "The input path must be an existing folder": "พาธอินพุตต้องเป็นโฟลเดอร์ที่มีอยู่",
+    "Stem mixer": "มิกเซอร์สเต็ม",
+    "Play all the stems together and adjust the volume of each one": "เล่นสเต็มทั้งหมดพร้อมกันและปรับระดับเสียงของแต่ละสเต็ม",
+    "Play": "เล่น",
+    "Pause": "หยุดชั่วคราว",
+    "Mute": "ปิดเสียง",
+    "Solo": "โซโล",
+    "Volume": "ระดับเสียง",
+    "Position": "ตำแหน่ง",
+    "Download mix (.wav)": "ดาวน์โหลดมิกซ์ (.wav)",
+    "Loading stems...": "กำลังโหลดสเต็ม...",
+    "This stem can't be played in the browser": "ไม่สามารถเล่นสเต็มนี้ในเบราว์เซอร์ได้",
+    "Separate all files!": "แยกไฟล์ทั้งหมด!",
+    "Separation finished: {stems}": "แยกเสร็จแล้ว: {stems}",
+    "Batch separation finished": "แยกแบบกลุ่มเสร็จแล้ว",
+    "Models in the list: {count}": "จำนวนโมเดลในรายการ: {count}",
+    "Complete": "เสร็จสิ้น",
+    "Language automatically detected by system": "ภาษาที่ระบบตรวจพบโดยอัตโนมัติ"
 }

@@ -183,5 +183,22 @@
     "Name template saved": "नाम टेम्पलेट सहेजा गया",
     "Stop": "रोकें",
     "Download all stems (.zip)": "सभी स्टेम डाउनलोड करें (.zip)",
-    "The input path must be an existing folder": "इनपुट पाथ एक मौजूदा फ़ोल्डर होना चाहिए"
+    "The input path must be an existing folder": "इनपुट पाथ एक मौजूदा फ़ोल्डर होना चाहिए",
+    "Stem mixer": "स्टेम मिक्सर",
+    "Play all the stems together and adjust the volume of each one": "सभी स्टेम एक साथ चलाएँ और हर एक का वॉल्यूम समायोजित करें",
+    "Play": "चलाएँ",
+    "Pause": "विराम",
+    "Mute": "म्यूट",
+    "Solo": "सोलो",
+    "Volume": "वॉल्यूम",
+    "Position": "स्थिति",
+    "Download mix (.wav)": "मिक्स डाउनलोड करें (.wav)",
+    "Loading stems...": "स्टेम लोड हो रहे हैं...",
+    "This stem can't be played in the browser": "यह स्टेम ब्राउज़र में नहीं चलाया जा सकता",
+    "Separate all files!": "सभी फ़ाइलें अलग करें!",
+    "Separation finished: {stems}": "अलगाव पूरा हुआ: {stems}",
+    "Batch separation finished": "बैच अलगाव पूरा हुआ",
+    "Models in the list: {count}": "सूची में मॉडल: {count}",
+    "Complete": "पूर्ण",
+    "Language automatically detected by system": "सिस्टम द्वारा स्वचालित रूप से पहचानी गई भाषा"
 }

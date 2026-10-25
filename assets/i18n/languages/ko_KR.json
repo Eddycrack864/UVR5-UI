@@ -183,5 +183,22 @@
     "Name template saved": "이름 템플릿이 저장되었습니다",
     "Stop": "중지",
     "Download all stems (.zip)": "모든 스템 다운로드 (.zip)",
-    "The input path must be an existing folder": "입력 경로는 존재하는 폴더여야 합니다"
+    "The input path must be an existing folder": "입력 경로는 존재하는 폴더여야 합니다",
+    "Stem mixer": "스템 믹서",
+    "Play all the stems together and adjust the volume of each one": "모든 스템을 함께 재생하고 각 스템의 볼륨을 조절합니다",
+    "Play": "재생",
+    "Pause": "일시정지",
+    "Mute": "음소거",
+    "Solo": "솔로",
+    "Volume": "볼륨",
+    "Position": "재생 위치",
+    "Download mix (.wav)": "믹스 다운로드 (.wav)",
+    "Loading stems...": "스템 불러오는 중...",
+    "This stem can't be played in the browser": "이 스템은 브라우저에서 재생할 수 없습니다",
+    "Separate all files!": "모든 파일 분리!",
+    "Separation finished: {stems}": "분리 완료: {stems}",
+    "Batch separation finished": "일괄 분리 완료",
+    "Models in the list: {count}": "목록의 모델 수: {count}",
+    "Complete": "완료",
+    "Language automatically detected by system": "시스템에서 자동으로 감지한 언어"
 }

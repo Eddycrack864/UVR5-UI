@@ -2,7 +2,6 @@
 
 import math
 from itertools import groupby
-from pathlib import Path
 
 import gradio as gr
 
@@ -13,10 +12,11 @@ from uvr5_ui.core.separation.ensemble import (
 )
 from uvr5_ui.core.separation.ensemble_presets import EnsemblePreset
 from uvr5_ui.core.separation.runtime import RuntimeOptions
+from uvr5_ui.core.separation.service import is_folder
 from uvr5_ui.core.separation.specs import ARCHITECTURES, ARCHITECTURES_BY_ID, ENSEMBLE_PARAMS, ENSEMBLE_SECTION
 from uvr5_ui.i18n import N_, i18n
 from uvr5_ui.integrations.discord_presence import presence
-from uvr5_ui.ui import components
+from uvr5_ui.ui import a11y, components, stem_mixer
 from uvr5_ui.ui.adapters import GPU_CONCURRENCY_ID, filled, progress_callback, require, user_errors, validations
 from uvr5_ui.ui.context import AppContext
 from uvr5_ui.ui.tabs.separation import DEFAULT_OUTPUT_FORMAT, SeparationTab, output_format_dropdown
@@ -58,9 +58,10 @@ ALGORITHM_INFO = {
 def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> SeparationTab:
     section = ctx.initial_settings.get(ENSEMBLE_SECTION, {})
     tabs_by_arch = {tab.spec.id: tab for tab in arch_tabs if tab.spec}
+    all_models = [model for spec in ARCHITECTURES for model in ctx.catalog.by_arch(spec.id)]
     model_choices = [
-        (f"{spec.tab_label} · {model.id}", model.filename)
-        for spec in ARCHITECTURES for model in ctx.catalog.by_arch(spec.id)
+        (components.model_label(ctx.catalog, model, f"{ARCHITECTURES_BY_ID[model.arch].tab_label} · "), model.filename)
+        for model in ctx.catalog.recommended_first(all_models)
     ]
     valid_files = {filename for _, filename in model_choices}
     initial_models = [f for f in section.get("models") or [] if f in valid_files]
@@ -69,6 +70,7 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
     initial_missing = _missing_models(ctx, initial_models)
 
     with gr.TabItem(i18n("Ensemble")):
+        a11y.tab_heading(i18n("Ensemble"))
         gr.Markdown(i18n("Combine the results of several models into a single, better separation. "
                          "Each model runs with the advanced settings of its own tab."))
         with gr.Row():
@@ -137,6 +139,8 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
             separate_button = gr.Button(i18n("Separate!"), variant="primary")
         stems = components.stem_outputs()
         zip_button = components.zip_download()
+        mixer_box, mixer = stem_mixer.stem_mixer()
+        announcer = a11y.announcer()
 
     # Presets, models, algorithm and weights
     def apply_preset(preset_id):
@@ -276,20 +280,28 @@ def render_ensemble_tab(ctx: AppContext, arch_tabs: list[SeparationTab]) -> Sepa
 
     def validate_batch(models, algorithm, weights, preset, output_format, input_path, output_path, **values):
         return validations(*ensemble_checks(models, algorithm, weights),
-                           (inputs.input_path, filled(input_path) and Path(input_path.strip()).is_dir(),
+                           (inputs.input_path, is_folder(input_path),
                             N_("The input path must be an existing folder")))
 
-    separate_button.click(
+    separate_event = separate_button.click(
         run_single, inputs_kwargs={**fields, **arch_fields, "audio": inputs.audio}, outputs=[*stems, zip_button],
         validator=validate_single, api_name="separate_ensemble",
         concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
+    # Separate steps, so the API's outputs stay the same. No progress of their own, so screen
+    # readers hear "Complete" once
+    separate_event.success(stem_mixer.mixer_update, inputs=[inputs.audio, *stems], outputs=[mixer_box, mixer],
+                           show_progress="hidden", api_visibility="undocumented")
+    separate_event.success(a11y.announce_stems, inputs=stems, outputs=announcer, show_progress="hidden",
+                           api_visibility="undocumented")
     batch_event = inputs.batch_button.click(
         run_batch,
         inputs_kwargs={**fields, **arch_fields, "input_path": inputs.input_path, "output_path": inputs.output_path},
         outputs=[inputs.batch_info], validator=validate_batch, api_name="batch_ensemble",
         concurrency_limit=1, concurrency_id=GPU_CONCURRENCY_ID,
     )
+    batch_event.success(a11y.announce_batch, inputs=inputs.batch_info, outputs=announcer,
+                        show_progress="hidden", api_visibility="undocumented")
     inputs.wire_stop(batch_event)
 
     return SeparationTab(

@@ -183,5 +183,22 @@
     "Name template saved": "Шаблон имени сохранён",
     "Stop": "Остановить",
     "Download all stems (.zip)": "Скачать все стемы (.zip)",
-    "The input path must be an existing folder": "Входной путь должен быть существующей папкой"
+    "The input path must be an existing folder": "Входной путь должен быть существующей папкой",
+    "Stem mixer": "Микшер стемов",
+    "Play all the stems together and adjust the volume of each one": "Воспроизводите все стемы вместе и регулируйте громкость каждого",
+    "Play": "Воспроизвести",
+    "Pause": "Пауза",
+    "Mute": "Заглушить",
+    "Solo": "Соло",
+    "Volume": "Громкость",
+    "Position": "Позиция",
+    "Download mix (.wav)": "Скачать микс (.wav)",
+    "Loading stems...": "Загрузка стемов...",
+    "This stem can't be played in the browser": "Этот стем нельзя воспроизвести в браузере",
+    "Separate all files!": "Разделить все файлы!",
+    "Separation finished: {stems}": "Разделение завершено: {stems}",
+    "Batch separation finished": "Пакетное разделение завершено",
+    "Models in the list: {count}": "Моделей в списке: {count}",
+    "Complete": "Готово",
+    "Language automatically detected by system": "Язык, автоматически определённый системой"
 }

@@ -9,13 +9,15 @@
 6. [Updating UVR5-UI](#updating-uvr5-ui)
 7. [Docker Instance Setup](#docker-instance-setup)
 8. [Ensembles](#ensembles)
-9. [Settings](#settings)
-10. [Best Models](#best-models)
-11. [Advanced Documentation](#advanced-documentation)
-12. [Contributions](#contributions)
-13. [TO-DO](#to-do)
-14. [Credits](#credits)
-15. [Feedback and Support](#feedback-and-support)
+9. [Stem Mixer](#stem-mixer)
+10. [Settings](#settings)
+11. [Accessibility](#accessibility)
+12. [Best Models](#best-models)
+13. [Advanced Documentation](#advanced-documentation)
+14. [Contributions](#contributions)
+15. [TO-DO](#to-do)
+16. [Credits](#credits)
+17. [Feedback and Support](#feedback-and-support)
 
 ## Introduction
 UVR5-UI is a user-friendly interface for the Ultimate Vocal Remover 5, designed to separate audio files into various stems using multiple models. Built on top of the `python-audio-separator`, it provides a Gradio UI for easier interaction, making it accessible to both novice and advanced users.
@@ -26,7 +28,9 @@ UVR5-UI is a user-friendly interface for the Ultimate Vocal Remover 5, designed 
 - **Video/Audio Separation**: Supports separation from URLs using `yt_dlp`, covering platforms like YouTube, SoundCloud, etc.
 - **Batch Processing**: Enables processing multiple files at once for efficiency.
 - **Ensembles**: Combines the results of several models, with curated presets and your own (see [Ensembles](#ensembles)).
+- **Stem Mixer**: Plays all the stems together with a volume, mute and solo control per stem, and downloads the mix (see [Stem Mixer](#stem-mixer)).
 - **Performance Settings**: Native FP16, torch.compile and chunked processing for long audio (see [Settings](#settings)).
+- **Accessibility**: Usable with the keyboard and screen readers such as NVDA (see [Accessibility](#accessibility)).
 - **Multi-Language Support**: Available in several languages to cater to a global user base.
 - **Cross-Platform Compatibility**: Runs on Windows, Linux, and through cloud services like Colab, Kaggle, and Hugging Face Spaces.
 - **Integration with Cloud Services**: Direct links to run in Google Colab, Kaggle, and Lightning.ai.
@@ -125,6 +129,19 @@ The **Ensemble** tab runs two to six models (of any architecture) on the same au
 - Only the stems produced by **every** model are combined (e.g. Vocals and Instrumental). Enable *Include unmatched stems* to also get the rest, and *Keep each model's stems* to save each model's own output next to the result.
 - Batches process the files model by model, so each model is loaded once per group of files.
 
+## Stem Mixer
+After a single-file separation that gives two or more stems, a **Stem mixer** section appears under the output players (in every architecture tab and in the Ensemble tab). Open it to listen to all the stems together, which makes it easy to check the separation: hear the rebuilt mix, find bleed between stems or compare how much of each stem is left.
+
+- **Playback**: ▶ plays every stem at the same time, perfectly in sync. Use ■ to stop and the position bar to jump to any point.
+- **Volume**: each stem has its own slider, from 0% to 150%, and the changes are heard right away while it plays.
+- **M (Mute)** silences a stem. **S (Solo)** plays only the soloed stems (several can be soloed at once); solo wins over mute.
+- **Download mix (.wav)**: saves the mix with the current volumes, mute and solo as `<song>_mix.wav`, at the stems' own sample rate. It is a 32-bit float WAV, so turning stems above 100% doesn't clip the file.
+
+Notes:
+- Everything runs in your browser: the stems are only loaded when you press ▶ or download the mix, and they take about 10 MB of browser memory per minute of audio per stem (a 5-minute song with 6 stems uses about 300 MB).
+- A stem in a format that your browser can't play (AIFF or AC3 in some browsers) is marked in its row and left out; the rest still work. WAV, FLAC and MP3 work in every browser.
+- Batch separations don't show the mixer: it uses the stems shown in the output players.
+
 ## Settings
 - **Performance** (applies to every tab):
   - *Precision*: Automatic (autocast on NVIDIA GPUs), FP32, Autocast or Native FP16. Native FP16 makes BS/Mel Roformer models faster and lighter on NVIDIA and Apple GPUs; other combinations fall back to FP32.
@@ -133,40 +150,56 @@ The **Ensemble** tab runs two to six models (of any architecture) on the same au
   - *Write outputs with soundfile*: uses less memory when writing very long files.
 - **Output file names**: a template with `{input}`, `{stem}` and `{model}`, e.g. `{stem} - {input}`. The default is `{input}_({stem})_{model}`.
 
+## Accessibility
+UVR5 UI can be used with the keyboard and a screen reader. It has been tested with **NVDA** on Windows and Chrome; other screen readers (JAWS, Narrator, Orca, VoiceOver) should work as well, since it uses standard ARIA roles and live regions.
+
+- **Tabs**: Tab moves into the tab bar and out of it in one step; use the **Left/Right arrows** (or Home/End) to move between tabs and **Enter** or **Space** to open one. Each tab starts with a heading with its name, so the heading keys of your screen reader (H in NVDA) jump to it.
+- **Model and format lists**: they are combo boxes. Press **Down arrow** to open the list and move through the models (e.g. "BS Roformer SW by jarredou (Vocals ⭐), 2 of 92"), or type part of a name to filter it, and press **Enter** to choose. The focus stays on the list. The recommended model of each stem is the first one, marked with a ⭐.
+- **Advanced settings, Separation by link, Batch separation**: they are collapsible sections; screen readers say whether each one is expanded or collapsed. Press Enter on its title to open or close it.
+- **What gets announced**:
+  - validation messages, e.g. "Please select a model first";
+  - when "All models" / "Downloaded models only" change the list ("Models in the list: 92");
+  - the progress of a separation, and which stems it produced ("Separation finished: Vocals, Instrumental");
+  - the summary of a batch separation;
+  - errors and notifications, e.g. "Current settings saved successfully!".
+- **Audio players**: each download button says which audio it saves ("Download: Stem 1 (Vocals)").
+- **Language selector**: languages are listed by name ("Español (es_ES)").
+- **Single file vs. batch**: the batch button is called "Separate all files!", so it isn't confused with "Separate!".
+- **Stem mixer**: every control has a name ("Mute: Vocals", "Volume: Vocals"), and the volume sliders are read as a percentage.
+- **Language**: the page uses the language selected in Settings, so screen readers can pick the matching voice. In NVDA this needs *Automatic language switching* enabled (Settings → Speech) and a voice for that language installed in Windows.
+- **Keyboard focus** is always shown with a visible outline, with any theme.
+
+Known limitations (they come from Gradio, the framework UVR5 UI is built on):
+- NVDA says "clickable" on some paragraphs and regions.
+- The "Reset to default value" buttons next to each slider don't say which setting they reset; the slider before them does.
+- Descriptions under some checkboxes aren't read when the checkbox gets the focus.
+
+If something isn't accessible to you, please [open an issue](https://github.com/Eddycrack864/UVR5-UI/issues) describing your screen reader, browser and what happened.
+
 ## Best Models
 ### Instrumental
-1. MelBand Roformer Kim | Inst V1 (E) Plus by Unwa (Added)
-2. MelBand Roformer | INSTV7 by Gabox (Added)
-3. MelBand Roformer | Instrumental FV8 by Gabo (Added)
-4. BS Roformer | Instrumental Resurrection by unwa (Added)
+1. BS Roformer | Instrumental Resurrection by unwa (Added)
+2. MelBand Roformer Kim | Inst V1 (E) Plus by Unwa (Added)
+3. MelBand Roformer | Instrumental FV8 by Gabox (Added)
 
 ### Vocals
-1. MelBand Roformer 2025.07 (Only available on MVSEP)
-2. MelBand Roformer Bas Curtiz edition (Only available on MVSEP)
-3. MelBand Roformer Kim | FT2 Bleedlees by unwa (Added)
-4. BS Roformer | Vocals Resurrection by unwa (Added)
-5. BS Roformer | Vocals Revive V2 by Unwa (Added)
+1. BS Roformer SW by jarredou (Added)
+2. MelBand Roformer Kim | FT 2 Bleedless by unwa (Added)
+3. BS Roformer | Vocals Resurrection by unwa (Added)
 
 ### Karaoke
-1. MelBand Roformer | Karaoke by becruily (Added)
-2. Mel-Roformer-Karaoke-Aufr33-Viperx (Added)
-3. MelBand Roformer | Karaoke by Gabox (Added)
-4. UVR-BVE-4B_SN-44100-2 (Added)
+1. BS Roformer | Karaoke by anvuew (Added)
+2. BS Roformer | Karaoke by frazer-becruily (Added)
 
 ### De-Reverb
 1. MelBand Roformer | De-Reverb by anvuew (Added)
 2. MelBand Roformer | De-Reverb Mono by anvuew (Added)
 3. MelBand Roformer | De-Reverb-Echo Fused by Sucial (Added)
-4. MelBand Roformer | De-Reverb Less Aggressive by anvuew (Added)
 
 ### Denoise
-1. Mel-Roformer-Denoise-Aufr33 (Added)
-2. MelBand Roformer | Denoise-Debleed by Gabox (Added)
+1. MelBand Roformer | Denoise-Debleed by Gabox (Added)
+2. Mel-Roformer-Denoise-Aufr33 (Added)
 3. UVR-DeNoise (Added)
-
-### Crowd
-1. UVR-MDX-NET_Crowd_HQ_1 (Added)
-2. Mel-Roformer-Crowd-Aufr33-Viperx (Added)
 
 ## Advanced Documentation
 You can review more advanced and detailed documentation about models, UVR5 and other stuff [here](https://docs.google.com/document/d/17fjNvJzj8ZGSer7c7OFe_CNfUKbAxEh_OBv94ZdRG5c/edit?usp=sharing)

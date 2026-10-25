@@ -183,5 +183,22 @@
     "Name template saved": "Templat nama disimpan",
     "Stop": "Hentikan",
     "Download all stems (.zip)": "Unduh semua stem (.zip)",
-    "The input path must be an existing folder": "Path masukan harus berupa folder yang ada"
+    "The input path must be an existing folder": "Path masukan harus berupa folder yang ada",
+    "Stem mixer": "Mixer stem",
+    "Play all the stems together and adjust the volume of each one": "Putar semua stem bersamaan dan atur volume masing-masing",
+    "Play": "Putar",
+    "Pause": "Jeda",
+    "Mute": "Bisukan",
+    "Solo": "Solo",
+    "Volume": "Volume",
+    "Position": "Posisi",
+    "Download mix (.wav)": "Unduh mix (.wav)",
+    "Loading stems...": "Memuat stem...",
+    "This stem can't be played in the browser": "Stem ini tidak dapat diputar di browser",
+    "Separate all files!": "Pisahkan semua file!",
+    "Separation finished: {stems}": "Pemisahan selesai: {stems}",
+    "Batch separation finished": "Pemisahan batch selesai",
+    "Models in the list: {count}": "Model dalam daftar: {count}",
+    "Complete": "Selesai",
+    "Language automatically detected by system": "Bahasa yang terdeteksi otomatis oleh sistem"
 }

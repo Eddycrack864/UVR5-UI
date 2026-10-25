@@ -1,10 +1,14 @@
+import io
 import sys
 import types
+import urllib.error
 
 import pytest
 
 from uvr5_ui.core.downloads import model_downloader, ytdl
-from uvr5_ui.core.downloads.model_downloader import METHOD_PYTHON, download_model, filename_from_url
+from uvr5_ui.core.downloads.model_downloader import (
+    METHOD_PYTHON, download_model, ensure_downloaded, file_urls, filename_from_url,
+)
 from uvr5_ui.core.errors import DownloadError
 from uvr5_ui.core.models.catalog import Model
 
@@ -59,6 +63,130 @@ def test_unsupported_method_and_no_urls(tmp_path):
     model = Model("m", "demucs", "m.yaml")
     assert list(download_model(model, "Github", "ftp", models_dir=tmp_path)) == ["Unsupported download method: ftp"]
     assert "No URLs found" in list(download_model(model, "Github", METHOD_PYTHON, models_dir=tmp_path))[0]
+
+
+class FakeResponse:
+    def __init__(self, data, status=200, fail_after=None):
+        self.status = status
+        self.headers = {"Content-Length": str(len(data))}
+        self._body = io.BytesIO(data)
+        self._fail_after = fail_after
+
+    def read(self, size):
+        if self._fail_after is not None and self._body.tell() >= self._fail_after:
+            raise ConnectionResetError("connection reset")
+        return self._body.read(size if self._fail_after is None else self._fail_after - self._body.tell())
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+
+@pytest.fixture
+def no_retry_delay(monkeypatch):
+    monkeypatch.setattr(model_downloader, "_RETRY_DELAY", 0)
+
+
+def test_interrupted_download_resumes_from_the_partial_file(tmp_path, monkeypatch, no_retry_delay):
+    data = b"0123456789"
+    ranges = []
+
+    def urlopen(request, timeout):
+        ranges.append(request.get_header("Range"))
+        if len(ranges) == 1:
+            return FakeResponse(data, fail_after=4)  # the connection drops after 4 bytes
+        start = int(request.get_header("Range")[6:-1])
+        return FakeResponse(data[start:], status=206)
+
+    monkeypatch.setattr(model_downloader.urllib.request, "urlopen", urlopen)
+    model = Model("m", "roformer", "m.ckpt", {"github": ["https://github.com/m.ckpt"]})
+
+    log = list(download_model(model, "Github", METHOD_PYTHON, models_dir=tmp_path))
+
+    assert ranges == [None, "bytes=4-"]
+    assert (tmp_path / "m.ckpt").read_bytes() == data
+    assert not (tmp_path / "m.ckpt.part").exists()
+    assert log[-1] == "m.ckpt downloaded successfully!"
+
+
+def test_a_server_that_ignores_the_range_restarts_the_file(tmp_path, monkeypatch, no_retry_delay):
+    (tmp_path / "m.ckpt.part").write_bytes(b"stale")
+    monkeypatch.setattr(model_downloader.urllib.request, "urlopen",
+                        lambda request, timeout: FakeResponse(b"fresh data"))
+    model = Model("m", "roformer", "m.ckpt", {"github": ["https://github.com/m.ckpt"]})
+    list(download_model(model, "Github", METHOD_PYTHON, models_dir=tmp_path))
+    assert (tmp_path / "m.ckpt").read_bytes() == b"fresh data"
+
+
+def test_client_errors_are_not_retried(tmp_path, monkeypatch, no_retry_delay):
+    calls = []
+
+    def urlopen(request, timeout):
+        calls.append(request.full_url)
+        raise urllib.error.HTTPError(request.full_url, 404, "Not Found", {}, None)
+
+    monkeypatch.setattr(model_downloader.urllib.request, "urlopen", urlopen)
+    model = Model("m", "roformer", "m.ckpt", {"github": ["https://github.com/m.ckpt"]})
+    log = list(download_model(model, "Github", METHOD_PYTHON, models_dir=tmp_path))
+    assert calls == ["https://github.com/m.ckpt"]
+    assert log[-1] == "Error downloading m.ckpt from github.com: HTTP Error 404: Not Found"
+
+
+FALLBACK_MODEL = Model("m", "roformer", "m.ckpt", {
+    "github": ["https://github.com/m.ckpt", "https://github.com/m.yaml"],
+    "huggingface": ["https://huggingface.co/m.ckpt", "https://huggingface.co/m.yaml"],
+})
+
+
+def test_file_urls_put_the_selected_source_first():
+    assert file_urls(FALLBACK_MODEL, "Hugging Face") == {
+        "m.ckpt": ["https://huggingface.co/m.ckpt", "https://github.com/m.ckpt"],
+        "m.yaml": ["https://huggingface.co/m.yaml", "https://github.com/m.yaml"],
+    }
+
+
+def test_a_failed_file_is_downloaded_from_the_other_source(tmp_path, monkeypatch):
+    used = []
+
+    def download(url, dest, on_fraction):
+        used.append(url)
+        if url == "https://github.com/m.ckpt":
+            raise ConnectionError("connection closed after 800 MB")
+        dest.write_text(url)
+
+    monkeypatch.setattr(model_downloader, "_download_python", download)
+    (tmp_path / "m.ckpt.part").write_text("partial from github")
+
+    log = list(download_model(FALLBACK_MODEL, "Github", METHOD_PYTHON, models_dir=tmp_path))
+
+    assert used == ["https://github.com/m.ckpt", "https://huggingface.co/m.ckpt", "https://github.com/m.yaml"]
+    assert "Trying another source for m.ckpt..." in log
+    assert (tmp_path / "m.ckpt").read_text() == "https://huggingface.co/m.ckpt"
+    assert not (tmp_path / "m.ckpt.part").exists()  # not resumed from another source's partial file
+
+
+def test_ensure_downloaded(tmp_path, monkeypatch):
+    used = []
+    monkeypatch.setattr(model_downloader, "_download_python",
+                        lambda url, dest, cb: (used.append(url), dest.touch()))
+    (tmp_path / "m.yaml").touch()
+    ensure_downloaded(FALLBACK_MODEL, tmp_path)
+    assert used == ["https://github.com/m.ckpt"]  # only the missing file
+
+    ensure_downloaded(FALLBACK_MODEL, tmp_path)
+    assert len(used) == 1  # nothing missing: no download at all
+    ensure_downloaded(Model("x", "demucs", "x.yaml"), tmp_path)  # no sources: audio-separator handles it
+
+
+def test_ensure_downloaded_raises_when_every_source_fails(tmp_path, monkeypatch):
+    def download(url, dest, on_fraction):
+        raise ConnectionError("no connection")
+
+    monkeypatch.setattr(model_downloader, "_download_python", download)
+    with pytest.raises(DownloadError, match="could not download m.ckpt, m.yaml"):
+        ensure_downloaded(FALLBACK_MODEL, tmp_path)
 
 
 class FakeYoutubeDL:

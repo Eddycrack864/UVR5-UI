@@ -183,5 +183,22 @@
     "Name template saved": "名称模板已保存",
     "Stop": "停止",
     "Download all stems (.zip)": "下载所有音轨（.zip）",
-    "The input path must be an existing folder": "输入路径必须是已存在的文件夹"
+    "The input path must be an existing folder": "输入路径必须是已存在的文件夹",
+    "Stem mixer": "音轨混音器",
+    "Play all the stems together and adjust the volume of each one": "同时播放所有音轨并调整每个音轨的音量",
+    "Play": "播放",
+    "Pause": "暂停",
+    "Mute": "静音",
+    "Solo": "独奏",
+    "Volume": "音量",
+    "Position": "播放位置",
+    "Download mix (.wav)": "下载混音（.wav）",
+    "Loading stems...": "正在加载音轨...",
+    "This stem can't be played in the browser": "此音轨无法在浏览器中播放",
+    "Separate all files!": "分离所有文件！",
+    "Separation finished: {stems}": "分离完成：{stems}",
+    "Batch separation finished": "批量分离完成",
+    "Models in the list: {count}": "列表中的模型数：{count}",
+    "Complete": "完成",
+    "Language automatically detected by system": "系统自动检测的语言"
 }

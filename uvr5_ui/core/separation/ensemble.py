@@ -240,7 +240,7 @@ def _run(members, files, output_dir, output_format, options, cache, progress, wo
                 try:
                     with separation_lock:
                         separator = cache.get(member.spec, member.model, member.separator_values(), member_dir,
-                                              "wav", options=runtime_options)
+                                              "wav", options=runtime_options, progress=lambda fraction, desc: step(desc))
                 except Exception as e:
                     cache.clear()
                     raise SeparationError(f"Could not load model {member.model.id}: {describe_error(e)}") from e

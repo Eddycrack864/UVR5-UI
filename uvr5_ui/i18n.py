@@ -14,6 +14,13 @@ FALLBACK_LANGUAGE = "en_US"
 AUTO_LANGUAGE = "Language automatically detected by system"
 # Language files that were renamed; configs saved before the rename still use the old name.
 LEGACY_LANGUAGE_NAMES = {"fr-FR": "fr_FR", "ro-RO": "ro_RO"}
+# Shown in the language selector next to the code, in their own language
+LANGUAGE_NAMES = {
+    "ar_AR": "العربية", "de_DE": "Deutsch", "en_US": "English", "es_ES": "Español", "fr_FR": "Français",
+    "hi_IN": "हिन्दी", "id_ID": "Bahasa Indonesia", "it_IT": "Italiano", "ja_JP": "日本語", "ko_KR": "한국어",
+    "ms_MY": "Bahasa Melayu", "pt_BR": "Português (Brasil)", "ro_RO": "Română", "ru_RU": "Русский",
+    "th_TH": "ไทย", "tr_TR": "Türkçe", "uk_UA": "Українська", "vi_VN": "Tiếng Việt", "zh_CN": "简体中文",
+}
 
 
 def N_(text: str) -> str:

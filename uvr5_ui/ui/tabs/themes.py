@@ -1,12 +1,13 @@
 import gradio as gr
 
 from uvr5_ui.i18n import i18n
-from uvr5_ui.ui import theme
+from uvr5_ui.ui import a11y, theme
 from uvr5_ui.ui.context import AppContext
 
 
 def render_themes_tab(ctx: AppContext) -> None:
     with gr.TabItem(i18n("Themes")):
+        a11y.tab_heading(i18n("Themes"))
         themes_select = gr.Dropdown(
             label=i18n("Theme"),
             info=i18n("Select the theme you want to use. (Requires restarting the App)"),

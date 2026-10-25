@@ -183,5 +183,22 @@
     "Name template saved": "تم حفظ قالب الاسم",
     "Stop": "إيقاف",
     "Download all stems (.zip)": "تنزيل جميع المسارات الصوتية (.zip)",
-    "The input path must be an existing folder": "يجب أن يكون مسار الإدخال مجلدًا موجودًا"
+    "The input path must be an existing folder": "يجب أن يكون مسار الإدخال مجلدًا موجودًا",
+    "Stem mixer": "مازج المسارات الصوتية",
+    "Play all the stems together and adjust the volume of each one": "شغّل جميع المسارات الصوتية معًا واضبط مستوى صوت كل منها",
+    "Play": "تشغيل",
+    "Pause": "إيقاف مؤقت",
+    "Mute": "كتم الصوت",
+    "Solo": "منفرد",
+    "Volume": "مستوى الصوت",
+    "Position": "الموضع",
+    "Download mix (.wav)": "تنزيل المزيج (.wav)",
+    "Loading stems...": "جارٍ تحميل المسارات الصوتية...",
+    "This stem can't be played in the browser": "لا يمكن تشغيل هذا المسار الصوتي في المتصفح",
+    "Separate all files!": "افصل جميع الملفات!",
+    "Separation finished: {stems}": "اكتمل الفصل: {stems}",
+    "Batch separation finished": "اكتمل الفصل الجماعي",
+    "Models in the list: {count}": "النماذج في القائمة: {count}",
+    "Complete": "اكتمل",
+    "Language automatically detected by system": "اللغة التي اكتشفها النظام تلقائيًا"
 }

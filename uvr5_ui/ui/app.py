@@ -4,7 +4,7 @@ import gradio as gr
 
 from uvr5_ui.core.separation.specs import ARCHITECTURES
 from uvr5_ui.i18n import i18n
-from uvr5_ui.ui import theme
+from uvr5_ui.ui import a11y, theme
 from uvr5_ui.ui.context import AppContext
 from uvr5_ui.ui.tabs.credits import render_credits_tab
 from uvr5_ui.ui.tabs.ensemble import render_ensemble_tab
@@ -24,6 +24,9 @@ def launch_kwargs(ctx: AppContext) -> dict:
     return {
         "theme": theme.load_theme(ctx.config) or theme.DEFAULT_THEME,
         "js": theme.mode_js(theme.current_mode(ctx.config)),
+        "head": a11y.head_html(i18n.language),
+        "css": a11y.CSS,
+        "i18n": a11y.gradio_i18n(i18n.language),
     }
 
 
@@ -32,7 +35,9 @@ def create_app(ctx: AppContext = None) -> gr.Blocks:
 
     # No Gradio telemetry: it reports every launch to huggingface.co
     with gr.Blocks(title=TITLE, analytics_enabled=False, delete_cache=DELETE_CACHE) as app:
-        gr.Markdown(f"<h1> {TITLE} </h1>")
+        # The emojis are hidden from screen readers, which read them as "musical note".
+        # gr.HTML, because the Markdown sanitizer drops aria-hidden
+        gr.HTML('<h1><span aria-hidden="true">🎵</span> UVR5 UI <span aria-hidden="true">🎵</span></h1>')
         gr.Markdown(i18n("If you like UVR5 UI you can star my repo on [GitHub](https://github.com/Eddycrack864/UVR5-UI)"))
         gr.Markdown(i18n("Try UVR5 UI on Hugging Face with A100 [here](https://huggingface.co/spaces/TheStinger/UVR5_UI)"))
 

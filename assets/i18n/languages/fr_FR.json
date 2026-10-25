@@ -183,5 +183,22 @@
     "Name template saved": "Modèle de nom enregistré",
     "Stop": "Arrêter",
     "Download all stems (.zip)": "Télécharger tous les stems (.zip)",
-    "The input path must be an existing folder": "Le chemin d'entrée doit être un dossier existant"
+    "The input path must be an existing folder": "Le chemin d'entrée doit être un dossier existant",
+    "Stem mixer": "Mixeur de stems",
+    "Play all the stems together and adjust the volume of each one": "Lisez tous les stems ensemble et réglez le volume de chacun",
+    "Play": "Lecture",
+    "Pause": "Pause",
+    "Mute": "Muet",
+    "Solo": "Solo",
+    "Volume": "Volume",
+    "Position": "Position",
+    "Download mix (.wav)": "Télécharger le mix (.wav)",
+    "Loading stems...": "Chargement des stems...",
+    "This stem can't be played in the browser": "Ce stem ne peut pas être lu dans le navigateur",
+    "Separate all files!": "Séparer tous les fichiers !",
+    "Separation finished: {stems}": "Séparation terminée : {stems}",
+    "Batch separation finished": "Séparation par lots terminée",
+    "Models in the list: {count}": "Modèles dans la liste : {count}",
+    "Complete": "Terminé",
+    "Language automatically detected by system": "Langue détectée automatiquement par le système"
 }

@@ -183,5 +183,22 @@
     "Name template saved": "Шаблон імені збережено",
     "Stop": "Зупинити",
     "Download all stems (.zip)": "Завантажити всі стеми (.zip)",
-    "The input path must be an existing folder": "Вхідний шлях має бути наявною папкою"
+    "The input path must be an existing folder": "Вхідний шлях має бути наявною папкою",
+    "Stem mixer": "Мікшер стемів",
+    "Play all the stems together and adjust the volume of each one": "Відтворюйте всі стеми разом і регулюйте гучність кожного",
+    "Play": "Відтворити",
+    "Pause": "Пауза",
+    "Mute": "Вимкнути звук",
+    "Solo": "Соло",
+    "Volume": "Гучність",
+    "Position": "Позиція",
+    "Download mix (.wav)": "Завантажити мікс (.wav)",
+    "Loading stems...": "Завантаження стемів...",
+    "This stem can't be played in the browser": "Цей стем неможливо відтворити в браузері",
+    "Separate all files!": "Розділити всі файли!",
+    "Separation finished: {stems}": "Розділення завершено: {stems}",
+    "Batch separation finished": "Пакетне розділення завершено",
+    "Models in the list: {count}": "Моделей у списку: {count}",
+    "Complete": "Готово",
+    "Language automatically detected by system": "Мова, автоматично визначена системою"
 }

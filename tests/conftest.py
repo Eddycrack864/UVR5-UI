@@ -19,6 +19,16 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(skip)
 
 
+@pytest.fixture(autouse=True)
+def english_ui():
+    """UI strings in English, whatever language is selected in the developer's own user_data."""
+    from uvr5_ui.i18n import I18nAuto, i18n
+
+    i18n.reset(I18nAuto(language="en_US"))
+    yield
+    i18n.reset()
+
+
 @pytest.fixture
 def tmp_root(tmp_path):
     """A throwaway app root with a copy of the bundled assets (no user data)."""

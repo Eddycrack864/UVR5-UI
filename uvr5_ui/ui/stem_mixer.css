@@ -1,0 +1,100 @@
+.uvr-mixer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  color: var(--body-text-color);
+}
+
+.uvr-mixer button {
+  min-width: 2.25rem;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--button-secondary-border-color);
+  border-radius: var(--button-small-radius);
+  background: var(--button-secondary-background-fill);
+  color: var(--button-secondary-text-color);
+  font-size: var(--button-small-text-size);
+  font-weight: var(--button-small-text-weight);
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.uvr-mixer button:hover:not(:disabled) {
+  background: var(--button-secondary-background-fill-hover);
+}
+
+.uvr-mixer button[aria-pressed="true"] {
+  border-color: var(--button-primary-border-color);
+  background: var(--button-primary-background-fill);
+  color: var(--button-primary-text-color);
+}
+
+.uvr-mixer button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.uvr-mixer input[type="range"] {
+  accent-color: var(--color-accent);
+}
+
+.uvr-mixer .transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.uvr-mixer .seek {
+  flex: 1;
+  min-width: 8rem;
+}
+
+.uvr-mixer .time,
+.uvr-mixer .percent {
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.uvr-mixer .status {
+  min-height: 1.2em;
+  color: var(--body-text-color-subdued);
+  font-size: var(--text-sm);
+}
+
+.uvr-mixer .row {
+  display: grid;
+  grid-template-columns: minmax(6rem, 12rem) auto auto 1fr 3.5rem;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.uvr-mixer .label {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.uvr-mixer .percent {
+  text-align: right;
+}
+
+.uvr-mixer .error {
+  grid-column: 1 / -1;
+  color: var(--error-text-color);
+  font-size: var(--text-sm);
+}
+
+.uvr-mixer .row.unavailable .label {
+  opacity: 0.6;
+}
+
+@media (max-width: 640px) {
+  .uvr-mixer .row {
+    grid-template-columns: 1fr auto auto;
+  }
+
+  .uvr-mixer .volume {
+    grid-column: 1 / 3;
+  }
+}

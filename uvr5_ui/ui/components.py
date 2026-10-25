@@ -8,12 +8,24 @@ import gradio as gr
 
 from uvr5_ui.core.audio import zip_files
 from uvr5_ui.core.downloads.ytdl import download_audio
+from uvr5_ui.core.models.catalog import Model, ModelCatalog
 from uvr5_ui.core.separation.specs import ParamSpec
 from uvr5_ui.i18n import N_, i18n
 from uvr5_ui.ui.adapters import user_errors
 
 STEM_LABELS = (N_("Stem 1"), N_("Stem 2"), N_("Stem 3"), N_("Stem 4"), N_("Stem 5"), N_("Stem 6"))
 MAX_STEMS = len(STEM_LABELS)
+
+
+def model_label(catalog: ModelCatalog, model: Model, prefix: str = "") -> str:
+    """Dropdown label of a model: its id, plus e.g. ``(Vocals ⭐)`` when it is a recommended model."""
+    stems = catalog.recommended_stems(model)
+    return f"{prefix}{model.id} ({', '.join(stems)} ⭐)" if stems else prefix + model.id
+
+
+def model_choices(catalog: ModelCatalog, models: list[Model]) -> list[tuple[str, str]]:
+    """``(label, id)`` dropdown choices, recommended models first."""
+    return [(model_label(catalog, m), m.id) for m in catalog.recommended_first(models)]
 
 
 def param_widget(param: ParamSpec, value):
@@ -87,7 +99,7 @@ def input_sections(section: dict, api_suffix: str) -> InputSections:
                 i18n("Output path"), i18n("Place the output path here"), section.get("output_path", "")
             )
         with gr.Row():
-            batch_button = gr.Button(i18n("Separate!"), variant="primary")
+            batch_button = gr.Button(i18n("Separate all files!"), variant="primary")
             stop_button = gr.Button(i18n("Stop"), variant="stop")
         with gr.Row():
             batch_info = output_log()

@@ -290,6 +290,23 @@ def test_launch_adds_the_accessibility_fixes(ctx):
     assert a11y.gradio_i18n("pt_BR").translations_dict.keys() == {"pt-BR"}
 
 
+def test_launch_allows_stems_in_a_symlinked_outputs_folder(ctx, tmp_path, monkeypatch):
+    # Gradio resolves symlinks before checking that a returned file is under the CWD (#83)
+    from gradio.utils import is_allowed_file
+    target = tmp_path / "other_disk"
+    target.mkdir()
+    link = tmp_path / "linked_outputs"
+    try:
+        link.symlink_to(target, target_is_directory=True)
+    except OSError:  # Windows needs admin rights or developer mode
+        pytest.skip("this system can't create symlinks")
+    monkeypatch.setattr(paths, "OUTPUTS_DIR", link)
+    stem = link / "song_(Vocals)_model.wav"
+    stem.touch()
+    allowed_paths = launch_kwargs(ctx)["allowed_paths"]
+    assert is_allowed_file(stem, blocked_paths=[], allowed_paths=allowed_paths, created_paths=[]) == (True, "allowed")
+
+
 def test_announcements():
     stems = a11y.announce_stems("/c/song_(Vocals)_m.wav", None, "/c/song_(Instrumental)_m.flac")
     assert stems["text"] == "Separation finished: Vocals, Instrumental"

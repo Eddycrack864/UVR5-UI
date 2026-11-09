@@ -2,7 +2,7 @@
 
 import gradio as gr
 
-from uvr5_ui import hosting
+from uvr5_ui import hosting, paths
 from uvr5_ui.core.separation.specs import ARCHITECTURES
 from uvr5_ui.i18n import i18n
 from uvr5_ui.ui import a11y, theme
@@ -28,6 +28,9 @@ def launch_kwargs(ctx: AppContext) -> dict:
         "head": a11y.head_html(i18n.language),
         "css": a11y.CSS,
         "i18n": a11y.gradio_i18n(i18n.language),
+        # Gradio only returns files under the CWD or the temp dir, and it resolves symlinks first:
+        # an outputs/ that links to another disk (or a launch from another folder) fails without this
+        "allowed_paths": [str(paths.OUTPUTS_DIR), str(paths.YTDL_DIR)],
     }
 
 

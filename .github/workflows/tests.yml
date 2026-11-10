@@ -1,0 +1,55 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pytest:
+    name: pytest (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read versions from the installer
+        id: versions
+        shell: bash
+        run: |
+          # UVR5-UI-installer.sh is the single source of truth for the Python and torch versions
+          eval "$(grep -E '^(PYTHON|TORCH|TORCHVISION)_VERSION=' UVR5-UI-installer.sh)"
+          echo "python=${PYTHON_VERSION%.*}" >> "$GITHUB_OUTPUT"
+          echo "torch=$TORCH_VERSION" >> "$GITHUB_OUTPUT"
+          echo "torchvision=$TORCHVISION_VERSION" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.versions.outputs.python }}
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - name: Install FFmpeg (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          # CPU build of the installer's torch: the runners have no GPU
+          python -m pip install "torch==${{ steps.versions.outputs.torch }}" "torchvision==${{ steps.versions.outputs.torchvision }}" --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -r requirements-dev.txt
+      - name: Run tests
+        # Only the network tests may skip: any other skip (a missing dependency, no symlinks...) fails the run
+        run: python -m pytest -q --strict-skips
+      - name: Check translations
+        run: python tools/i18n_scan.py --check --langs

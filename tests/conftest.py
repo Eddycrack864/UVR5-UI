@@ -8,6 +8,8 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 def pytest_addoption(parser):
     parser.addoption("--network", action="store_true", help="also run the tests that need internet access")
+    parser.addoption("--strict-skips", action="store_true",
+                     help="fail any test that skips, except the network ones (CI: a missing dependency can't hide tests)")
 
 
 def pytest_collection_modifyitems(config, items):
@@ -17,6 +19,16 @@ def pytest_collection_modifyitems(config, items):
     for item in items:
         if "network" in item.keywords:
             item.add_marker(skip)
+
+
+@pytest.hookimpl(wrapper=True)
+def pytest_runtest_makereport(item, call):
+    report = yield
+    if report.skipped and item.config.getoption("--strict-skips") and "network" not in item.keywords:
+        reason = report.longrepr[2] if isinstance(report.longrepr, tuple) else report.longrepr
+        report.outcome = "failed"
+        report.longrepr = f"Skipped, which --strict-skips doesn't allow: {reason}"
+    return report
 
 
 @pytest.fixture(autouse=True)
